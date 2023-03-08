@@ -27,31 +27,94 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Layers.cpp">
+    <ClCompile Include="src\layers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Inventory.cpp">
+    <ClCompile Include="src\ui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\DroppedItems.cpp">
+    <ClCompile Include="src\player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Player.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\BlockManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\text.cpp">
+    <ClCompile Include="src\blocks.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\animations.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\world.cpp">
+    <ClCompile Include="src\noise.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\ECS\components.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\ECS\ECS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\ECS\systems.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\componentSystems.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\globals.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mobFunctions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\textures.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\items.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\ECS\components.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\resources.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\map.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gameLoop.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\input.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\startMenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\background.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\text.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\enemies.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\particles.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sounds.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\buffs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\liquids.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -920,31 +983,88 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Layers.h">
+    <ClInclude Include="include\layers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Inventory.h">
+    <ClInclude Include="include\ui.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\DroppedItems.h">
+    <ClInclude Include="include\player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Player.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\BlockManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\text.h">
+    <ClInclude Include="include\blocks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\animations.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\noise.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ECS\ECS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ECS\systems.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\componentSystems.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\globals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\enemyFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\textures.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\items.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="include\world.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gameLoop.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\input.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\game.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\startMenu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\background.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\text.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\enemies.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\particles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sounds.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\buffs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\liquids.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1364,6 +1484,11 @@
     <None Include="src\shaders\displayFrag.frag" />
     <None Include="src\shaders\cell lighting.frag" />
     <None Include="src\shaders\backgroundFrag.frag" />
+    <None Include="src\shaders\lightFrag.frag" />
+    <None Include="src\shaders\zoomFrag.frag" />
+    <None Include="src\shaders\bloomFrag.frag" />
+    <None Include="src\shaders\waterFrag.frag" />
+    <None Include="src\shaders\waterVert.vert" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="libs\glfw3.lib" />

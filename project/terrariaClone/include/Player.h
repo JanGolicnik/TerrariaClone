@@ -5,37 +5,124 @@
 
 namespace Player
 {
+    extern std::string name;
+
     extern glm::vec2 pos;
-    extern glm::vec2 velocity;
+    extern glm::vec2 vel;
+    extern glm::vec2 tvel;
     extern float ms;
     extern float jumpms;
-    extern glm::mat4 playerTrans;
+    extern int dir;
+    extern glm::vec2 center;
 
     extern float pickupRange;
     extern float editRange;
     extern int editsize;
     extern int invBlock;
     
-    extern bool digging;
-    extern bool placing;
-    extern Layers::Layer* editLayer;
+    extern bool leftClick;
+    extern bool rightClick;
 
     extern float width;
     extern float height;
-    extern glm::vec2 center;
 
-    extern float playerVertices[20];
-    extern uint32_t playerIndices[6];
+    extern const int numsprites;
     extern GLuint playerVB;
     extern GLuint playerVA;
     extern GLuint playerIB;
 
+    extern bool ignorebot;
+
     extern int anim;
 
+    extern float craftingDist;
+
+    extern float hp;
+    extern float currmaxhp;
+    extern float maxhp;
+    extern int defense;
+
+    extern float mana;
+    extern float currmaxmana;
+    extern float maxmana;
+
+    extern int cursoritem;
+
+    extern int inventoryC;
+    extern int chestInvC;
+    extern int crafting;
+
+    extern int entity;
+
+    extern int jumpDuration;
+    extern float jumpSpeed;
+    extern int currJumpTime;
+
+    extern bool friction;
+
+    extern int iframes;
+
+    extern int regentimer;
+
+    extern int boomerangsout;
+
+    extern int tool;
+    
+    extern float maxsummons;
+    extern float currsummons;
+
+    extern int heartcrystals;
+
+    extern std::array<ActiveBuff, 20> buffs;
+    extern int manaregentimer;
+    extern float regeneration;
+
+    extern float enemyChance;
+    extern float critterChance;
+
+    extern float meeleDamage;
+    extern float thorns;
+
+    extern std::string curritem;
+
+    extern std::string activeSetBonus;
+
+    extern float hue;
+
+    extern float breathtimer;
+
+    extern bool dead;
+
+    extern std::string timeToRespawn;
+
     void create();
-    void update(float grav);
-    void render(GLuint spriteShaderID, glm::mat4 camTrans);
-    void updateSprite();
-    void editMap();
+    void update();
+    void render();
+    void clean();
+    void calculateStats();
+    bool save();
+    bool load();
+    void jump();
+    void stop();
+
+    void useItem(std::string item, itemInfo* info);
+
+    void setPos(glm::vec2 val);
+    void setVel(glm::vec2 val);
+    glm::vec2* position();
+    glm::vec2* velocity();
+
+    void doPrimary(std::string item);
+    void doSecondary(std::string item);
+    void doPrimaryHold(std::string item);
+
+    void addStatsFromItem(std::string item);
+
+    void addBuff(std::string name, int timer);
+    bool hasBuff(std::string name);
+
+    int pickUp(std::string  item, int num);
+
+    void dropCoins();
 };
 

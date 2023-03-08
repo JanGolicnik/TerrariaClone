@@ -2,12 +2,18 @@
 
 out vec4 FragColor;
 
-layout (location = 2) uniform sampler2D uSpriteSheet;
+layout (location = 1) uniform sampler2D[2] uSpriteSheets;
 
 in vec2 fSpriteCoords;
+in vec4 fColor;
+in float fSpritesheet;
 
 void main()
 {
-	FragColor = texture(uSpriteSheet, fSpriteCoords);
+	if(fSpritesheet == 0){
+		FragColor = texture2D(uSpriteSheets[0], fSpriteCoords) * fColor;
+	}else{
+		FragColor = fColor * texture2D(uSpriteSheets[1], fSpriteCoords).r;
+	}
 }
 

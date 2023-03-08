@@ -1,0 +1,1896 @@
+texCoords
+[
+empty {0,0,0,0} {1,1}
+dirt {32, 472, 40, 464} {1,1}
+dirtwall {472, 152, 488, 136} {2,2}
+grass {72, 472, 80, 464} {1,1}
+grass2 { 72,472,80,464 } {1,1}
+glass { 120,432,112,424 } {1,1}
+glasswall { 472,216,488,200 } {2,2}
+stone { 32,432,40,424 } {1,1}
+stonewall { 472,88,488,72 } {2,2}
+wood { 112,472,120,464 } {1,1}
+woodwall { 472,24,488,8 } {2,2}
+grassdecor { 48,176,56,166 } {1,1}
+grassdecor2 { 56,176,64,166 } {1,1}
+player { 8,32,24,8 } {1,1}
+trunk { 24,168,32,160 } {1,1}
+trunkbase1 { 24,176,32,168 } {1,1}
+trunkbase2 { 16,176,24,168 } {1,1}
+trunkbase3 { 32,176,40,168 } {1,1}
+leaves { 8,160,48,120 } {7,7}
+invempty { 448, 496, 496, 448 } {1,1}
+torch  { 16, 258, 25, 248 } {1,1}
+err { 0, 500, 2, 488 } {1,1}
+woodenbow { 56, 56, 72, 40 } {1,1}
+arrow { 72, 48, 88, 39 } {1,1}
+flamingarrow {72, 56, 88, 49} {1,1}
+bomb { 88, 56, 104, 40 } {1,1}
+minishark { 8, 68, 36, 58 } {1,1}
+waterspell { 8, 104, 24, 88 } {1,1}
+acorn { 52, 0, 53, 1 } {1,1}
+sand { 72, 432, 80, 424 } {1,1}
+purpletorch { 16,269,25,259 } {1,1}
+zombie { 384, 56, 401, 33 } {1,1}
+demoneye { 336, 99, 354, 88 } {1,1}
+bunny { 240, 24, 254, 8 } {1,1}
+bunnyright { 254, 24, 240, 8 } {1,1}
+dirtitem { 504, 464, 512, 456 } {1,1}
+stoneitem  { 512, 464, 520, 456 } {1,1}
+torchitem { 520, 464, 527, 456 } {1,1}
+gel { 536, 463, 544, 456 } {1,1}
+sanditem { 560, 464, 568, 456 } {1,1}
+glassitem { 568, 464, 576, 456 } {1,1}
+wooditem { 520, 475, 532, 464 } {1,1}
+acorn { 536, 473, 545, 464 } {1,1}
+bullet { 552, 472, 558, 466 } {1,1}
+stonewallitem { 504, 492, 516, 480 } {1,1}
+dirtwallitem { 520, 492, 532, 480 } {1,1}
+woodwallitem { 536, 492, 548, 480 } {1,1}
+glasswallitem { 552, 492, 564, 480 } {1,1}
+mushroomitem  { 504, 476, 515, 464 } {1,1}
+woodplatform { 544, 464, 556, 456 } {1,1}
+ironoreitem { 528, 464, 536, 456 } {1,1}
+ironbar { 560, 476, 576, 464 } {1,1}
+waterbolt { 16, 80, 24, 72 } { 1,1 }
+flyingbullet { 8, 82, 9, 72 } { 1,1 }
+chest { 16, 288, 24, 280 } { 1,1 }
+chestitem { 448, 518, 464, 504 } { 1,1 }
+dooritem { 464, 520, 473, 504 } { 1,1 }
+tableitem { 473, 520, 488, 509 } { 1,1 }
+chairitem { 488, 520, 496, 504 } { 1,1 }
+anvilitem { 496, 520, 512, 512 } { 1,1 }
+furnaceitem { 448, 533, 463, 520 } { 1,1 }
+craftingbenchitem { 464, 529, 480, 520 } { 1,1 }
+gravestoneitem { 480, 536, 492, 521 } { 1,1 }
+slimestatueitem { 493, 536, 505, 523 } { 1,1 }
+anvil { 32, 288, 40, 279 } { 1,1 }
+chairright { 56, 288, 64, 280 } { 1,1 }
+chairleft { 64, 288, 56, 280 } { 1,1 }
+craftingbench { 64, 288, 72, 279 } { 1,1 }
+table { 16, 304, 24, 296 } { 1,1 }
+furnace { 48, 304, 56, 296 } { 1,1 }
+closeddoor { 16, 336, 24, 328 } { 1,1 }
+opendoorleft { 24, 336, 31, 328 } { 1,1 }
+opendoorright { 38, 336, 31, 328 } { 1,1 }
+slimestatue { 72, 304, 80, 296 } { 1,1 }
+gravestone { 88, 304, 96, 296 } { 1,1 }
+ironore {152, 432, 160, 424} {1,1}
+corruptgrass {192, 432, 200, 424} {1,1}
+copperore {152, 472, 160, 464} {1,1}
+stonebrick {192, 472, 200, 464} {1,1}
+borealwood {152, 512, 160, 504} {1,1}
+ebonwood {192, 512, 200, 504} {1,1}
+mahoganywood {32, 552, 40, 544} {1,1}
+junglegrass {32, 512, 40, 504} {1,1}
+mud {72, 512, 80, 504} {1,1}
+snow {112, 512, 120, 504} {1,1}
+ebonwoodwall {536, 24, 552, 8} {2,2}
+borealwoodwall {600, 24, 616, 8} {2,2}
+snowwall {536, 88, 552, 72} {2,2}
+mudwall {536, 152, 552, 136} {2,2}
+mahoganywoodwall {536, 216, 552, 200} {2,2}
+coppercoin {504, 456, 510, 450} {1,1}
+silvercoin {510, 456, 516, 449} {1,1}
+goldcoin {516, 456, 522, 448} {1,1}
+platinumcoin {522, 456, 529, 448} {1,1}
+stonebrickitem {536, 456, 544, 448} {1,1}
+muditem {544, 456, 552, 448} {1,1}
+healthpot {552, 456, 562, 443} {1,1}
+snowitem {568, 456, 576, 448} {1,1}
+copperoreitem {576, 464, 584, 456} {1,1}
+suseye {584, 464, 600, 454} {1,1}
+regenband {600, 464, 613, 454} {1,1}
+magicmirror {616, 464, 628, 452} {1,1}
+bottlecloud {632, 464, 642, 451} {1,1}
+hermesboots {648, 464, 666, 449} {1,1}
+manaband {672, 464, 686, 454} {1,1}
+lens {688, 464, 696, 453} {1,1}
+copperbar {576, 476, 592, 464} {1,1}
+shackle {592, 476, 603, 464} {1,1}
+mahoganywooditem {608, 475, 620, 464} {1,1}
+ebonwooditem {624, 475, 636, 464} {1,1}
+borealwooditem {640, 475, 652, 464} {1,1}
+stonebrickwallitem {568, 492, 580, 480} {1,1}
+borealwoodwallitem {584, 492, 596, 480} {1,1}
+ebonwoodwallitem {600, 492, 612, 480} {1,1}
+mahoganywoodwallitem {616, 492, 628, 480} {1,1}
+mahoganydooritem {505, 536, 514, 520} {1,1}
+borealdooritem {523, 536, 533, 520} {1,1}
+ebonwooddooritem {514, 536, 523, 520} {1,1}
+borealtableitem {448, 548, 465, 536} {1,1}
+borealworkbenchitem {448, 561, 464, 552} {1,1}
+ebonwoodworkbenchitem {466, 545, 481, 536} {1,1}
+mahoganyworkbenchitem {482, 545, 497, 536} {1,1}
+ebonwoodtableitem {504, 547, 519, 536} {1,1}
+mahoganytableitem {520, 547, 535, 536} {1,1}
+cursor {424, 472, 431, 465} {1,1}
+cursorborder {432, 472, 441, 463} {1,1}
+trash {424, 496, 446, 474} {1,1}
+heart {408, 496, 419, 485} {1,1}
+mana {392, 496, 403, 484} {1,1}
+magicboomerang {40, 72, 49, 56} {1,1}
+spacegun {72, 84, 90, 72} {1,1}
+vilethorn {56, 72, 72, 56} {1,1}
+terrablade {96, 81, 119, 56} {1,1}
+starfury {32, 89, 49, 72} {1,1}
+magicmissile {56, 85, 69, 72} {1,1}
+aquascepter {32, 105, 55, 96} {1,1}
+opticstaff {56, 104, 72, 88} {1,1}
+handgun {72, 102, 92, 88} {1,1}
+twinssummon2 {304, 219, 328, 208} {1,1}
+twinssummon1 {304, 235, 328, 224} {1,1}
+fallenstar {256, 20, 267, 8} {1,1}
+sapling {88, 176, 96, 168} {1,1}
+borealtrunk {104, 168, 112, 160} {1,1}
+borealtrunkbase1 {104, 176, 112, 168} {1,1}
+borealtrunkbase2 {96, 176, 104, 168} {1,1}
+borealtrunkbase3 {112, 176, 120, 168} {1,1}
+borealleaves {88, 160, 128, 120} {7,7}
+borealtrunktop {120, 168, 128, 160} {1,1}
+borealsapling {168, 176, 176, 168} {1,1}
+corrupttrunk {24, 232, 32, 224} {1,1}
+corrupttrunkbase1 {24, 240, 32, 232} {1,1}
+corrupttrunkbase2 {16, 240, 24, 232} {1,1}
+corrupttrunkbase3 {32, 240, 40, 232} {1,1}
+corruptleaves {8, 224, 48, 184} {7,7}
+corrupttrunktop {40, 232, 48, 224} {1,1}
+corruptsapling {88, 240, 96, 232} {1,1}
+mahoganytrunk {104, 232, 112, 224} {1,1}
+mahoganytrunkbase1 {104, 240, 112, 232} {1,1}
+mahoganytrunkbase2 {96, 240, 104, 232} {1,1}
+mahoganytrunkbase3 {112, 240, 120, 232} {1,1}
+mahoganyleaves {88, 224, 128, 184} {7,7}
+mahoganytrunktop {120, 232, 128, 224} {1,1}
+mahoganysapling {168, 240, 176, 232} {1,1}
+cactustop {128, 280, 136, 272} {1,1}
+cactusmid {128, 288, 136, 280} {1,1}
+cactusright {128, 296, 136, 288} {1,1}
+cactusleft {128, 304, 136, 296} {1,1}
+cactusleftarm {120, 304, 128, 296} {1,1}
+cactusarmleftmid {120, 296, 128, 288} {1,1}
+cactusarmlefttop {120, 288, 128, 280} {1,1}
+cactusrightarm {136, 296, 144, 288} {1,1}
+cactusarmrightmid {136, 288, 144, 280} {1,1}
+cactusarmrighttop {136, 280, 144, 272} {1,1}
+ebonwooddoor { 40, 336, 48, 328 } { 1,1 }
+ebonwooddoorleft { 48, 336, 56, 328 } { 1,1 }
+ebonwooddoorright { 64, 336, 56, 328 } { 1,1 }
+borealdoor { 16, 360, 24, 352 } { 1,1 }
+borealdoorleft { 24, 360, 32, 352 } { 1,1 }
+borealdoorright { 40, 360, 32, 352 } { 1,1 }
+mahoganydoor { 40, 360, 48, 352 } { 1,1 }
+mahoganydoorleft { 48, 360, 56, 352 } { 1,1 }
+mahoganydoorright { 64, 360, 56, 352 } { 1,1 }
+ebonwoodtable {16, 376, 24, 368} {1,1}
+mahoganytable {48, 376, 56, 368} {1,1}
+borealtable {80, 376, 88, 368} {1,1}
+ebonwoodworkbench {16, 392, 24, 383} {1,1}
+mahoganyworkbench {32, 392, 40, 383} {1,1}
+borealworkbench {48, 392, 56, 383} {1,1}
+borealchairright {160, 304, 168, 296} {1,1}
+mahoganychairright {152, 304, 160, 296} {1,1}
+ebonwoodchairright {144, 304, 152, 296} {1,1}
+borealchairleft {168, 304, 160, 296} {1,1}
+mahoganychairleft {160, 304, 152, 296} {1,1}
+ebonwoodchairleft {152, 304, 144, 296} {1,1}
+ebonwoodchairitem {512, 520, 520, 502} {1,1}
+borealchairitem {528, 520, 536, 502} {1,1}
+mahoganychairitem {520, 520, 528, 502} {1,1}
+ash {72, 552, 80, 544} {1,1}
+ashitem {576, 456, 584, 448} {1,1}
+sliderpaddle {364, 502, 368, 488} {1,1}
+toggleoff {377, 495, 384, 488} {1,1}
+toggleon {369, 495, 376, 488} {1,1}
+slider {352, 510, 440, 504} {1,1}
+sliderrainbow {350, 560, 440, 552} {1,1}
+tooltip {408, 480, 409, 479} {1,1}
+logo {360, 440, 602, 368} {1,1}
+sandstoneitem {544, 512, 552, 504} {1,1}
+hardenedsanditem {552, 512, 560, 504} {1,1}
+sandstonewallitem {632, 492, 644, 480} {1,1}
+hardenedsandwallitem {648, 492, 660, 480} {1,1}
+sandstone {112, 552, 120, 544} {1,1}
+hardenedsand {152, 552, 160, 544} {1,1}
+sandstonewall {600, 88, 616, 72} {2,2}
+hardenedsandwall {600, 152, 616, 136} {2,2}
+ebonstone {192, 552, 200, 544} {1,1}
+ebonstoneitem {560, 512, 568, 504} {1,1}
+ebonstonewall {600, 215, 616, 200} {2,2}
+normalgrassdecor {48, 176, 56, 168} {1,1}
+corruptgrassdecor {48, 240, 56, 232} {1,1}
+junglegrassdecor {128, 240, 136, 232} {1,1}
+normalbranchr {56, 160, 64, 152} {1,1}
+normalbranchl {56, 144, 64, 136} {1,1}
+corruptbranchr {56, 224, 64, 216} {1,1}
+corruptbranchl {56, 208, 64, 200} {1,1}
+junglebranchr {136, 224, 144, 216} {1,1}
+junglebranchl {136, 208, 144, 200} {1,1}
+borealbranchr {136, 160, 144, 152} {1,1}
+borealbranchl {136, 144, 144, 136} {1,1}
+icicle {112, 328, 120, 320} {1,1}
+stalaktit {144, 328, 152, 320} {1,1}
+corruptstalaktit {176, 328, 184, 320} {1,1}
+sandstalaktit {208, 328, 216, 320} {1,1}
+stalagmit {144, 344, 152, 336} {1,1}
+corruptstalagmit {176, 344, 184, 336} {1,1}
+sandstalagmit {208, 344, 216, 336} {1,1}
+smallrock {112, 368, 120, 360} {1,1}
+mediumrock {112, 376, 120, 368} {1,1}
+dirtparticle {20, 487, 21, 486} {1,1}
+woodenhelmet {355, 520, 366, 512} {1,1}
+woodenbreastplate {352, 530, 367, 520} {1,1}
+woodengreaves {354, 541, 365, 532} {1,1}
+defense {360, 480, 372, 468} {1,1}
+hpbar1 {376, 472, 393, 468} {1,1}
+hpbar2 {376, 480, 393, 474} {1,1}
+fallenstar {256, 20, 267, 8} {1,1}
+dirtpart {557, 268, 561, 264} {1,1}
+stonepart {562, 268, 566, 264} {1,1}
+grasspart {568, 268, 572, 264} {1,1}
+leafpart {572, 268, 576, 264} {1,1}
+tintablepart {577, 268, 581, 264} {1,1}
+bloodpart {582, 268, 586, 264} {1,1}
+torchpart {587, 268, 591, 264} {1,1}
+woodpart {592, 268, 596, 264} {1,1}
+ironpart {597, 268, 601, 264} {1,1}
+copperpart {602, 268, 606, 264} {1,1}
+goldpart {607, 268, 611, 264} {1,1}
+silverpart {612, 268, 616, 264} {1,1}
+magicpart {612, 284, 616, 280} {1,1}
+corruptpart {607, 284, 611, 280} {1,1}
+glasspart {602, 284, 606, 280} {1,1}
+smokepart {597, 284, 601, 280} {1,1}
+dustpart {509, 282, 528, 264} {1,1}
+sandpart {591, 284, 595, 280} {1,1}
+star1part {587, 284, 591, 280} {1,1}
+star2part {583, 284, 587, 280} {1,1}
+cloudpart {533, 282, 552, 264} {1,1}
+cloudpart2 {567, 284, 571, 280} {1,1}
+icepart {562, 284, 566, 280} {1,1}
+terrapart {556, 284, 561, 280} {1,1}
+purplepart {572, 283, 575, 280} {1,1}
+waterpart {612, 300, 616, 296} {1,1}
+lavapart {607, 300, 611, 296} {1,1}
+coppercoindrop {270, 14, 276, 8} {1,1}
+platinumcoindrop {277, 16, 284, 8} {1,1}
+goldcoindrop {286, 16, 292, 8} {1,1}
+silvercoindrop {294, 15, 300, 8} {1,1}
+woodenplatformitem {544, 528, 556, 521} {1,1}
+ebonwoodplatformitem {544, 535, 556, 528} {1,1}
+mahoganyplatformitem {560, 528, 572, 521} {1,1}
+borealplatformitem {560, 528, 572, 521} {1,1}
+woodenplatform {48, 592, 56, 584} {1,1}
+ebonwoodplatform {48, 600, 56, 592} {1,1}
+mahoganyplatform {48, 608, 56, 600} {1,1}
+borealplatform {48, 616, 56, 608} {1,1}
+backmiddle {360, 584, 368, 576} {1,1}
+backleft {344, 584, 360, 576} {1,1}
+backtop {360, 576, 368, 560} {1,1}
+backcorner {344, 576, 360, 560} {1,1}
+backbordermiddle {312, 584, 320, 576} {1,1}
+backborderleft {296, 584, 312, 576} {1,1}
+backbordertop {312, 576, 320, 560} {1,1}
+backbordercorner {296, 576, 312, 560} {1,1}
+campfire {304, 23, 312, 15} {1,1}
+campfireitem {544, 562, 576, 544} {1,1}
+hellstone { 112, 592, 120, 584} {1,1}
+demoniteore { 152, 592, 160, 584} {1,1}
+obsidianbrick { 192, 592, 200, 584} {1,1}
+goldore { 232, 432, 240, 424} {1,1}
+silverore { 232, 464, 240, 472} {1,1}
+placedbottle { 144, 280, 152, 272} {1,1}
+placedhpbottle { 152, 280, 160, 272} {1,1}
+placedmanabottle { 160, 280, 168, 272} {1,1}
+mushroom { 56, 128, 64, 120} {1,1}
+unholyarrow { 72, 64, 88, 56} {1,1}
+lightsbane { 96, 106, 114, 88} {1,1}
+demonbow { 119, 109, 128, 88} {1,1}
+waraxeofthenight { 120, 56, 136, 40} {1,1}
+cactuspickaxe { 120, 88, 136, 72} {1,1}
+woodenboomerang { 120, 72, 128, 56} {1,1}
+nightmarepickaxe { 136, 56, 152, 40} {1,1}
+frozenboomerang { 133, 72, 142, 56} {1,1}
+iceblade { 147, 75, 164, 56} {1,1}
+icebladeprojectile { 168, 64, 176, 56} {1,1}
+lightdisc { 152, 56, 168, 40} {1,1}
+starfurystar { 168, 56, 184, 40} {1,1}
+vilethornhead { 184, 56, 200, 40} {1,1}
+vilethornbody { 200, 56, 216, 40} {1,1}
+cactussword { 136, 104, 160, 80} {1,1}
+enchantedsword { 160, 97, 177, 80} {1,1}
+enchantedswordprojectile { 178, 94, 192, 80} {1,1}
+beegun { 160, 118, 184, 104} {1,1}
+vulture { 261, 312, 296, 288} {1,1}
+hornet { 272, 99, 295, 80} {1,1}
+hornetsting { 202, 89, 207, 80} {1,1}
+demon { 262, 172, 303, 144} {1,1}
+servantofcthulu { 304, 183, 314, 168} {1,1}
+eaterofsouls { 336, 46, 357, 8} {1,1}
+colorableslime { 360, 23, 382, 8} {1,1}
+greenslime { 360, 51, 376, 40} {1,1}
+iceslime { 360, 75, 376, 64} {1,1}
+lavaslime { 360, 99, 376, 88} {1,1}
+spikediceslime { 356, 126, 376, 112} {1,1}
+spikedjungleslime { 332, 118, 352, 104} {1,1}
+bee { 336, 141, 341, 136} {1,1}
+bee2 { 344, 141, 349, 136} {1,1}
+cavebat { 333, 169, 346, 160} {1,1}
+junglebat { 349, 169, 362, 160} {1,1}
+hellbat { 363, 169, 376, 160} {1,1}
+darkcaster { 384, 128, 399, 105} {1,1}
+darkcastercast { 384, 152, 399, 129} {1,1}
+antlioncharger { 327, 235, 368, 216} {1,1}
+mouse { 369, 240, 376, 236} {1,1}
+merchant { 384, 32, 400, 10} {1,1}
+merchantwalk { 409, 32, 425, 8} {1,1}
+lifecrystal { 304, 256, 320, 240} {1,1}
+obsidianbrickwall { 664, 24, 680, 8} {2,2}
+eyeofcthulu1 { 744, 80, 800, 0} {1,1}
+eyeofcthulu2 { 816, 80, 872, 0} {1,1}
+ironhelmet { 371, 522, 382, 512} {1,1}
+ironbreastplate { 368, 533, 383, 524} {1,1}
+irongreaves { 370, 544, 382, 535} {1,1}
+silverhelmet { 385, 523, 398, 512} {1,1}
+silverbreastplate { 384, 533, 399, 524} {1,1}
+silvergreaves { 386, 544, 397, 535} {1,1}
+goldhelmet { 401, 523, 414, 512} {1,1}
+goldbreastplate { 400, 533, 415, 524} {1,1}
+goldgreaves { 402, 544, 413, 535} {1,1}
+copperhelmet { 418, 520, 430, 512} {1,1}
+copperbreastplate { 416, 534, 431, 524} {1,1}
+coppergreaves { 418, 544, 429, 535} {1,1}
+mininghelmet { 338, 520, 349, 512} {1,1}
+moltenhelmet { 322, 521, 332, 512} {1,1}
+moltenbreastplate { 321, 533, 334, 524} {1,1}
+moltengreaves { 322, 544, 334, 535} {1,1}
+cactushelmet { 306, 520, 316, 508} {1,1}
+cactusbreastplate { 301, 534, 320, 520} {1,1}
+cactusgreaves { 305, 544, 316, 535} {1,1}
+aglet { 592, 448, 606, 444} {1,1}
+sandstorminabottle { 608, 448, 618, 435} {1,1}
+bottle { 696, 464, 706, 452} {1,1}
+ankletofthewind { 712, 464, 726, 453} {1,1}
+feralclaws { 728, 464, 738, 453} {1,1}
+goldbar { 656, 476, 672, 464} {1,1}
+goldoreitem { 576, 512, 584, 504} {1,1}
+silverbar { 672, 476, 687, 464} {1,1}
+silveroreitem { 568, 512, 576, 504} {1,1}
+obsidianbrickitem { 544, 520, 552, 512} {1,1}
+demonitebar { 688, 476, 703, 464} {1,1}
+demoniteoreitem { 584, 512, 592, 504} {1,1}
+hellstonebar { 704, 476, 719, 464} {1,1}
+hellstoneitem { 592, 512, 600, 504} {1,1}
+manacrystal { 576, 544, 588, 532} {1,1}
+heartcrystalitem { 576, 555, 588, 544} {1,1}
+sunfloweritem { 592, 558, 607, 544} {1,1}
+rottenchunkitem { 608, 555, 619, 544} {1,1}
+snowballcannon { 167, 78, 192, 65} {1,1}
+aquabolt {24, 110, 30, 104} {1,1}
+magicprojectile {192, 77, 213, 56} {1,1}
+terrabladeprojectile1 {821, 323, 896, 248} {1,1}
+terrabladeprojectile2 {821, 323, 896, 325} {1,1}
+terrabladeprojectile3 {821, 475, 896, 401} {1,1}
+terrabladeprojectile4 {821, 550, 896, 475} {1,1}
+spacegunprojectile { 2, 93, 3, 72 } { 1,1 }
+snowball { 176, 63, 183, 56 } { 1,1 }
+twinsbuff {392, 576, 408, 560} {1,1}
+onfirebuff {408, 576, 424, 560} {1,1}
+potionsicknessbuff {424, 576, 440, 560} {1,1}
+chilledbuff {392, 608, 408, 592} {1,1}
+poisonedbuff {408, 608, 424, 592} {1,1}
+obsidianitem {552, 520, 560, 512} {1,1}
+obsidian {232, 512, 240, 504} {1,1}
+hellforge {72, 328, 80, 320} {1,1}
+hellforgeitem {472, 566, 487, 552} {1,1}
+copperbow {288, 624, 296, 608} {1,1}
+ironbow {296, 624, 304, 608} {1,1}
+silverbow {304, 624, 312, 608} {1,1}
+goldbow {312, 624, 320, 608} {1,1}
+copperaxe {320, 624, 336, 608} {1,1}
+ironaxe {336, 624, 352, 608} {1,1}
+silveraxe {352, 624, 368, 608} {1,1}
+goldaxe {368, 624, 384, 608} {1,1}
+coppersword {384, 624, 400, 608} {1,1}
+copperhammer {400, 624, 416, 608} {1,1}
+ironsword {416, 624, 432, 608} {1,1}
+ironhammer {432, 624, 448, 608} {1,1}
+silversword {448, 624, 464, 608} {1,1}
+silverhammer {464, 624, 480, 608} {1,1}
+goldsword {480, 624, 496, 608} {1,1}
+goldhammer {496, 624, 512, 608} {1,1}
+copperpickaxe {512, 624, 528, 608} {1,1}
+ironpickaxe {528, 624, 544, 608} {1,1}
+silverpickaxe {544, 624, 560, 608} {1,1}
+goldpickaxe {560, 624, 576, 608} {1,1}
+volcano {288, 664, 323, 629} {1,1}
+moltenfury {288, 682, 297, 664} {1,1}
+moltenpickaxe {297, 682, 315, 664} {1,1}
+moltenhamaxe {315, 686, 337, 664} {1,1}
+impstaff {328, 664, 351, 639} {1,1}
+imp {232, 142, 258, 120} {1,1}
+impbuff {392, 592, 408, 576} {1,1}
+cozyfirebuff {408, 592, 424, 576} {1,1}
+happybuff {424, 592, 440, 576} {1,1}
+sunflower {104, 304, 112, 296} {1,1}
+heartcrystal {304, 256, 312, 248} {1,1}
+spikediceslimeprojectile {192, 90, 197, 80} {1,1}
+spikedjungleslimeprojectile {197, 90, 202, 80} {1,1}
+demonscythe {192, 120, 216, 96} {1,1}
+cactusitem {600, 512, 608, 504} {1,1}
+casterbolt {8, 56, 16, 48} {1,1}
+devourerhead {384, 177, 399, 159} {1,1}
+devourerbody {384, 191, 399, 178} {1,1}
+devourertail {384, 208, 399, 192} {1,1}
+moon1 {8, 689, 33, 664} {1,1}
+moon2 {8, 714, 33, 689} {1,1}
+moon3 {8, 739, 33, 714} {1,1}
+moon4 {8, 764, 33, 739} {1,1}
+moon5 {8, 789, 33, 764} {1,1}
+moon6 {8, 814, 33, 789} {1,1}
+moon7 {8, 839, 33, 814} {1,1}
+moon8 {8, 864, 33, 839} {1,1}
+sun {8, 896, 40, 864} {1,1}
+demonaltar {72, 352, 80, 344} {1,1}
+bossbar {48, 888, 306, 864} {1,1}
+bosshp {48, 864, 49, 851} {1,1}
+bosshead0 {56, 864, 69, 850} {1,1}
+bosshead1 {72, 864, 84, 849} {1,1}
+radial {40, 848, 96, 792} {1,1}
+eaterofworldshead {744, 290, 767, 256} {1,1}
+eaterofworldsbody {768, 286, 791, 262} {1,1}
+eaterofworldstail {792, 288, 815, 256} {1,1}
+shadoworb {96, 352, 104, 344} {1,1}
+keybindbg {361, 501, 363, 489} {1,1}
+shadowscales {587, 544, 596, 534} {1,1}
+treecloud {312, 816, 350, 756} {1,1}
+cloud1 {313, 832, 352, 820} {1,1}
+cloud2 {313, 840, 352, 835} {1,1}
+cloud3 {312, 896, 365, 882} {1,1}
+cloud4 {360, 792, 464, 751} {1,1}
+cloud5 {360, 856, 508, 798} {1,1}
+cloud6 {512, 832, 614, 798} {1,1}
+cloud7 {512, 864, 584, 836} {1,1}
+cloud8 {488, 896, 572, 870} {1,1}
+cloud9 {368, 896, 481, 862} {1,1}
+cloud10 {312, 880, 351, 846} {1,1}
+water {808, 320, 816, 312} {1.2,1.2}
+lava {784, 320, 792, 312} {1.2,1.2}
+worldcreationbg {40, 701, 77, 664} {1,1}
+worldcreationborder {40, 746, 82, 704} {1,1}
+worldcreationleft {88, 704, 125, 667} {1,1}
+worldcreationlarge {88, 744, 125, 707} {1,1}
+worldcreationmedium {114, 704, 151, 667} {1,1}
+worldcreationsmall {128, 744, 165, 707} {1,1}
+bubble {395, 480, 406, 469} {1,1}
+daybloom {64, 128, 72, 120} {1,1}
+junglespores {160, 202, 168, 192} {1,1}
+voodoodollitem {624, 448, 632, 434} {1,1}
+junglesporesitem {720, 473, 730, 464} {1,1}
+vinesitem {739, 460, 748, 448} {1,1}
+bladeofgrass {368, 666, 402, 632} {1,1}
+stinger {736, 472, 744, 464} {1,1}
+bladeofgrassprojectile {688, 25, 703, 16} {1,1}
+pengu1 {712, 35, 724, 16} {1,1}
+pengu2 {712, 92, 724, 73} {1,1}
+pengu3 {712, 150, 724, 130} {1,1}
+pengu4 {712, 209, 724, 190} {1,1}
+grasshopper {376, 213, 384, 208} {1,1}
+fireflylit {368, 213, 373, 208} {1,1}
+firefly {368, 222, 373, 217} {1,1}
+guide {384, 32, 400, 8} {1,1}
+guidewalk {408, 32, 424, 8} {1,1}
+tombstone {88, 304, 104, 288} {1,1}
+normalvines {56, 264, 64, 256} {1,1}
+junglevines {96, 264, 104, 256} {1,1}
+pot {16, 424, 24, 416} {1,1}
+icepot {16, 408, 24, 400} {1,1}
+junglepot {48, 408, 56, 400} {1,1}
+hellpot {48, 424, 56, 416} {1,1}
+shadowchest {64, 392, 72, 384} {1,1}
+mahoganychest {80, 392, 88, 384} {1,1}
+frozenchest {96, 392, 104, 384} {1,1}
+waterchest {112, 392, 120, 384} {1,1}
+goldchest {128, 392, 136, 384} {1,1}
+shadowchestitem {488, 566, 504, 552} {1,1}
+goldchestitem {504, 566, 520, 552} {1,1}
+mahoganychestitem {504, 582, 520, 568} {1,1}
+waterchestitem {488, 582, 504, 568} {1,1}
+frozenchestitem {520, 566, 536, 552} {1,1}
+]
+items
+[
+dirt {
+20
+dirtitem
+999
+t ammo dirt
+t places dirt
+}
+glass {
+20
+glassitem
+999
+t ammo glass
+t places glass
+}
+stone {
+20
+stoneitem
+999
+t ammo stone
+t places stone
+}
+wood {
+20
+wooditem
+999
+t ammo wood
+t places wood
+}
+sand {
+20
+sanditem
+999
+t ammo sand
+t places sand
+}
+dirtwall {
+20
+dirtwallitem
+999
+t ammo dirtwall
+t places dirtwall
+}
+glasswall {
+20
+glasswallitem
+999
+t ammo glasswall
+t places glasswall
+}
+stonewall {
+20
+stonewallitem
+999
+t ammo stonewall
+t places stonewall
+}
+woodwall {
+20
+woodwallitem
+999
+t ammo woodwall
+t places woodwall
+}
+grass {
+20
+grass
+999
+t ammo grass
+t places grass
+}
+torch {
+20
+torchitem
+99
+t desc Provides light
+t ammo torch
+t places torch
+}
+purpletorch {
+20
+purpletorch
+99
+t desc Provides \c190100190purple\c255255255 light
+t ammo purpletorch
+t places purpletorch
+}
+acorn {
+20
+acorn
+99
+t ammo acorn
+t places sapling
+}
+copperpickaxe {
+15
+copperpickaxe
+1
+f damage 4
+f knockback 2
+t layer blocks
+f digstrength 35
+}
+ironpickaxe {
+13
+ironpickaxe
+1
+f damage 5
+f knockback 2
+t layer blocks
+f digstrength 40
+}
+silverpickaxe {
+19
+silverpickaxe
+1
+f damage 6
+f knockback 2
+t layer blocks
+f digstrength 45
+}
+goldpickaxe {
+17
+goldpickaxe
+1
+f damage 6
+f knockback 2
+t layer blocks
+f digstrength 55
+}
+coppersword {
+21
+coppersword
+1
+f damage 9
+f knockback 5.5
+}
+ironsword {
+20
+ironsword
+1
+f damage 12
+f knockback 5.5
+}
+silversword {
+20
+silversword
+1
+f damage 14
+f knockback 6
+}
+goldsword {
+18
+goldsword
+1
+f damage 15
+f knockback 6.5
+}
+copperaxe {
+21
+copperaxe
+1
+f damage 3
+f knockback 4.5
+t layer blocks
+f axestrength 35
+}
+ironaxe {
+19
+ironaxe
+1
+f damage 5
+f knockback 4.5
+t layer blocks
+f axestrength 45
+}
+silveraxe {
+18
+silveraxe
+1
+f damage 7
+f knockback 4.5
+t layer blocks
+f axestrength 50
+}
+goldaxe {
+18
+goldaxe
+1
+f damage 7
+f knockback 4.5
+t layer blocks
+f axestrength 55
+}
+copperhammer {
+23
+copperhammer
+1
+f damage 4
+f knockback 5.5
+f hammerstrength 35
+t layer bg
+}
+ironhammer {
+20
+ironhammer
+1
+f damage 7
+f knockback 5.5
+f hammerstrength 40
+t layer bg
+}
+silverhammer {
+19
+silverhammer
+1
+f damage 9
+f knockback 5.5
+f hammerstrength 45
+t layer bg
+}
+goldhammer {
+23
+goldhammer
+1
+f damage 9
+f knockback 5.5
+f hammerstrength 55
+t layer bg
+}
+chest {
+20
+chestitem
+99
+t ammo chest
+t places chest
+}
+goldchest {
+20
+goldchestitem
+99
+t ammo goldchest
+t places goldchest
+}
+mahoganychest {
+20
+mahoganychestitem
+99
+t ammo mahoganychest
+t places mahoganychest
+}
+shadowchest {
+20
+shadowchestitem
+99
+t ammo shadowchest
+t places shadowchest
+}
+frozenchest {
+20
+frozenchestitem
+99
+t ammo frozenchest
+t places frozenchest
+}
+waterchest {
+20
+waterchestitem
+99
+t ammo waterchest
+t places waterchest
+}
+door {
+20
+dooritem
+99
+t ammo door
+t places door
+}
+table {
+20
+tableitem
+99
+t ammo table
+t places table
+}
+anvil {
+20
+anvilitem
+99
+t desc Used to craft items from metal bars
+t ammo anvil
+t places anvil
+}
+furnace {
+20
+furnaceitem
+99
+t desc Used for smelting ore
+t ammo furnace
+t places furnace
+}
+hellforge {
+20
+hellforgeitem
+99
+t ammo hellforge
+t places hellforge
+}
+craftingbench {
+20
+craftingbenchitem
+99
+t desc Used for basic crafting
+t ammo craftingbench
+t places craftingbench
+}
+gravestone {
+20
+gravestoneitem
+99
+t desc :(
+t ammo gravestone
+t places gravestone
+}
+slimestatue {
+20
+slimestatueitem
+99
+t ammo slimestatue
+t places slimestatue
+}
+chair {
+20
+chairitem
+99
+t ammo chair
+t places chairright
+}
+ironore {
+20
+ironoreitem
+999
+t ammo ironore
+t places ironore
+}
+copperore {
+20
+copperoreitem
+999
+t ammo copperore
+t places copperore
+}
+stonebrick {
+20
+stonebrickitem
+999
+t ammo stonebrick
+t places stonebrick
+}
+mud {
+20
+muditem
+999
+t ammo mud
+t places mud
+}
+snow {
+20
+snowitem
+999
+t ammo snow
+t places snow
+}
+borealwood {
+20
+borealwooditem
+999
+t ammo borealwood
+t places borealwood
+}
+ebonwood {
+20
+ebonwooditem
+999
+t ammo ebonwood
+t places ebonwood
+}
+mahoganywood {
+20
+mahoganywooditem
+999
+t ammo mahoganywood
+t places mahoganywood
+}
+borealwoodwall {
+20
+borealwoodwallitem
+999
+t ammo borealwoodwall
+t places borealwoodwall
+}
+ebonwoodwall {
+20
+ebonwoodwallitem
+999
+t ammo ebonwoodwall
+t places ebonwoodwall
+}
+mahoganywoodwall {
+20
+mahoganywoodwallitem
+999
+t ammo mahoganywoodwall
+t places mahoganywoodwall
+}
+borealtable {
+20
+borealtableitem
+99
+t ammo borealtable
+t places borealtable
+}
+borealdoor {
+20
+borealdooritem
+99
+t ammo borealdoor
+t places borealdoor
+}
+borealworkbench {
+20
+borealworkbenchitem
+99
+t ammo borealworkbench
+t places borealworkbench
+}
+mahoganytable {
+20
+mahoganytableitem
+99
+t ammo mahoganytable
+t places mahoganytable
+}
+mahoganydoor {
+20
+mahoganydooritem
+99
+t ammo mahoganydoor
+t places mahoganydoor
+}
+mahoganyworkbench {
+20
+mahoganyworkbenchitem
+99
+t ammo mahoganyworkbench
+t places mahoganyworkbench
+}
+ebonwoodtable {
+20
+ebonwoodtableitem
+99
+t ammo ebonwoodtable
+t places ebonwoodtable
+}
+ebonwooddoor {
+20
+ebonwooddooritem
+99
+t ammo ebonwooddoor
+t places ebonwooddoor
+}
+ebonwoodchair {
+20
+ebonwoodchairitem
+99
+t ammo ebonwoodchair
+t places ebonwoodchairright
+}
+borealchair {
+20
+borealchairitem
+99
+t ammo borealchair
+t places borealchairright
+}
+mahoganychair {
+20
+mahoganychairitem
+99
+t ammo mahoganychair
+t places mahoganychairright
+}
+cactus {
+20
+cactusitem
+999
+}
+sunflower {
+20
+sunfloweritem
+999
+t ammo sunflower
+t places sunflower
+}
+heartcrystal {
+20
+heartcrystalitem
+999
+t desc Permanently increases maximum life by 20
+t ammo heartcrystal
+}
+bottle {
+20
+bottle
+999
+t ammo bottle
+t places bottle
+}
+healthpotion {
+20
+healthpot
+999
+t desc Restores 50 life
+t ammo healthpotion
+f heal 50
+i sickness 3600
+}
+mushroom {
+20
+mushroomitem
+999
+t desc Restores 15 life
+t ammo mushroom
+f heal 30
+i sickness 3600
+}
+ash {
+20
+ashitem
+999
+t ammo ash
+t places ash
+}
+sandstone {
+20
+sandstoneitem
+999
+t ammo sandstone
+t places sandstone
+}
+sandstonewall {
+20
+sandstonewallitem
+999
+t ammo sandstonewall
+t places sandstonewall
+}
+hardenedsand {
+20
+hardenedsanditem
+999
+t ammo hardenedsand
+t places hardenedsand
+}
+hardenedsandwall {
+20
+hardenedsandwallitem
+999
+t ammo hardenedsandwall
+t places hardenedsandwall
+}
+ebonstone {
+20
+ebonstoneitem
+999
+t ammo ebonstone
+t places ebonstone
+}
+fallenstar {
+20
+fallenstar
+99
+t desc Disappears after the sunrise
+i rarity 2
+}
+coppercoin {
+20
+coppercoin
+9999
+}
+silvercoin {
+20
+silvercoin
+9999
+}
+goldcoin {
+20
+goldcoin
+9999
+}
+platinumcoin {
+20
+platinumcoin
+9999
+}
+bomb {
+20
+bomb
+99
+t desc A small explosion that will destroy most tiles
+t ammo bomb
+}
+campfire {
+20
+campfireitem
+99
+t desc Life regen is increased when near a campfire
+t ammo campfire
+t places campfire
+}
+woodenplatform {
+20
+woodenplatformitem
+999
+t ammo woodenplatform
+t places woodenplatform
+}
+woodenbow {
+20
+woodenbow
+1
+f projectileDamage 7
+t projectile arrow
+t ammo arrow
+f projectileSpread 15
+f projectileSpeed 1
+}
+copperbow {
+29
+copperbow
+1
+f projectileDamage 6
+t projectile arrow
+t ammo arrow
+f projectileSpread 7
+f projectileSpeed 1
+}
+ironbow {
+28
+ironbow
+1
+f projectileDamage 8
+t projectile arrow
+t ammo arrow
+f projectileSpread 7
+f projectileSpeed 1
+}
+silverbow {
+27
+silverbow
+1
+f projectileDamage 9
+t projectile arrow
+t ammo arrow
+f projectileSpread 7
+f projectileSpeed 1
+}
+goldbow {
+26
+goldbow
+1
+f projectileDamage 11
+t projectile arrow
+t ammo arrow
+f projectileSpread 7
+f projectileSpeed 1
+}
+minishark {
+4
+minishark
+1
+t desc 'Half shark, half gun, completely awesome.'
+f damage 0
+t projectile bullet
+t ammo bullet
+f projectileSpread 5
+f projectileSpeed 1
+i rarity 3
+}
+waterspell {
+4
+waterspell
+1
+f damage 0
+t desc Creates a slow moving bolt of water
+t projectile waterbolt
+f projectileSpread 3
+f projectileSpeed 1
+i rarity 2
+}
+bullet {
+20
+bullet
+999
+f damage 3
+t flyingTex flyingbullet
+i pierce 1
+f ms 2.3
+}
+arrow {
+20
+arrow
+999
+f damage 4
+i pierce 1
+t flyingTex arrow
+f ms 0.7
+}
+waterbolt {
+20
+empty
+1
+t desc How did you get this?
+f damage 410
+i pierce 1000
+t flyingTex empty
+v3 light 0.8 0.8 1.9
+f ms 0.2
+}
+ironbreastplate {
+20
+ironbreastplate
+1
+i defense 3
+}
+ironhelmet {
+20
+ironhelmet
+1
+i defense 2
+}
+irongreaves {
+20
+irongreaves
+1
+i defense 2
+}
+goldbreastplate {
+20
+goldbreastplate
+1
+i defense 5
+}
+goldhelmet {
+20
+goldhelmet
+1
+i defense 4
+}
+goldgreaves {
+20
+goldgreaves
+1
+i defense 4
+}
+silverbreastplate {
+20
+silverbreastplate
+1
+i defense 4
+}
+silverhelmet {
+20
+silverhelmet
+1
+i defense 3
+}
+silvergreaves {
+20
+silvergreaves
+1
+i defense 3
+}
+copperbreastplate {
+20
+copperbreastplate
+1
+i defense 1
+}
+copperhelmet {
+20
+copperhelmet
+1
+i defense 2
+}
+coppergreaves {
+20
+coppergreaves
+1
+i defense 1
+}
+moltenbreastplate {
+20
+moltenbreastplate
+1
+i defense 9
+f meeledamagepercent 7
+i rarity 4
+}
+moltenhelmet {
+20
+moltenhelmet
+1
+i defense 8
+f meelecritpercent 7
+i rarity 4
+}
+moltengreaves {
+20
+moltengreaves
+1
+i defense 8
+f meeleas 0.07
+i rarity 4
+}
+cactusbreastplate {
+20
+cactusbreastplate
+1
+i defense 1
+}
+cactushelmet {
+20
+cactushelmet
+1
+i defense 1
+}
+cactusgreaves {
+20
+cactusgreaves
+1
+i defense 1
+}
+mininghelmet {
+20
+mininghelmet
+1
+t desc Provides light when worn
+i defense 2
+v3 lightstat 2.7 2.25 1.7 
+}
+shadowscales {
+20
+shadowscales
+999
+i rarity 2
+}
+demoniteore {
+20
+demoniteoreitem
+999
+t desc 'Pulsing with dark energy'
+t ammo demoniteore
+t places demoniteore
+i rarity 2
+}
+hellstone {
+20
+hellstoneitem
+999
+t desc 'Hot to the touch'
+t ammo hellstone
+t places hellstone
+i rarity 3
+}
+silverore {
+20
+silveroreitem
+999
+t ammo silverore
+t places silverore
+}
+goldore {
+20
+goldoreitem
+999
+t ammo goldore
+t places goldore
+}
+obsidianbrick {
+20
+obsidianbrickitem
+999
+t ammo obsidianbrick
+t places obsidianbrick
+}
+obsidian {
+20
+obsidianitem
+999
+t ammo obsidian
+t places obsidian
+}
+vines {
+20
+vinesitem
+9999
+}
+junglespores {
+20
+junglesporesitem
+9999
+}
+voodoodoll {
+20
+voodoodollitem
+1
+t desc 'You are a terrible person.'
+}
+stinger {
+20
+stinger
+9999
+}
+daybloom {
+20
+daybloom
+999
+}
+bandofregeneration {
+20
+regenband
+1
+t desc Slowly regenerates life
+f regen 1.0
+i rarity 2
+}
+ankletofthewind {
+20
+ankletofthewind
+1
+t desc 10% increased movement speed
+f mspercent 1.1
+i rarity 4
+}
+feralclaws {
+20
+feralclaws
+1
+t desc Enables autoswing for meele weapons
+f meeleas 0.12
+b meeleautoswing 1
+i rarity 4
+}
+aglet {
+20
+aglet
+1
+t desc 5% increased movement speed
+f mspercent 1.05
+i rarity 2
+}
+suseye {
+20
+suseye
+99
+t desc Summons the eye of Cthulu
+t ammo suseye
+i rarity 2
+}
+magicmirror {
+120
+magicmirror
+1
+t desc Gaze in the mirror to return home
+i rarity 2
+}
+cloudinabottle {
+20
+bottlecloud
+1
+t desc Allows the holder to double jump!
+t extrajump cloudinabottle
+i extrajumpDuration 13
+i rarity 2
+}
+hermesboots {
+20
+hermesboots
+1
+t desc The wearerer can run super fast!
+f mspercent 1.4
+i rarity 2
+}
+bandofstarpower {
+20
+manaband
+1
+t desc Maximum mana increased by 20
+i mana 20
+i rarity 2
+}
+lens {
+20
+lens
+99
+}
+shackle {
+20
+shackle
+1
+i defense 1
+i rarity 2
+}
+handgun {
+20
+handgun
+1
+f damage 10
+f knockback 2
+}
+opticstaff {
+36
+opticstaff
+1
+t desc Summons twins to fight for you
+f damage 24
+f knockback 2
+f manacost 10
+i rarity 6
+}
+enchantedboomerang {
+20
+magicboomerang
+1
+t projectile enchantedboomerang
+f damage 17
+f knockback 8
+i rarity 2
+}
+frozenboomerang {
+20
+frozenboomerang
+1
+t projectile frozenboomerang
+f damage 21
+f knockback 8.5
+i rarity 2
+}
+woodenboomerang {
+20
+woodenboomerang
+1
+t projectile woodenboomerang
+f damage 10
+f knockback 5
+}
+lightdisc {
+14
+lightdisc
+1
+t projectile lightdisc
+f damage 35
+f knockback 8
+i rarity 6
+}
+vilethorn {
+28
+vilethorn
+1
+f manacost 10
+i rarity 2
+}
+terrablade {
+18
+terrablade
+1
+f damage 85
+f knockback 6.5
+i rarity 9
+}
+starfury {
+20
+starfury
+1
+t desc Causes stars to rain from heaven
+t projectile starfurystar
+f damage 25
+f knockback 5
+i rarity 3
+}
+magicmissile {
+22
+magicmissile
+1
+t desc Casts a controllable missile
+t projectile magicprojectile
+f manacost 14
+i rarity 3
+}
+magicprojectile {
+20
+empty
+1
+f damage 35
+i pierce 1
+t flyingTex magicprojectile
+v3 light 4.5 0.5 1.9
+f ms 0.9
+}
+aquascepter {
+16
+aquascepter
+1
+t desc Sprays out a shower of water
+t projectile aquabolt
+f projectileSpread 0.2
+f projectileSpeed 1
+f manacost 7
+i rarity 3
+}
+aquabolt {
+20
+empty
+1
+f damage 27
+f knockback 7
+i pierce 1000
+t flyingTex empty
+v3 light 4.5 0.5 1.9
+f ms 0.9
+}
+iceblade {
+20
+iceblade
+1
+t desc Shoots an icy bolt
+t projectile icebladeprojectile
+f projectileSpeed 1
+f damage 17
+v3 light 0.9 0.9 1.7
+f knockback 4.75
+i rarity 2
+}
+icebladeprojectile {
+20
+empty
+1
+f damage 17
+i pierce 1
+t flyingTex empty
+v3 light 0.9 0.9 1.7
+f ms 0.7
+}
+nightmarepickaxe {
+15
+nightmarepickaxe
+1
+t desc Able to mine hellstone
+f damage 10
+f knockback 1
+t layer blocks
+f digstrength 35
+i rarity 2
+}
+lightsbane {
+20
+lightsbane
+1
+f damage 16
+f knockback 5
+i rarity 2
+}
+waraxeofthenight {
+30
+waraxeofthenight
+1
+f damage 20
+f knockback 6
+t layer blocks
+f axestrength 75
+i rarity 2
+}
+demonbow {
+25
+demonbow
+1
+t projectile arrow
+t ammo arrow
+f projectileDamage 14
+f projectileSpread 7
+f projectileKnockback 1
+f projectileSpeed 1
+i rarity 2
+}
+cactuspickaxe {
+23
+cactuspickaxe
+1
+f damage 4
+f knockback 2
+t layer blocks
+f digstrength 35
+}
+cactussword {
+30
+cactussword
+1
+f damage 10
+f knockback 4.5
+}
+spacegun {
+17
+spacegun
+1
+t projectile spacegunprojectile
+f projectileSpeed 1
+f projectileSize 1
+f projectileSpread 0.1
+f damage 17
+f knockback 0.75
+f manacost 6
+i rarity 2
+}
+spacegunprojectile {
+20
+empty
+1
+f damage 17
+t flyingTex spacegunprojectile
+i pierce 2
+f ms 2.3
+}
+enchantedsword {
+21
+enchantedsword
+1
+t desc Shoots an enchanted sword beam
+t projectile enchantedswordprojectile
+f projectileSpeed 1
+f projectileSize 1
+f damage 23
+f knockback 4.5
+i rarity 3
+}
+enchantedswordprojectile {
+20
+enchantedswordprojectile
+1
+f damage 23
+t flyingTex enchantedswordprojectile
+i pierce 2
+f ms 2.3
+}
+snowballcannon {
+19
+snowballcannon
+1
+t projectile snowball
+t ammo snowball
+f projectileSpeed 2.7
+f projectileSpread 0.1
+f projectileDamage 10
+f knockback 1
+i rarity 2
+}
+snowball {
+19
+snowball
+9999
+t projectile snowball
+t ammo snowball
+f projectileSpeed 1
+f damage 8
+t flyingTex snowball
+i pierce 1
+f ms 0.3
+}
+beegun {
+12
+beegun
+1
+t desc Shoots bees that will chase your enemy
+t projectile bee
+f projectileSpeed 1
+f projectileSpread 5
+f projectileDamage 9
+f projectileKnockback 0.25
+f manacost 5
+i rarity 3
+}
+bee {
+32
+empty
+1
+f projectileSpeed 1
+f damage 3
+t flyingTex bee
+i pierce 2
+f ms 0.6
+}
+volcano {
+40
+volcano
+1
+f damage 40
+f knockback 6.5
+i rarity 4
+}
+bladeofgrass {
+40
+bladeofgrass
+1
+f damage 18
+f knockback 4.5
+i rarity 4
+}
+moltenfury {
+22
+moltenfury
+1
+t desc 'It's made out of fire!'
+t ammo arrow
+f damage 100
+f projectileDamage 31
+f projectileKnockback 2
+t projectile arrow
+f projectileSpread 7
+f projectileSpeed 1
+i rarity 4
+}
+moltenhamaxe {
+14
+moltenhamaxe
+1
+f damage 20
+f knockback 7
+t layer bg
+f hammerstrength 70
+f axestrength 150
+i rarity 4
+}
+moltenpickaxe {
+18
+moltenpickaxe
+1
+f damage 12
+f knockback 2
+t layer blocks
+f digstrength 100
+i rarity 4
+}
+impstaff {
+36
+impstaff
+1
+t desc Summons an imp to fight for you
+f damage 17
+f knockback 2
+f manacost 10
+i rarity 4
+}
+]
+lights
+[
+torch { 2.4,1,0.3 }
+purpletorch { 2.3, 0.2, 4.0 }
+furnace {0.8, 0.2, 0.2}
+campfire {0.8, 0.2, 0.2}
+hellstone {0.1, 0, 0}
+demonaltar {0.05, 0, 0.1}
+demoniteore {0.07, 0, 0.1}
+shadoworb {0, 0, 0.1}
+]

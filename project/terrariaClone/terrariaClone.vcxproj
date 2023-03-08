@@ -105,11 +105,14 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)vendor;$(ProjectDir)src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <OmitFramePointers>false</OmitFramePointers>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;irrKlang.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -123,45 +126,86 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)vendor;$(ProjectDir)src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;irrKlang.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\liquids.cpp" />
+    <ClCompile Include="src\buffs.cpp" />
+    <ClCompile Include="src\sounds.cpp" />
+    <ClCompile Include="src\particles.cpp" />
+    <ClCompile Include="src\enemies.cpp" />
+    <ClCompile Include="src\background.cpp" />
+    <ClCompile Include="src\camera.cpp" />
+    <ClCompile Include="src\input.cpp" />
+    <ClCompile Include="src\gameLoop.cpp" />
+    <ClCompile Include="include\ECS\components.cpp" />
+    <ClCompile Include="src\map.cpp" />
+    <ClCompile Include="src\resources.cpp" />
+    <ClCompile Include="src\items.cpp" />
+    <ClCompile Include="src\mobFunctions.cpp" />
+    <ClCompile Include="include\ECS\components.h" />
+    <ClCompile Include="include\ECS\ECS.cpp" />
+    <ClCompile Include="include\ECS\systems.cpp" />
     <ClCompile Include="src\animations.cpp" />
-    <ClCompile Include="src\Player.cpp" />
-    <ClCompile Include="src\DroppedItems.cpp" />
-    <ClCompile Include="src\Inventory.cpp" />
-    <ClCompile Include="src\Layers.cpp" />
+    <ClCompile Include="src\globals.cpp" />
+    <ClCompile Include="src\player.cpp" />
+    <ClCompile Include="src\ui.cpp" />
+    <ClCompile Include="src\layers.cpp" />
     <ClCompile Include="src\Source.cpp" />
+    <ClCompile Include="src\componentSystems.cpp" />
     <ClCompile Include="src\utils.cpp" />
-    <ClCompile Include="src\BlockManager.cpp" />
+    <ClCompile Include="src\blocks.cpp" />
+    <ClCompile Include="src\textures.cpp" />
+    <ClCompile Include="src\game.cpp" />
+    <ClCompile Include="src\startMenu.cpp" />
     <ClCompile Include="src\text.cpp" />
     <ClCompile Include="vendor\glad.c" />
     <ClCompile Include="vendor\glm\detail\glm.cpp" />
     <ClCompile Include="vendor\stb_image\stb_image.cpp" />
-    <ClCompile Include="src\world.cpp" />
+    <ClCompile Include="src\noise.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\buffs.h" />
+    <ClInclude Include="include\enemies.h" />
+    <ClInclude Include="include\background.h" />
+    <ClInclude Include="include\camera.h" />
+    <ClInclude Include="include\enemyFunctions.h" />
     <ClInclude Include="include\animations.h" />
-    <ClInclude Include="include\DroppedItems.h" />
-    <ClInclude Include="include\Layers.h" />
+    <ClInclude Include="include\ECS\ECS.h" />
+    <ClInclude Include="include\ECS\systems.h" />
+    <ClInclude Include="include\gameLoop.h" />
+    <ClInclude Include="include\layers.h" />
     <ClInclude Include="include\glad\glad.h" />
     <ClInclude Include="include\GLFW\glfw3.h" />
     <ClInclude Include="include\GLFW\glfw3native.h" />
     <ClInclude Include="include\KHR\khrplatform.h" />
     <ClInclude Include="include\core.h" />
+    <ClInclude Include="include\componentSystems.h" />
+    <ClInclude Include="include\sounds.h" />
     <ClInclude Include="include\utils.h" />
-    <ClInclude Include="include\Inventory.h" />
-    <ClInclude Include="include\Player.h" />
-    <ClInclude Include="include\BlockManager.h" />
+    <ClInclude Include="include\ui.h" />
+    <ClInclude Include="include\player.h" />
+    <ClInclude Include="include\blocks.h" />
+    <ClInclude Include="include\globals.h" />
+    <ClInclude Include="include\textures.h" />
+    <ClInclude Include="include\items.h" />
+    <ClInclude Include="include\resources.h" />
+    <ClInclude Include="include\world.h" />
+    <ClInclude Include="include\input.h" />
+    <ClInclude Include="include\game.h" />
+    <ClInclude Include="include\startMenu.h" />
     <ClInclude Include="include\text.h" />
+    <ClInclude Include="include\particles.h" />
+    <ClInclude Include="include\liquids.h" />
     <ClInclude Include="vendor\glm\common.hpp" />
     <ClInclude Include="vendor\glm\detail\compute_common.hpp" />
     <ClInclude Include="vendor\glm\detail\compute_vector_relational.hpp" />
@@ -445,16 +489,21 @@
     <ClInclude Include="vendor\glm\vec4.hpp" />
     <ClInclude Include="vendor\glm\vector_relational.hpp" />
     <ClInclude Include="vendor\stb_image\stb_image.h" />
-    <ClInclude Include="include\world.h" />
+    <ClInclude Include="include\noise.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="libs\glfw3.pdb" />
     <None Include="src\shaders\backgroundFrag.frag" />
+    <None Include="src\shaders\bloomFrag.frag" />
     <None Include="src\shaders\cell lighting.frag" />
     <None Include="src\shaders\displayFrag.frag" />
+    <None Include="src\shaders\lightFrag.frag" />
     <None Include="src\shaders\rayCastingFrag.frag" />
     <None Include="src\shaders\overlayVert.vert" />
     <None Include="src\shaders\testLighting.frag" />
+    <None Include="src\shaders\waterFrag.frag" />
+    <None Include="src\shaders\waterVert.vert" />
+    <None Include="src\shaders\zoomFrag.frag" />
     <None Include="vendor\glm\detail\func_common.inl" />
     <None Include="vendor\glm\detail\func_common_simd.inl" />
     <None Include="vendor\glm\detail\func_exponential.inl" />
