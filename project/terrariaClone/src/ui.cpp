@@ -24,6 +24,8 @@ namespace UI {
     Inventory* inventory;
     Inventory* hotbar;
     Inventory* chest;
+    Inventory* npc;
+
     std::vector<int> craftingSlot;
     InventoryItem guideItem;
     InventoryItem cursorItem;
@@ -41,6 +43,7 @@ namespace UI {
     std::vector<std::shared_ptr<InventoryItem>> PlayerInventory;
     std::vector<std::shared_ptr<InventoryItem>> PlayerHotbar;
     std::vector<std::shared_ptr<InventoryItem>> defaultChest;
+    std::vector<std::shared_ptr<InventoryItem>> merchantInventory;
 
     std::set<std::string> craftingStationsInRange;
 
@@ -49,6 +52,8 @@ namespace UI {
     std::string* capturedInput;
     int capturingamount = 0;
     int capturingmaxlength = 0;
+
+    std::vector <playerData> playerDataBuffer;
 
     bool canCraft(recipe* rec)
     {
@@ -59,14 +64,13 @@ namespace UI {
             }
         }
 
-        //loopamo cez use iteme v receptu
         for (int i = 0; i < rec->items.size(); i++) {
             recipeItem ri = rec->items[i];
 
             //gremo cez use vidne itemslotte
             for (int c = 0; c < arr->components.size(); c++) {
                 if (arr->components[c].func == ui_ITEMSLOT && arr->components[c].hidden == false) {
-                    auto itemp = UI::getStat(&arr->components[c], "item", {.itemp = nullptr})->itemp;
+                    auto itemp = UI::getStat(&arr->components[c], "item", { .itemp = nullptr })->itemp;
                     if (itemp == nullptr) continue;
                     if (itemp->item == ri.item) {
                         //ce majo ta item odstejemo in ce je stevilka po tem kprevermo use itemslotte vecja od nic pomen da jih n idovol seprav ne mormo scraftat
@@ -94,6 +98,7 @@ namespace UI {
         PlayerInventory.clear();
         PlayerHotbar.clear();
         defaultChest.clear();
+        merchantInventory.clear();
         craftingStationsInRange.clear();
         captureInput(nullptr, false);
     }
@@ -153,11 +158,14 @@ namespace UI {
     {
         hotbar = new Inventory({ 100, -100 }, { 10, 1 }, &PlayerHotbar, false, gameLoop::inventoryC);
 
-        inventory = new Inventory({ inventoryPos.x, inventoryPos.y - 110 }, { 10, 4 }, &PlayerInventory, true, gameLoop::inventoryC);
+        inventory = new Inventory({ inventoryPos.x, inventoryPos.y - 110 }, { 10, 4 }, &PlayerInventory, false, gameLoop::inventoryC);
         inventory->toggle(1);
 
         Inventory::setupInventory(&defaultChest, { 10,4 });
-        chest = new Inventory({ chestInvPos, {10,4}, &defaultChest, true, gameLoop::chestInvC, 0.885f});
+        chest = new Inventory(chestInvPos, { 10,4 }, &defaultChest, true, gameLoop::chestInvC, 0.885f);
+
+        npc = new Inventory(chestInvPos, { 10,4 }, &defaultChest, true, gameLoop::npcInvC, 0.885f, true);
+
         openChest = -1;
     }
 
@@ -203,18 +211,21 @@ namespace UI {
             c.onrightclick = itemslotONRIGHTCLICK;
             c.onrender = itemslotONRENDER;
             c.onhover = itemslotONHOVER;
-            c.onnothover = itemslotONNOTHOVER;
             if (stats.count("guideslot") >= 1) {
                 c.onrender = guideslotONRENDER;
             }
+            c.propagateClick = false;
             break;
         case ui_CURSORITEM:
             dc.textoffset = glm::vec2(0, -1);
             c.onrender = cursoritemONRENDER;
-            c.onrightclick = cursoritemONRIGHTCLICK;
-            c.onclick = cursoritemONLEFTCLICK;
-            c.onhold = cursoritemONHOLD;
             c.anchor = anchorNONE;
+            if (stats.count("item") >= 1) {
+                c.onrightclick = cursoritemONRIGHTCLICK;
+                c.onclick = cursoritemONLEFTCLICK;
+                c.onhold = cursoritemONHOLD;
+                c.propagateClick = false;
+            }
             dc.parent = stats["parent"].intVal;
             break;
         case ui_CRAFTABLEITEM:
@@ -222,6 +233,7 @@ namespace UI {
             c.onrender = craftableitemONRENDER;
             c.onclick = craftableitemONCLICK;
             c.onhover = craftableitemONHOVER;
+            c.propagateClick = false;
             break;
         case ui_DISPLAY:
             c.onrender = displayONRENDER;
@@ -232,7 +244,7 @@ namespace UI {
                 dc.flipX = stats["flipX"].boolVal;
             }
             if (stats.count("flipY") >= 1) {
-                dc.flipY= stats["flipY"].boolVal;
+                dc.flipY = stats["flipY"].boolVal;
             }
             if (stats.count("color") >= 1) {
                 if (stats["color"].vec3p != nullptr) {
@@ -242,11 +254,14 @@ namespace UI {
             if (stats.count("autolight") >= 1) {
                 dc.autolight = true;
             }
+            if (stats.count("parent") >= 1) {
+                dc.parent = stats["parent"].intVal;
+            }
             break;
         case ui_TEXT:
             c.onrender = textONRENDER;
             c.onhover = textONHOVER;
-            c.onnothover= textONNOTHOVER;
+            c.onnothover = textONNOTHOVER;
             break;
         case ui_TOOLTIP:
             c.onrender = tooltipONRENDER;
@@ -260,14 +275,17 @@ namespace UI {
         case ui_DRAGFLOAT:
             c.onhold = dragfloatONHOLD;
             c.onrender = dragfloatONRENDER;
+            c.propagateClick = false;
             break;
         case ui_TOGGLE:
             c.onclick = toggleONCLICK;
-            c.onrender= toggleONRENDER;
+            c.onrender = toggleONRENDER;
+            c.propagateClick = false;
             break;
         case ui_BUTTON:
             c.onclick = buttonONCLICK;
             c.onrender = buttonONRENDER;
+            c.onenter = soundONENTER;
             dc.tex = textStats["tex"];
             c.propagateClick = false;
             if (stats.count("color") >= 1) {
@@ -280,6 +298,7 @@ namespace UI {
         case ui_DRAGINT:
             c.onhold = dragintONHOLD;
             c.onrender = dragintONRENDER;
+            c.propagateClick = false;
             break;
         case ui_CONTAINER:
             c.onrender = containerONRENDER;
@@ -318,6 +337,7 @@ namespace UI {
             c.onrender = buffONRENDER;
             c.onrightclick = buffONRIGHTCLICK;
             c.onhover = buffONHOVER;
+            c.propagateClick = false;
             break;
         case ui_BOSSBAR:
             c.onrender = bossbarONRENDER;
@@ -358,31 +378,29 @@ namespace UI {
 
         //add children
         uiStat t;
-        t.intVal = 0; 
+        t.intVal = 0;
         switch (func) {
         case ui_TEST:
             break;
         case ui_ITEMSLOT:
-            {
+        {
             addElement(ECS::newEntity(), ui_DISPLAY, c.pos, { 1,1 }, entity, {}, { {"tex", "item"},{"item", "empty"} }, hidden, anchor);
-            addElement(ECS::newEntity(), ui_TEXT, c.pos, glm::vec2(0), entity, { {"textSize", {.floatVal = globals::fontSize}} }, { {"text", ""} }, hidden, anchor);
+            UI::Elements::text(entity, c.pos, hidden, anchor, "", globals::fontSize);
         }
-            break;
+        break;
         case ui_CRAFTABLEITEM:
         {
             uiStat centered; centered.boolVal = false;
             addElement(ECS::newEntity(), ui_DISPLAY, c.pos, { 1,1 }, entity, { }, { {"tex", "item"},{"item", "empty"} }, hidden, anchor);
-            addElement(ECS::newEntity(), ui_TEXT, c.pos, glm::vec2(0), entity, { {"centered", centered}, {"textSize", stats["textSize"]} }, { {"text", "empty"} }, hidden, anchor);
+            UI::Elements::text(entity, c.pos, hidden, anchor, "empty", stats["textSize"].floatVal, true);
         }   break;
-        case ui_TEXT: {
-            int ent = ECS::newEntity();
-            addElement(ent, ui_EMPTY, c.pos, glm::vec2(0), entity, { {"textSize", stats["textSize"]} }, {}, hidden, anchorNONE);
-        }
+        case ui_TEXT:
+            UI::Elements::empty(entity, c.pos, anchorNONE, stats["textSize"].floatVal);
             break;
         case ui_TOOLTIP:
         {    uiStat centered; centered.boolVal = false;
-        addElement(ECS::newEntity(), ui_BACK, c.pos, glm::vec2(0), entity, { {"color", {.vec3p = &globals::tooltipcolor}}, {"opacity",{.floatVal = 0.97}}}, {}, hidden, anchor);
-             addElement(ECS::newEntity(), ui_TEXT, c.pos, glm::vec2(0), entity, { {"centered", centered},{"textSize", stats["textSize"]} }, { {"text", ""} }, hidden, anchor);
+        addElement(ECS::newEntity(), ui_BACK, c.pos, glm::vec2(0), entity, { {"color", {.vec3p = &globals::tooltipcolor}}, {"opacity",{.floatVal = 0.97}} }, {}, hidden, anchor);
+        UI::Elements::text(entity, c.pos, hidden, anchor, "", stats["textSize"].floatVal, false);
         }   break;
         case ui_RESOURCEBAR: {
             glm::vec2 offset = glm::vec2(0);
@@ -397,33 +415,33 @@ namespace UI {
             }
         }   break;
         case ui_DRAGFLOAT: {
-                std::string text = textStats["label"];
-                float textsize = globals::fontSize;
-                if (stats.count("textSize") >= 1) {
-                    textsize = stats["textSize"].floatVal;
-                }
-                int slider = ECS::newEntity();
-                addElement(slider, ui_DISPLAY, c.pos, size, entity, { {"centered", {.boolVal = true}},{"textSize", {.floatVal = textsize}} }, { {"tex", textStats["tex"]} }, hidden, anchor);
-                ECS::getComponent<drawC>(slider)->autocorrect = false;
-                addElement(ECS::newEntity(), ui_DISPLAY, c.pos, glm::vec2(size.y), entity, { {"centered", {.boolVal = true}},{"textSize", {.floatVal = textsize}} }, { {"tex", "sliderpaddle"} }, hidden, anchor);
-                addElement(ECS::newEntity(), ui_TEXT, c.pos, { 0,0 }, entity, { {"centered", {.boolVal = true}},{"textSize", {.floatVal = textsize}} }, { {"text", textStats["label"]} }, hidden, anchor);
-            }   break;
+            std::string text = textStats["label"];
+            float textsize = globals::fontSize;
+            if (stats.count("textSize") >= 1) {
+                textsize = stats["textSize"].floatVal;
+            }
+            int slider = ECS::newEntity();
+            addElement(slider, ui_DISPLAY, c.pos, size, entity, { {"centered", {.boolVal = true}},{"textSize", {.floatVal = textsize}} }, { {"tex", textStats["tex"]} }, hidden, anchor);
+            ECS::getComponent<drawC>(slider)->autocorrect = false;
+            addElement(ECS::newEntity(), ui_DISPLAY, c.pos, glm::vec2(size.y), entity, { {"centered", {.boolVal = true}},{"textSize", {.floatVal = textsize}} }, { {"tex", "sliderpaddle"} }, hidden, anchor);
+            UI::Elements::text(entity, c.pos, hidden, anchor, textStats["label"], stats["textSize"].floatVal, true);
+        }   break;
         case ui_BUTTON: {
-            uiStat centered; centered.boolVal = true;
-            uiStat hoveredScale; hoveredScale.floatVal = stats["textSize"].floatVal * 1.5;
             bool textscaleonhover = true;
             if (stats.count("textonhover") >= 1) {
                 textscaleonhover = false;
             }
+            float textsize = globals::fontSize;
+            if (stats.count("textSize") >= 1) {
+                textsize = stats["textSize"].floatVal;
+            }
             if (stats.count("borderhover") >= 1) {
-                addElement(ECS::newEntity(), ui_BACK, c.pos, c.size, entity, {{"hoverclr", {.vec3p = &globals::buttonhovercolor}}}, {}, hidden, anchor);
+                addElement(ECS::newEntity(), ui_BACK, c.pos, c.size, entity, { {"hoverclr", {.vec3p = &globals::buttonhovercolor}} }, {}, hidden, anchor);
                 addElement(ECS::newEntity(), ui_BACK, c.pos, c.size, entity, { {"color", {.vec3p = &globals::blackcolor}}, {"isborder", {.boolVal = true}}, {"hoverclr", {.vec3p = &globals::buttonborderhovercolor}} }, {}, hidden, anchor);
             }
-            addElement(ECS::newEntity(), ui_TEXT, c.pos, glm::vec2(0), entity, { {"centered", centered},{"hoveredScale", hoveredScale},{"textSize", stats["textSize"]},{"colorOnHover", {.boolVal = textscaleonhover}} }, { {"text", textStats["text"]} }, hidden, anchor);
+            UI::Elements::text(entity, c.pos, hidden, anchor, textStats["text"], textsize, true, textscaleonhover, stats["textSize"].floatVal * 1.5);
         }   break;
         case ui_DRAGINT: {
-            std::string text = textStats["label"];
-            uiStat centered; centered.boolVal = false;
             uiStat float1; float1.floatVal = 1;
             float textsize = globals::fontSize;
             if (stats.count("textSize") >= 1) {
@@ -431,21 +449,21 @@ namespace UI {
             }
             addElement(ECS::newEntity(), ui_DISPLAY, c.pos, glm::vec2(size.x), entity, {}, { {"tex", textStats["tex"]} }, hidden, anchor);
             addElement(ECS::newEntity(), ui_DISPLAY, c.pos, glm::vec2(size.y), entity, {}, { {"tex", "sliderpaddle"} }, hidden, anchor);
-            addElement(ECS::newEntity(), ui_TEXT, c.pos, { 0,0 }, entity, { {"centered", {.boolVal = true}},{"textSize", {.floatVal = textsize}} }, { {"text", textStats["label"]} }, hidden, anchor);
+            UI::Elements::text(entity, c.pos, hidden, anchor, textStats["label"], textsize, true);
         }   break;
         case ui_FAKESLOT:
             addElement(ECS::newEntity(), ui_DISPLAY, c.pos, { 1,1 }, entity, {}, { {"tex", "item"},{"item", "empty"} }, hidden, anchor);
-            addElement(ECS::newEntity(), ui_TEXT, c.pos, glm::vec2(0), entity, { {"textSize", stats["textSize"]} }, { {"text", "empty"} }, hidden, anchor);
+            UI::Elements::text(entity, c.pos, hidden, anchor, textStats["text"], stats["textSize"].floatVal);
             break;
         case ui_CURSOR:
             addElement(ECS::newEntity(), ui_DISPLAY, c.pos, c.size * glm::vec2(0.9), entity, {}, { {"tex", "cursor"} }, hidden, anchor);
             break;
         case ui_HPBAR:
-            addElement(ECS::newEntity(), ui_DISPLAY, c.pos, { 0,0 }, entity, {}, { {"tex", "hpbar2"} }, hidden, anchor);
+            addElement(ECS::newEntity(), ui_DISPLAY, c.pos, { 0,0 }, entity, { {"parent", {.intVal = globals::topparticleLayer}} }, { {"tex", "hpbar2"} }, hidden, anchor);
             break;
         case ui_TEXTBOX:
             addElement(ECS::newEntity(), ui_BACK, c.pos, { 0,0 }, entity, {}, {}, hidden, anchor);
-            addElement(ECS::newEntity(), ui_TEXT, c.pos, { 0,0 }, entity, { {"textSize", {.floatVal = 0.8}} }, { {"text", textStats["text"]} }, hidden, anchor);
+            UI::Elements::text(entity, c.pos, hidden, anchor, textStats["text"], 0.8);
             break;
         case ui_BACK: {
             glm::vec2 size = glm::vec2(32);
@@ -475,24 +493,28 @@ namespace UI {
         }   break;
         case ui_CONTAINER:
             addElement(ECS::newEntity(), ui_BACK, c.pos, glm::vec2(0), entity, {}, {}, hidden, anchor);
-            break;  
+            break;
         case ui_BOSSBAR:
             addElement(ECS::newEntity(), ui_DISPLAY, c.pos, { 0,0 }, entity, {}, { {"tex", "bossbar"} }, hidden, anchor);
-            addElement(ECS::newEntity(), ui_DISPLAY, c.pos, { 0,0 }, entity, {}, { {"tex", textStats["head"]}}, hidden, anchor);
+            addElement(ECS::newEntity(), ui_DISPLAY, c.pos, { 0,0 }, entity, {}, { {"tex", textStats["head"]} }, hidden, anchor);
             break;
         case ui_TOGGLE:
-            addElement(ECS::newEntity(), ui_TEXT, c.pos, { 0,0 }, entity, { {"centered", {.boolVal = true}}, {"colorOnHover", {.boolVal = true}}, {"textSize", stats["textSize"]} }, { {"text", ""} }, hidden, anchor);
+            UI::Elements::text(entity, c.pos, hidden, anchor, "", stats["textSize"].floatVal, true, true);
             break;
         case ui_KEYBIND:
-            addElement(ECS::newEntity(), ui_TEXT, c.pos, { 0,0 }, entity, { {"centered", {.boolVal = true}}, {"textSize", stats["textSize"]} }, { {"text", ""} }, hidden, anchor);
-            addElement(ECS::newEntity(), ui_TEXT, c.pos, { 0,0 }, entity, { {"centered", {.boolVal = true}}, {"colorOnHover", {.boolVal = true}}, {"textSize", stats["textSize"]} }, { {"text", ""} }, hidden, anchor);
+            UI::Elements::text(entity, c.pos, hidden, anchor, "", stats["textSize"].floatVal, true);
+            UI::Elements::text(entity, c.pos, hidden, anchor, "", stats["textSize"].floatVal, true, true);
+            break;
+        case ui_CURSORITEM:
+            UI::Elements::empty(entity, c.pos, anchor);
             break;
         }
     }
-    void deleteElement(int entity,bool self)
+    void deleteElement(int entity, bool self)
     {
         auto p = ECS::getComponent<uiC>(entity);
         for (int i = 0; i < p->children.size(); i++) {
+            game::drawSys->deleteComponent(p->children[i]);
             deleteElement(p->children[i], false);
             ECS::queueDeletion(p->children[i]);
         }
@@ -541,7 +563,7 @@ namespace UI {
     {
         p->textStats[name] = val;
     }
-    int getCraftable(int *i)
+    int getCraftable(int* i)
     {
         if (availableRecipes.size() == 0) {
             return -1;
@@ -555,8 +577,9 @@ namespace UI {
         UI::hideChildren(ECS::getComponent<uiC>(gameLoop::inventoryC), false);
         UI::hideChildren(ECS::getComponent<uiC>(gameLoop::equipmentC), false);
         UI::inventory->toggle(0);
-        UI::chest->toggle(0);
-        ECS::getComponent<uiC>(gameLoop::crafting)->hidden = UI::inventory->hidden();
+        UI::chest->toggle(1);
+        UI::npc->toggle(1);
+        ECS::getComponent<uiC>(gameLoop::crafting)->hidden = false;
     };
 
     void UI_nothing(uiCfunctionArguments)
@@ -572,41 +595,62 @@ namespace UI {
         auto item = getStat(p, "item", { .itemp = nullptr })->itemp;
         auto citem = getStat(ECS::getComponent<uiC>(gameLoop::cursoritem), "item", { .itemp = nullptr })->itemp;
         if (item == NULL || citem == NULL) return;
-        
+
         auto citeminfo = items::getInfo(citem->item);
-        int itemfam = getStat(p, "limitFamily", {.intVal = int(if_ANY)})->intVal;
+        int itemfam = getStat(p, "limitFamily", { .intVal = int(if_ANY) })->intVal;
         if (itemfam == if_ANY || citeminfo->families.count((itemFamily)itemfam) >= 1 || citeminfo->families.count(if_ANY) >= 1) {
-                if (citem->item == item->item) {
-                    int maxStacks = items::info[item->item].maxStacks;
-                    //dodamo iz roke dokler ne pridemo do maxa, ce pa smo ze na maxu pa jih sam zamenamo
-                    if (maxStacks == item->num) {
-                        std::string tmpi = item->item;
-                        item->item = citem->item;
-                        citem->item = tmpi;
-                        int tmpn = item->num;
-                        item->num = citem->num;
-                        citem->num = tmpn;
-                        return;
-                    }
-                    item->num += citem->num;
-                    if (item->num > maxStacks) {
-                        citem->num = item->num - maxStacks;
-                        item->num = maxStacks;
-                    }
-                    else {
-                        citem->num = 0;
-                    }
-                }
-                else {
+            if (citem->item == item->item) {
+                int maxStacks = items::info[item->item].maxStacks;
+                //dodamo iz roke dokler ne pridemo do maxa, ce pa smo ze na maxu pa jih sam zamenamo
+                if (maxStacks == item->num) {
                     std::string tmpi = item->item;
                     item->item = citem->item;
                     citem->item = tmpi;
                     int tmpn = item->num;
                     item->num = citem->num;
                     citem->num = tmpn;
+                    return;
+                }
+                item->num += citem->num;
+                if (item->num > maxStacks) {
+                    citem->num = item->num - maxStacks;
+                    item->num = maxStacks;
+                }
+                else {
+                    citem->num = 0;
                 }
             }
+            else {
+                std::string tmpi = item->item;
+                item->item = citem->item;
+                citem->item = tmpi;
+                int tmpn = item->num;
+                item->num = citem->num;
+                citem->num = tmpn;
+            }
+        }
     }
+
+    void itemslotONHOLD(uiCfunctionArguments)
+    {
+        auto item = getStat(p, "item", { .itemp = nullptr })->itemp;
+        auto citem = getStat(ECS::getComponent<uiC>(gameLoop::cursoritem), "item", { .itemp = nullptr })->itemp;
+        if (item == NULL || citem == NULL) return;
+        if (item->item != citem->item) return;
+        int maxstacks = items::info[citem->item].maxStacks;
+        if (citem->num >= maxstacks - 1) return;
+
+        int n = 0;
+
+        if (p->holdingtime < 60) n += p->holdingtime % 10 == 0; else
+            if (p->holdingtime < 120) n += p->holdingtime % 4 == 0; else
+                if (p->holdingtime < 180) n += p->holdingtime % 2 == 0; else
+                    n = 1;
+
+        citem->num += n;
+        item->num -= n;
+    }
+
     void itemslotONRIGHTCLICK(uiCfunctionArguments)
     {
         auto item = getStat(p, "item", { .itemp = nullptr })->itemp;
@@ -665,6 +709,9 @@ namespace UI {
         else {
             draw->color = globals::itemslotColor;
         }
+        if (p->holdingtime <= 0) {
+            UI::getStat(p, "counter", { .intVal = 0 })->intVal = 0;
+        }
     }
 
     void guideslotONRENDER(uiCfunctionArguments)
@@ -722,7 +769,7 @@ namespace UI {
                 }
             }
             UI::setTStat(dc, "item", recipe->craftedItem);
-            
+
             dc->pos = p->pos;
             dc->size = p->size * glm::vec2(0.6f);
             dc->hidden = p->hidden;
@@ -740,48 +787,49 @@ namespace UI {
 
     void cursoritemONRENDER(uiCfunctionArguments)
     {
+        auto child = ECS::getComponent<drawC>(p->children[0]);
+        auto childui = ECS::getComponent<uiC>(p->children[0]);
         auto item = getStat(p, "item")->itemp;
 
-        draw->textScale = globals::fontSize;
+        *draw->position = p->pos = globals::mouseBlockCoordsGlobal(false);
+        draw->tex = "empty";
+        child->textScale = globals::fontSize;
         if (item == nullptr) {
-            p->hidden = !globals::hovertext;
-            draw->text = *UI::getTStatRef(p, "text", "");
-            p->pos = globals::mouseBlockCoordsZoomed(false);
+            childui->hidden = !globals::hovertext;
+            child->text = *UI::getTStatRef(p, "text", "");
+            childui->pos = globals::mouseBlockCoords(false);
             glm::vec2 offset = p->size;
             offset *= 0.45f;
-            if (p->pos.x > Player::pos.x) {
+            if (childui->pos.x > Player::pos.x) {
                 offset.x *= -1;
             }
-            p->pos.x += offset.x;
-            p->pos.y -= offset.y;
+            child->tex = "empty";
+            childui->pos.x += offset.x;
+            childui->pos.y -= offset.y;
             *UI::getTStatRef(p, "text", "") = "";
-            *draw->position = p->pos;
+            *child->position = p->pos;
             return;
         }
-
 
         if (item->num <= 0) {
             item->item = "empty";
             item->num = 0;
-            draw->text = "";
+            child->text = "";
         }
-        if (item->item == "empty") {
-            draw->text = *UI::getTStatRef(p, "text", "");
-        }
-        else {
-            draw->text = std::to_string(item->num);
-        }
-        draw->tex = items::getInfo(item->item)->tex.c_str();
-        p->pos = globals::mouseBlockCoords(false);
+        child->tex = items::getInfo(item->item)->tex.c_str();
+        childui->size = glm::vec2(1.5);
+        childui->pos = globals::mouseBlockCoords(false);
         glm::vec2 offset = p->size;
         offset *= 0.45f;
-        if (p->pos.x > Player::pos.x) {
+        if (childui->pos.x > Player::pos.x) {
             offset.x *= -1;
         }
-        p->pos.x += offset.x;
-        p->pos.y -= offset.y;
+        childui->pos.x += offset.x;
+        childui->pos.y -= offset.y;
         *UI::getTStatRef(p, "text", "") = "";
-        *draw->position = p->pos;
+        *child->position = p->pos;
+        child->text = item->num > 1 ? std::to_string(item->num) : "";
+        child->textoffset = glm::vec2(-1, -0.7);
     }
 
     void cursoritemONRIGHTCLICK(uiCfunctionArguments)
@@ -802,6 +850,29 @@ namespace UI {
         }
     }
 
+    void soundONENTER(uiCfunctionArguments)
+    {
+        sounds::menuclick();
+    }
+
+    void toastONRENDER(uiCfunctionArguments)
+    {
+        float wantToBeAt = UI::getStat(p, "wantToBeAt", { .floatVal = p->pos.y })->floatVal;
+        p->pos.y += utils::approach(p->pos.y, wantToBeAt, 2);
+
+        draw->opacity += utils::approach(draw->opacity, 0, 150);
+        if (draw->opacity < 0.05)
+            UI::deleteElement(entity);
+    }
+
+    void textpONRENDER(uiCfunctionArguments)
+    {
+        auto textp = UI::getStat(p, "textp", { .stringp = nullptr })->stringp;
+        if (textp == nullptr) return;
+        p->textStats["text"] = *textp;
+        textONRENDER(p, draw, entity, arr);
+    }
+
     void textONRENDER(uiCfunctionArguments)
     {
         auto textC = ECS::getComponent<uiC>(p->children[0]);
@@ -812,15 +883,10 @@ namespace UI {
         }
         text->color = draw->color;
         text->opacity = UI::getStat(p, "opacity", { .floatVal = 1 })->floatVal;
-        auto textp = UI::getStat(p, "textp", { .stringp = nullptr })->stringp;
-        if (textp != nullptr) {
-            text->text = *textp;
-        }
-        else {
-            text->text = UI::getTStat(p, "text");
-        }
+        text->text = UI::getTStat(p, "text");
+
         if (UI::getStat(p, "colorOnHover", { .boolVal = false })->boolVal == true) {
-            text->textScale += utils::approach(text->textScale, UI::getStat(p, "targetScale")->floatVal, 10);
+            text->textScale += utils::approach(text->textScale, UI::getStat(p, "targetScale", {.floatVal = text->textScale})->floatVal, 10);
         }
         textC->pos= *draw->position;
         float width = text::widthOfText(&text->text, text->textScale);
@@ -866,6 +932,82 @@ namespace UI {
         tc->hidden = true;
     }
 
+    void shopitemslotONCLICK(uiCfunctionArguments)
+    {
+        auto item = getStat(p, "item", { .itemp = nullptr })->itemp;
+        auto citem = getStat(ECS::getComponent<uiC>(gameLoop::cursoritem), "item", { .itemp = nullptr })->itemp;
+        if (item == NULL || citem == NULL) return;
+        
+        int price = items::getInfo(item->item)->buyprice;
+        if (!Player::takeCoinsIfEnough(price))return;
+
+        if (citem->item == "empty") {
+            citem->item = item->item;
+            citem->num = 1;
+            return;
+        }
+        
+        if (item->item != citem->item) return;
+        if (citem->num >= items::info[citem->item].maxStacks) return;
+
+        citem->num++;
+    }
+
+    void shopitemslotONHOLD(uiCfunctionArguments)
+    {
+        auto item = getStat(p, "item", { .itemp = nullptr })->itemp;
+        auto citem = getStat(ECS::getComponent<uiC>(gameLoop::cursoritem), "item", { .itemp = nullptr })->itemp;
+        if (item == NULL || citem == NULL) return;
+        if (item->item != citem->item) return;
+        if (citem->num >= items::info[citem->item].maxStacks) return;
+
+        int price = items::getInfo(item->item)->buyprice;
+
+        int n = 0;
+
+        if (p->holdingtime < 60) n += p->holdingtime % 10 == 0; else
+            if (p->holdingtime < 120) n += p->holdingtime % 4 == 0; else
+                if (p->holdingtime < 180) n += p->holdingtime % 2 == 0; else
+                    n = 1;
+        if(n == 0) return;
+        if (!Player::takeCoinsIfEnough(price)) return;
+        citem->num++;
+    }
+
+    void shopitemslotONRENDER(uiCfunctionArguments)
+    {
+        auto dc = ECS::getComponent<uiC>(p->children[0]);
+        auto item = getStat(p, "item", { .itemp = nullptr })->itemp;
+        if (item == nullptr) {
+            UI::setTStat(dc, "item", "empty");
+            return;
+        }
+
+        dc->pos = p->pos;
+        dc->size = p->size * glm::vec2(0.6f);
+        UI::setTStat(dc, "item", item->item);
+        dc->hidden = p->hidden;
+
+        draw->tex = UI::getTStat(p, "tex", "invempty");
+
+        draw->color = globals::shopitemslotColor;
+    
+        if (p->holdingtime <= 0) {
+            UI::getStat(p, "counter", { .intVal = 0 })->intVal = 0;
+        }
+    }
+
+    void shopitemslotONHOVER(uiCfunctionArguments)
+    {
+        auto item = getStat(p, "item")->itemp;
+        auto tt = ECS::getComponent<uiC>(gameLoop::tooltip);
+        if (item != nullptr) {
+            UI::setTStat(tt, "item", item->item);
+            UI::getStat(tt, "buyprice")->floatVal = items::getInfo(item->item)->buyprice;
+            UI::getStat(tt, "num", { .intVal = 0 })->intVal = item->num;
+        }
+    }
+
     void fakeslotONHOVER(uiCfunctionArguments)
     {
         auto tt = ECS::getComponent<uiC>(gameLoop::tooltip);
@@ -887,7 +1029,7 @@ namespace UI {
         lastx->floatVal = p->pos.x;
         lasty->floatVal = p->pos.y;
 
-        p->pos = globals::mouseBlockCoords(false, glm::vec2(-1, 1), glm::vec2(-1, 1));
+        p->pos = globals::mouseBlockCoordsGlobal(false, glm::vec2(-1, 1), glm::vec2(-1, 1));
         p->pos.x += (p->pos.x - lastx->floatVal)/6;
         p->pos.y += (p->pos.y - lasty->floatVal)/6;
         p->pos.x += p->size.x;
@@ -920,6 +1062,7 @@ namespace UI {
         auto front = ECS::getComponent<uiC>(p->children[0]);
         auto frontDraw = ECS::getComponent<drawC>(p->children[0]);
 
+        front->hidden = false;
         p->pos = *ePhys->position;
         p->pos.y -= ePhys->size.y / 2.0f + 0.6;
         p->size = { 2, 2 };
@@ -937,15 +1080,24 @@ namespace UI {
 
     void pickuptextONRENDER(uiCfunctionArguments)
     {
-        p->pos.y += 0.015f;
         draw->textScale += utils::approach(draw->textScale, 1, 5);
         draw->opacity -= 0.008;
         int num = UI::getStat(p, "num", { .intVal = 0 })->intVal;
         auto lastNum = UI::getStat(p, "lastNum", { .intVal = 0 });
-        if (lastNum->intVal != num) {
-            draw->opacity = 1;
+        auto container = ECS::getComponent<uiC>(gameLoop::pickuptextcontainer);
+        
+        float height = text::heightOfText(&draw->text, draw->textScale) / (float)globals::blocksizepx;
+
+        for (int i = 0; i < container->children.size(); i++) {
+            if (container->children[i] == entity) continue;
+            auto child = ECS::getComponent<uiC>(container->children[i]);
+            if (child->pos.y <= p->pos.y) {
+                if (p->pos.y - child->pos.y < height * 1.1) {
+                    p->pos.y += height /60;
+                }
+            }
         }
-        lastNum->intVal = num;
+
         if (draw->opacity < 0) {
             UI::deleteElement(entity);
             return;
@@ -1176,7 +1328,7 @@ namespace UI {
     void radialONRENDER(uiCfunctionArguments)
     {
         p->hidden = !globals::tilegrid;
-        *draw->position = globals::mouseBlockCoordsZoomed();
+        *draw->position = globals::mouseBlockCoords();
     }
 
     void logoONRENDER(uiCfunctionArguments)
@@ -1225,7 +1377,7 @@ namespace UI {
 
     void cursoritemONLEFTCLICK(uiCfunctionArguments)
     {
-        auto item = getStat(p, "item")->itemp;
+        auto item = getStat(p, "item", {.itemp = nullptr})->itemp;
         if (item == nullptr) return;
         if (item->item == "empty") {
             Player::doPrimary(Player::curritem);
@@ -1263,13 +1415,20 @@ namespace UI {
         tc->hidden = true;
     }
 
-    void itemslotONNOTHOVER(uiCfunctionArguments) {
-    }
-
     void tooltipONRENDER(uiCfunctionArguments) {
         auto backc = ECS::getComponent<uiC>(p->children[0]);
         auto tc = ECS::getComponent<uiC>(p->children[1]);
         std::string* item = UI::getTStatRef(p, "item", "empty");
+
+        auto citem = getStat(ECS::getComponent<uiC>(gameLoop::cursoritem), "item", { .itemp = nullptr })->itemp;
+        if (citem != nullptr) {
+            if (citem->item != "empty") {
+                backc->hidden = true;
+                UI::setTStat(tc, "text", UI::getTStat(p, ""));
+                tc->hidden = backc->hidden;
+                return;
+            }
+        }
 
         if (*item != "empty") {
             backc->hidden = false;
@@ -1282,13 +1441,20 @@ namespace UI {
             }
             text += "\\c255255255";
             createTooltip(*item, &text);
+
+            uiStat* buyprice = UI::getStat(p, "buyprice", { .floatVal = -1 });
+            if (buyprice->floatVal != -1) {
+                text += "\n\\c1937962Buy price: " + std::to_string((int)buyprice->floatVal) + " copper";
+                buyprice->floatVal = -1;
+            }
+
             UI::setTStat(tc, "text", text);
 
             float textsize = UI::getStat(tc, "textSize", { .floatVal = 1 })->floatVal;
 
             backc->size.x = text::widthOfText(&text, textsize);
             backc->size.y = text::heightOfText(&text, textsize);
-            backc->pos = globals::mouseBlockCoords(false) + glm::vec2(2, -2);
+            backc->pos = globals::mouseBlockCoordsGlobal(false) + glm::vec2(2, -2);
             if (backc->pos.x > Player::pos.x) {
                 backc->pos += glm::vec2(-backc->size.x / globals::blocksizepx, -backc->size.y / globals::blocksizepx / 2);
             }
@@ -1379,7 +1545,7 @@ namespace UI {
         auto slider = ECS::getComponent<uiC>(p->children[0]);
         auto paddle = ECS::getComponent<uiC>(p->children[1]);
 
-        float mousex = globals::mouseBlockCoords(false).x;
+        float mousex = globals::mouseBlockCoordsGlobal(false).x;
 
         glm::vec2 sliderpos = slider->pos / glm::vec2(globals::resX, globals::resY);
         glm::vec2 slidersize = (slider->size / glm::vec2(globals::resX, globals::resY)) / globals::fullScale;
@@ -1420,10 +1586,17 @@ namespace UI {
         paddle->pos.x = slider->pos.x - slider->size.x / 2;
         paddle->pos.x += slider->size.x * proc;
 
-        std::string labeltext = p->textStats["label"] + std::to_string(*UI::getStat(p, "ref")->floatValp);
-        float labeltextsize = text::widthOfText(&labeltext, textSize);
-        label->pos.x = slider->pos.x - labeltextsize * 0.6 - slider->size.x/2.0f;
-        label->textStats["text"] = labeltext;
+
+        if (UI::getStat(p, "showval", { .boolVal = true })->boolVal) {
+            std::string labeltext = p->textStats["label"] + std::to_string(*UI::getStat(p, "ref")->floatValp);
+            float labeltextsize = text::widthOfText(&labeltext, textSize);
+            label->pos.x = slider->pos.x - labeltextsize * 0.6 - slider->size.x / 2.0f;
+            label->textStats["text"] = labeltext;
+        }
+        else {
+            label->textStats["text"] = "";
+
+        }
     }
 
 
@@ -1432,7 +1605,7 @@ namespace UI {
         auto slider = ECS::getComponent<uiC>(p->children[0]);
         auto paddle = ECS::getComponent<uiC>(p->children[1]);
 
-        float mousex = globals::mouseBlockCoords(false).x;
+        float mousex = globals::mouseBlockCoordsGlobal(false).x;
 
         glm::vec2 sliderpos = slider->pos / glm::vec2(globals::resX, globals::resY);
         glm::vec2 slidersize = (slider->size / glm::vec2(globals::resX, globals::resY)) / globals::fullScale;
@@ -1701,8 +1874,15 @@ namespace UI {
             itemit++;
         }
         Player::heartcrystals = 0;
+        Player::manacrystals = 0;
         Player::boomerangsout = 0;
         Player::currsummons = 0;
+        Player::headarmor = "empty";
+        Player::bodyarmor = "empty";
+        Player::legsarmor = "empty";
+        UI::helmetItem.item = "empty";
+        UI::breastplateItem.item = "empty";
+        UI::greavesItem.item = "empty";
         Player::save();
         PlayerHotbar.clear();
         PlayerInventory.clear();
@@ -1742,6 +1922,18 @@ namespace UI {
     {
         UI::inventory->toggle(false);
         UI::chest->toggle(1);
+        ECS::getComponent<uiC>(gameLoop::crafting)->hidden = false;
+        UI::hideChildren(ECS::getComponent<uiC>(gameLoop::equipmentC), false);
+        UI::hideChildren(ECS::getComponent<uiC>(gameLoop::buffcontainer), true);
+        ECS::getComponent<uiC>(gameLoop::guideslot)->hidden = false;
+    }
+
+    void uiCfunc_openMerchantShop(uiC* p)
+    {
+        UI::openInventory();
+        UI::inventory->toggle(false);
+        UI::npc->toggle(0); 
+        UI::npc->setTo(&UI::merchantInventory);
         ECS::getComponent<uiC>(gameLoop::crafting)->hidden = false;
         UI::hideChildren(ECS::getComponent<uiC>(gameLoop::equipmentC), false);
         UI::hideChildren(ECS::getComponent<uiC>(gameLoop::buffcontainer), true);
@@ -1823,7 +2015,7 @@ namespace UI {
     {
         switch (anchor) {
         case anchorNONE:
-            *pos += globals::mouseBlockCoords(false);
+            *pos += globals::mouseBlockCoordsGlobal(false);
             break;
         case anchorMID:
             break;
@@ -2249,23 +2441,21 @@ void Inventory::markAsSelected(int pos)
 
 }
 
-Inventory::Inventory(glm::vec2 pos, glm::vec2 ROWS, std::vector<std::shared_ptr<InventoryItem>>* ITEMS, bool hidden, int container, float scale)
+Inventory::Inventory(glm::vec2 pos, glm::vec2 ROWS, std::vector<std::shared_ptr<InventoryItem>>* ITEMS, bool hidden, int container, float scale, bool shop)
 {
     rows = ROWS;
     items = ITEMS;
     float w; // edge width¸
     float h = w = 140 * scale; // size
     float s = h * 0.7f; //vertical spacing
-    uiStat textSize; textSize.floatVal = globals::fontSize;
     for (int row = 0; row < rows.y; row++) {
         for (int col = 0; col < rows.x; col++) {
             int ipos = col + row * rows.x;
-            uiStat t2;
-            t2.itemp = items->at(ipos).get();
-            int slot = ECS::newEntity();
-            entities.push_back(slot);
-            UI::addElement(slot, ui_ITEMSLOT, pos + glm::vec2(s * col, 0), glm::vec2(w / 1.5f, h / 1.5f), container, { {"item", t2}, {"textSize", textSize} }, { }, hidden, anchorTOPLEFT);
-            ECS::getComponent<uiC>(slot)->propagateClick = false;
+            if (shop) {
+                entities.push_back(UI::Elements::shopitemslot(container, pos + glm::vec2(s * col, 0), glm::vec2(w / 1.5f, h / 1.5f), hidden, anchorTOPLEFT, items->at(ipos).get(), globals::fontSize));
+                continue;
+            }
+            entities.push_back(UI::Elements::itemslot(container, pos + glm::vec2(s * col, 0), glm::vec2(w / 1.5f, h / 1.5f), hidden, anchorTOPLEFT, items->at(ipos).get(), globals::fontSize));
         }
         pos += glm::vec2(0, -s);
     }
@@ -2430,4 +2620,295 @@ InventoryItem* Inventory::at(glm::vec2 pos)
         return nullptr;
     }
     return items->at(pos.x + pos.y * size.x).get();
+}
+
+namespace UI {
+    namespace Elements {
+
+        const uiC BASE = {
+            false,
+            glm::vec2(0),
+            glm::vec2(0),
+            -1,
+            ui_EMPTY,
+            true,
+            true,
+            anchorMID,
+            {},
+            {},
+            {},
+            UI_nothing,
+            UI_nothing,
+            UI_nothing,
+            UI_nothing,
+            UI_nothing,
+            UI_nothing,
+            UI_nothing,
+            UI_nothing,
+            false,
+            0,
+            false
+        };
+
+        int nextDrawParent = -1;
+
+        int add(uiC uic, drawC dc) {
+
+            if (nextDrawParent != -1) {
+                dc.parent = nextDrawParent;
+                nextDrawParent = -1;
+            }
+            else {
+                dc.parent = uic.parent;
+            }
+
+            int ent = ECS::newEntity();
+            ECS::getComponent<uiC>(uic.parent)->children.push_back(ent);
+            ECS::addComponent<uiC>(ent, uic);
+            drawSystem::addComponent(ent, &dc);
+            return ent;
+        }
+
+        void setnextdrawparent(int parent)
+        {
+            nextDrawParent = parent;
+        }
+
+        int test(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor)
+        {
+            return 0;
+        }
+
+        int empty(int parent, glm::vec2 pos, uiAnchor anchor, float textSize)
+        {
+            uiC uic = BASE;
+            uic.parent = parent;
+            uic.func = ui_EMPTY;
+            uic.hidden = false;
+            uic.pos = pos;
+            uic.size = glm::vec2(0);
+            uic.anchor = anchor;
+
+            drawC dc;
+            dc.position = std::make_shared<glm::vec2>(glm::vec2(0));
+            dc.parent = parent;
+            dc.tex = "empty";
+            dc.hidden = false;
+            dc.parent = parent;
+            dc.autolight = false;
+            dc.size = glm::vec2(0);
+            dc.textScale = textSize;
+
+            return add(uic, dc);
+        }
+
+        int itemslot(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor, InventoryItem* itemp, float textsize, itemFamily limitfamily)
+        {
+            uiC uic = BASE;
+            uic.parent = parent;
+            uic.func = ui_ITEMSLOT;
+            uic.propagateClick = false;
+            uic.pos = pos;
+            uic.size = size;
+            uic.hidden = hidden;
+            uic.anchor = anchor;
+            
+            uic.onrender = itemslotONRENDER;
+            uic.onhover = itemslotONHOVER;
+            uic.onhold = itemslotONHOLD;
+            uic.onrighthold = itemslotONHOLD;
+            uic.onclick = itemslotONCLICK;
+            uic.onrightclick = itemslotONRIGHTCLICK;
+            
+            uic.stats["item"].itemp = itemp;
+            uic.stats["textSize"].floatVal = textsize;
+            uic.stats["limitFamily"].intVal = limitfamily;
+            
+            drawC dc;
+            dc.position = std::make_shared<glm::vec2>(uic.pos);
+
+            int entity = add(uic, dc);
+        
+            addElement(ECS::newEntity(), ui_DISPLAY, pos, { 1,1 }, entity, {}, { {"tex", "item"},{"item", "empty"} }, hidden, anchor);
+            UI::Elements::text(entity, pos, hidden, anchor, "", globals::fontSize);
+
+            return entity;
+        }
+
+        int shopitemslot(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor, InventoryItem* itemp, float textsize, itemFamily limitfamily)
+        {
+            uiC uic = BASE;
+            uic.parent = parent;
+            uic.func = ui_ITEMSLOT;
+            uic.propagateClick = false;
+            uic.pos = pos;
+            uic.size = size;
+            uic.hidden = hidden;
+            uic.anchor = anchor;
+
+            uic.onrender = shopitemslotONRENDER;
+            uic.onhover = shopitemslotONHOVER;
+            uic.onclick = shopitemslotONCLICK;
+            uic.onhold = shopitemslotONHOLD;
+            uic.onrighthold = shopitemslotONHOLD;
+            uic.onrightclick = shopitemslotONCLICK;
+
+            uic.stats["item"].itemp = itemp;
+            uic.stats["textSize"].floatVal = textsize;
+            uic.stats["limitFamily"].intVal = limitfamily;
+
+            drawC dc;
+            dc.position = std::make_shared<glm::vec2>(uic.pos);
+
+            int entity = add(uic, dc);
+
+            addElement(ECS::newEntity(), ui_DISPLAY, pos, { 1,1 }, entity, {}, { {"tex", "item"},{"item", "empty"} }, hidden, anchor);
+
+            return entity;
+        }
+
+        int guideslot(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor, InventoryItem* itemp, float textsize, itemFamily limitfamily)
+        {
+            uiC uic = BASE;
+            uic.parent = parent;
+            uic.func = ui_ITEMSLOT;
+            uic.propagateClick = false;
+            uic.pos = pos;
+            uic.size = size;
+            uic.hidden = hidden;
+            uic.anchor = anchor;
+
+            uic.onrender = guideslotONRENDER;
+            uic.onhover = itemslotONHOVER;
+            uic.onclick = itemslotONCLICK;
+            uic.onrightclick = itemslotONRIGHTCLICK;
+
+            uic.stats["item"].itemp = itemp;
+            uic.stats["textSize"].floatVal = textsize;
+            uic.stats["limitFamily"].intVal = limitfamily;
+
+            drawC dc;
+            dc.position = std::make_shared<glm::vec2>(uic.pos);
+
+            int entity = add(uic, dc);
+
+            addElement(ECS::newEntity(), ui_DISPLAY, pos, { 1,1 }, entity, {}, { {"tex", "item"},{"item", "empty"} }, hidden, anchor);
+            Elements::text(entity, pos, hidden, anchor, "", globals::fontSize);
+
+            return entity;
+        }
+        int text(int parent, glm::vec2 pos, bool hidden, uiAnchor anchor, std::string text, float textSize, bool centered, bool colorOnHover, float hoveredScale, float opacity)
+        {
+            uiC uic = BASE;
+            uic.parent = parent;
+            uic.func = ui_TEXT;
+            uic.pos = pos;
+            uic.hidden = hidden;
+            uic.anchor = anchor;
+
+            uic.onrender = textONRENDER;
+            uic.onhover = textONHOVER;
+            uic.onnothover = textONNOTHOVER;
+
+            uic.textStats["text"] = text;
+            if(opacity != 1)
+                uic.stats["opacity"].floatVal = opacity;
+            if(colorOnHover != false)
+                uic.stats["colorOnHover"].boolVal = colorOnHover;
+            if (centered != false)
+                uic.stats["centered"].boolVal = centered;
+            if (hoveredScale != textSize)
+                uic.stats["hoveredScale"].floatVal = hoveredScale;
+            uic.stats["textSize"].floatVal = textSize;
+
+            drawC dc;
+            dc.position = std::make_shared<glm::vec2>(glm::vec2(0));
+
+            int entity = add(uic, dc);
+
+            Elements::empty(entity, pos, anchorNONE, textSize);
+
+            return entity;
+        }
+        int text(int parent, glm::vec2 pos, bool hidden, uiAnchor anchor, std::string* text, float textSize, bool centered, bool colorOnHover, float hoveredScale, float opacity)
+        {
+            uiC uic = BASE;
+            uic.parent = parent;
+            uic.func = ui_TEXT;
+            uic.pos = pos;
+            uic.hidden = hidden;
+            uic.anchor = anchor;
+
+            uic.onrender = textpONRENDER;
+            uic.onhover = textONHOVER;
+            uic.onnothover = textONNOTHOVER;
+
+            uic.stats["textp"].stringp = text;
+            if (opacity != 1)
+                uic.stats["opacity"].floatVal = opacity;
+            if (colorOnHover != false)
+                uic.stats["colorOnHover"].boolVal = colorOnHover;
+            if (centered != false)
+                uic.stats["centered"].boolVal = centered;
+            if (hoveredScale != textSize)
+                uic.stats["hoveredScale"].floatVal = hoveredScale;
+            uic.stats["textSize"].floatVal = textSize;
+
+            drawC dc;
+            dc.position = std::make_shared<glm::vec2>(glm::vec2(0));
+
+            int entity = add(uic, dc);
+
+            Elements::empty(entity, pos, anchorNONE, textSize);
+
+            return entity;
+        }
+        int toast(int parent, glm::vec2 pos, bool hidden, uiAnchor anchor, std::string text, float textSize)
+        {
+            uiC uic = BASE;
+            uic.parent = parent;
+            uic.func = ui_TEXT;
+            uic.pos = pos;
+            uic.hidden = hidden;
+            uic.anchor = anchor;
+            uic.stats["wantToBeAt"].floatVal = pos.y;
+
+            uic.onrender = toastONRENDER;
+
+            drawC dc;
+            dc.position = std::make_shared<glm::vec2>(glm::vec2(0));
+            dc.text = text;
+            dc.textScale = textSize;
+
+            return add(uic, dc);
+        }
+        int display(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor, std::string tex, bool autocorrect, bool flipX, bool flipY, glm::vec3* color, bool autolight, float *huep)
+        {
+            uiC uic = BASE;
+            uic.parent = parent;
+            uic.func = ui_TEXT;
+            uic.pos = pos;
+            uic.size = size;
+            uic.hidden = hidden;
+            uic.anchor = anchor;
+
+            uic.onrender = displayONRENDER;
+
+            if(color != nullptr)
+            uic.stats["color"].vec3p = color;
+            if (huep != nullptr)
+            uic.stats["huep"].floatValp = huep;
+
+            uic.textStats["tex"] = tex;
+
+            drawC dc;
+            dc.position = std::make_shared<glm::vec2>(glm::vec2(0));
+            dc.autocorrect = autocorrect;
+            dc.flipX = flipX;
+            dc.flipY = flipY;
+            dc.tex = tex;
+
+            return add(uic, dc);
+        }
+}
 }

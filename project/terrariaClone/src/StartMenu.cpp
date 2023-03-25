@@ -14,6 +14,7 @@
 #include <background.h>
 #include <utils.h>
 #include <world.h>
+#include <resources.h>
 
 namespace StartMenu {
     int logo;
@@ -44,10 +45,14 @@ namespace StartMenu {
     int sun;
     int moon;
 
+    int playerdisplay; 
+
     int worldsizedisplay;
 
     std::vector<std::string> availableWorlds;
     std::vector<std::string> availablePlayers;
+
+    std::vector < playerData> playerDataBuffer;
 
     void init()
     {
@@ -56,33 +61,20 @@ namespace StartMenu {
 
         logo = ECS::newEntity();
         UI::addElement(logo, ui_LOGO, { 0, -300 }, { 1200, 1200 }, uiSystem::body, { {"autolight", {.boolVal = true}} }, { {"tex","logo"} }, false, anchorTOP);
-        mainSelectContainer = ECS::newEntity();
-        UI::addElement(mainSelectContainer, ui_EMPTY, { 0,0 }, { 0,0 }, uiSystem::body);
-        worldSelectContainer = ECS::newEntity();
-        UI::addElement(worldSelectContainer, ui_EMPTY, { 0,0 }, { 0,0 }, uiSystem::body);
-        worldCreateContainer = ECS::newEntity();
-        UI::addElement(worldCreateContainer, ui_EMPTY, { 0,0 }, { 0,0 }, uiSystem::body);
-        worldsContainer = ECS::newEntity();
-        UI::addElement(worldsContainer, ui_EMPTY, { 0,0 }, { 0,0 }, worldSelectContainer);
-        playerSelectContainer = ECS::newEntity();
-        UI::addElement(playerSelectContainer, ui_EMPTY, { 0,0 }, { 0,0 }, uiSystem::body);
-        playerCreateContainer = ECS::newEntity();
-        UI::addElement(playerCreateContainer, ui_EMPTY, { 0,0 }, { 0,0 }, uiSystem::body);
-        loadingScreen = ECS::newEntity();
-        UI::addElement(loadingScreen, ui_EMPTY, { 0,0 }, { 0,0 }, uiSystem::body);
-        settingsContainer = ECS::newEntity();
-        UI::addElement(settingsContainer, ui_EMPTY, { 0,0 }, { 0,0 }, uiSystem::body);
-        generalContainer = ECS::newEntity();
-        UI::addElement(generalContainer, ui_EMPTY, { 0,0 }, { 0,0 }, uiSystem::body);
-        videoContainer = ECS::newEntity();
-        UI::addElement(videoContainer, ui_EMPTY, { 0,0 }, { 0,0 }, uiSystem::body);
-        cursorContainer = ECS::newEntity();
-        UI::addElement(cursorContainer, ui_EMPTY, { 0,0 }, { 0,0 }, uiSystem::body);
-        interfaceContainer = ECS::newEntity();
-        UI::addElement(interfaceContainer, ui_EMPTY, { 0,0 }, { 0,0 }, uiSystem::body);
-        keybindingsContainer = ECS::newEntity();
+        mainSelectContainer = UI::Elements::empty(uiSystem::body);
+        worldSelectContainer = UI::Elements::empty(uiSystem::body);
+        worldCreateContainer = UI::Elements::empty(uiSystem::body);
+        worldsContainer = UI::Elements::empty(worldSelectContainer);
+        playerSelectContainer = UI::Elements::empty(uiSystem::body);
+        playerCreateContainer = UI::Elements::empty(uiSystem::body);
+        loadingScreen = UI::Elements::empty(uiSystem::body);
+        settingsContainer = UI::Elements::empty(uiSystem::body);
+        generalContainer = UI::Elements::empty(uiSystem::body);
+        videoContainer = UI::Elements::empty(uiSystem::body);
+        cursorContainer = UI::Elements::empty(uiSystem::body);
+        interfaceContainer = UI::Elements::empty(uiSystem::body);
+        keybindingsContainer = UI::Elements::empty(uiSystem::body);
         UI::addElement(keybindingsContainer, ui_EMPTY, { 0,0 }, { 0,0 }, uiSystem::body);
-
 
         //-----------------------------------mainselect------------------------------------------
 
@@ -137,18 +129,29 @@ namespace StartMenu {
         func; func.funcp = openMenu;
         UI::addElement(ECS::newEntity(), ui_BUTTON, { 0, -150 }, { 200, 200 }, generalContainer, { {"func", func}, {"textSize", {.floatVal = fontsize}}, {"fitText", fitText}, {"padding", padding}, {"menu", menu} }, { {"tex", "empty"}, {"text", "Back"} }, true, anchorMID);
 
-        uiStat ref;  ref.floatValp = &globals::volume;
+        uiStat ref;  ref.floatValp = &sounds::mastervolume;
         uiStat max; max.floatVal = 1.0f;
         uiStat roundAt; roundAt.floatVal = 0.04f;
         textSize; textSize.floatVal = 1.0f;
         UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { 0, -50 }, { 333,333 / 11 }, generalContainer, { {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", "veolumes"} }, true);
 
+        ref.floatValp = &sounds::musicvolume;
+        max.floatVal = 1.0f;
+        roundAt.floatVal = 0.04f;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { 0, 100 }, { 333,333 / 11 }, generalContainer, { {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", "Music: "} }, true);
+
+        ref.floatValp = &sounds::soundsvolume;
+        max.floatVal = 1.0f;
+        roundAt.floatVal = 0.04f;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { 0, 150 }, { 333,333 / 11 }, generalContainer, { {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", "Sounds: "} }, true);
+
+
+
         ref.floatValp = &globals::zoom;
         max.floatVal = 5.0f;
         textSize; textSize.floatVal = 1.0f; 
         roundAt.floatVal = 0.04f;
-        ref.floatValp = &globals::volume;
-        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { 0, 50 }, { 333,333 / 11 }, generalContainer, { {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", "zoom"} }, true);
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { 0, 200 }, { 333,333 / 11 }, generalContainer, { {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", "zoom"} }, true);
 
         //-----------------------------------general------------------------------------------
         
@@ -185,7 +188,7 @@ namespace StartMenu {
 
         //-----------------------------------cursor------------------------------------------
 
-        UI::addElement(ECS::newEntity(), ui_TEXT, { 0, 350 }, { 300,30 }, cursorContainer, { {"textSize", {.floatVal = fontsize}}, {"centered", {.boolVal = true}} }, { {"text", "Border"} }, true);
+        UI::Elements::text(cursorContainer, { 0, 350 }, true, anchorMID, "Border", fontsize, true);
 
         max.floatVal = 360;
         min.floatVal = 0;
@@ -205,7 +208,7 @@ namespace StartMenu {
         roundAt.intVal = 0.01;
         UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { 0, 125 }, { 333,333 / 11 }, cursorContainer, { {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
 
-        UI::addElement(ECS::newEntity(), ui_TEXT, { 0, 50 }, { 333,333 / 11 }, cursorContainer, { {"textSize", {.floatVal = fontsize}}, {"centered", {.boolVal = true}} }, { {"text", "Cursor"} }, true);
+        UI::Elements::text(cursorContainer, { 0,50 }, true, anchorMID, "Cursor", fontsize, true);
         
         max.floatVal = 360;
         min.floatVal = 0;
@@ -247,7 +250,7 @@ namespace StartMenu {
       
         int container = ECS::newEntity();
         UI::addElement(container, ui_CONTAINER, { 0, 0 }, { 0, 0 }, keybindingsContainer, { {"padding", {.floatVal = 1} } }, {}, true, anchorNONE);
-        UI::addElement(ECS::newEntity(), ui_TEXT, { 0, -450 }, { 200, 200 }, container, { {"textSize", {.floatVal = fontsize}},{"centered", {.boolVal= true}} }, { {"text", "Controls"} }, true, anchorTOP);
+        UI::Elements::text(container, { 0, -450 }, true, anchorTOP, "Controls", fontsize, true);
 
         fontsize /= 1.3;
         container = ECS::newEntity();
@@ -307,27 +310,150 @@ namespace StartMenu {
 
         ref; ref.stringp = &Player::name;
         func.funcp = UI::uiCfunc_captureInput;
-        UI::addElement(ECS::newEntity(), ui_BUTTON, { 0, 50 }, { 700,40 }, container,
+        UI::addElement(ECS::newEntity(), ui_BUTTON, { 0, 400 }, { 700,40 }, container,
             { { "borderhover", {.boolVal = true} }, { "textonhover", {.boolVal = false} }, { "func", func }, { "ref", ref }, { "textSize", {.floatVal = fontsize} }, { "menu", menu }, {"capturinglength",{.intVal = 24}} },
             { {"tex", "empty"}, {"text", "Enter name"} }, true, anchorMID);
 
+        int hsvx = 400;
+        int hsvy = 300;
+        int hsvy2 = hsvy - 200 - 250;
+
+        UI::Elements::text(container, { hsvx, hsvy2 }, true, anchorMID, "Eye", fontsize, true);
+
         max.floatVal = 360;
         min.floatVal = 0;
-        ref.floatValp = &Player::hue;
+        ref.floatValp = &Player::eyeclr_hsv.r;
         roundAt.intVal = 0.1;
-        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { 150, -125 }, { 333,333 / 11 }, container, { {"textSize", {.floatVal = 0}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "sliderrainbow"},{"label", ""} }, true);
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { hsvx, hsvy2 - 50 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}}, {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "sliderrainbow"},{"label", ""} }, true);
 
-        container2 = ECS::newEntity();
-        UI::addElement(container2, ui_CONTAINER, { 0, 0 }, { 0, 0 }, container, { {"padding", {.floatVal = 0.5} }, {"opacity", {.floatVal = 0.96}} }, {}, true, anchorNONE);
+        max.floatVal = 1;
+        min.floatVal = 0;
+        ref.floatValp = &Player::eyeclr_hsv.g;
+        roundAt.intVal = 0.01;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { hsvx, hsvy2 - 100 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}},{"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
 
-        UI::addElement(ECS::newEntity(), ui_DISPLAY, { -175, -125 }, { 100, 100 }, container2, { {"huep", {.floatValp = &Player::hue}} }, { {"tex", "player"} }, true);
+        max.floatVal = 1;
+        min.floatVal = 0;
+        ref.floatValp = &Player::eyeclr_hsv.b;
+        roundAt.intVal = 0.01;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { hsvx, hsvy2 - 150 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}}, {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
+
+
+        UI::Elements::text(container, { -hsvx, hsvy2 }, true, anchorMID, "Skin", fontsize, true);
+
+        max.floatVal = 360;
+        min.floatVal = 0;
+        ref.floatValp = &Player::skinclr_hsv.r;
+        roundAt.intVal = 0.1;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { -hsvx,  hsvy2 - 50 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}}, {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "sliderrainbow"},{"label", ""} }, true);
+
+        max.floatVal = 1;
+        min.floatVal = 0;
+        ref.floatValp = &Player::skinclr_hsv.g;
+        roundAt.intVal = 0.01;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { -hsvx, hsvy2 - 100 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}},{"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
+
+        max.floatVal = 1;
+        min.floatVal = 0;
+        ref.floatValp = &Player::skinclr_hsv.b;
+        roundAt.intVal = 0.01;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { -hsvx, hsvy2 - 150 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}}, {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
+
+        UI::Elements::text(container, { 0, hsvy2 }, true, anchorMID, "Shoes", fontsize, true);
+
+        max.floatVal = 360;
+        min.floatVal = 0;
+        ref.floatValp = &Player::shoeclr_hsv.r;
+        roundAt.intVal = 0.1;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { 0,  hsvy2 - 50 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}}, {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "sliderrainbow"},{"label", ""} }, true);
+
+        max.floatVal = 1;
+        min.floatVal = 0;
+        ref.floatValp = &Player::shoeclr_hsv.g;
+        roundAt.intVal = 0.01;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { 0, hsvy2 - 100 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}},{"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
+
+        max.floatVal = 1;
+        min.floatVal = 0;
+        ref.floatValp = &Player::shoeclr_hsv.b;
+        roundAt.intVal = 0.01;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { 0, hsvy2 - 150 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}}, {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
+
+
+        UI::Elements::text(container, { -hsvx,hsvy }, true, anchorMID, "Hair", fontsize, true);
+
+        max.floatVal = 360;
+        min.floatVal = 0;
+        ref.floatValp = &Player::hairclr_hsv.r;
+        roundAt.intVal = 0.1;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { -hsvx, hsvy-50 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}}, {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "sliderrainbow"},{"label", ""} }, true);
+
+        max.floatVal = 1;
+        min.floatVal = 0;
+        ref.floatValp = &Player::hairclr_hsv.g;
+        roundAt.intVal = 0.01;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { -hsvx, hsvy-100 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}},{"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
+
+        max.floatVal = 1;
+        min.floatVal = 0;
+        ref.floatValp = &Player::hairclr_hsv.b;
+        roundAt.intVal = 0.01;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { -hsvx, hsvy-150 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}}, {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
+
+
+        UI::Elements::text(container, { 0,hsvy }, true, anchorMID, "Shirt", fontsize, true);
+
+        max.floatVal = 360;
+        min.floatVal = 0;
+        ref.floatValp = &Player::shirtclr_hsv.r;
+        roundAt.intVal = 0.1;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { 0, hsvy - 50 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}},{"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "sliderrainbow"},{"label", ""} }, true);
+
+        max.floatVal = 1;
+        min.floatVal = 0;
+        ref.floatValp = &Player::shirtclr_hsv.g;
+        roundAt.intVal = 0.01;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { 0, hsvy - 100 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}},{"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
+
+        max.floatVal = 1;
+        min.floatVal = 0;
+        ref.floatValp = &Player::shirtclr_hsv.b;
+        roundAt.intVal = 0.01;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { 0,  hsvy - 150 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}}, {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
+
+        UI::Elements::text(container, { hsvx,hsvy }, true, anchorMID, "Pants", fontsize, true);
+
+        max.floatVal = 360;
+        min.floatVal = 0;
+        ref.floatValp = &Player::pantsclr_hsv.r;
+        roundAt.intVal = 0.1;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { hsvx, hsvy - 50 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}}, {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "sliderrainbow"},{"label", ""} }, true);
+
+        max.floatVal = 1;
+        min.floatVal = 0;
+        ref.floatValp = &Player::pantsclr_hsv.g;
+        roundAt.intVal = 0.01;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { hsvx, hsvy - 100 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}},{"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
+
+        max.floatVal = 1;
+        min.floatVal = 0;
+        ref.floatValp = &Player::pantsclr_hsv.b;
+        roundAt.intVal = 0.01;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { hsvx,  hsvy - 150 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}}, {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
+
+        menu.intVal = playerSelectContainer;
+        func; func.funcp = Player::cycleHair;
+        UI::addElement(ECS::newEntity(), ui_BUTTON, { 0, hsvy2 - 225}, { 100, 50 }, container, { {"textonhover", {.boolVal = false}}, {"func", func}, {"textSize", {.floatVal = fontsize * 0.75f}} }, { {"tex", "empty"}, {"text", "Cycle hair"} }, true, anchorMID);
+
+        playerdisplay = ECS::newEntity();
+        UI::addElement(playerdisplay, ui_BACK, { 0,0}, { 150, 150 }, container, { {"opacity", {.floatVal = 0.97}} }, {}, true, anchorMID);
 
         menu.intVal = playerSelectContainer;
         func; func.funcp = openMenu;
-        UI::addElement(ECS::newEntity(), ui_BUTTON, { -195, -350 }, { 270, 50 }, playerCreateContainer, { {"borderhover", {.boolVal = true}},  {"textonhover", {.boolVal = false}},{"func", func}, {"textSize", {.floatVal = fontsize}}, {"menu", menu} }, { {"tex", "empty"}, {"text", "Back"} }, true, anchorMID);
+        UI::addElement(ECS::newEntity(), ui_BUTTON, { -195, hsvy2 - 350 }, { 270, 50 }, playerCreateContainer, { {"borderhover", {.boolVal = true}},  {"textonhover", {.boolVal = false}},{"func", func}, {"textSize", {.floatVal = fontsize}}, {"menu", menu} }, { {"tex", "empty"}, {"text", "Back"} }, true, anchorMID);
 
         func; func.funcp = UI::uiCfunc_createPlayer;
-        UI::addElement(ECS::newEntity(), ui_BUTTON, { 195, -350 }, { 270, 50 }, playerCreateContainer, { {"borderhover", {.boolVal = true}},  {"textonhover", {.boolVal = false}},{"func", func}, {"textSize", {.floatVal = fontsize}}, {"menu", menu} }, { {"tex", "empty"}, {"text", "Create"} }, true, anchorMID);
+        UI::addElement(ECS::newEntity(), ui_BUTTON, { 195, hsvy2 - 350 }, { 270, 50 }, playerCreateContainer, { {"borderhover", {.boolVal = true}},  {"textonhover", {.boolVal = false}},{"func", func}, {"textSize", {.floatVal = fontsize}}, {"menu", menu} }, { {"tex", "empty"}, {"text", "Create"} }, true, anchorMID);
 
         //-----------------------------------playercreate----------------------------------------
         
@@ -368,10 +494,10 @@ namespace StartMenu {
         roundAt; roundAt.intVal = 50;
         textSize; textSize.floatVal = 1.0f;
         ref.intValp = &map::mapX;
-        UI::addElement(ECS::newEntity(), ui_TEXT, { 200, -100 }, { 300,30 }, container, { {"textSize", {.floatVal = fontsize}}, {"centered", {.boolVal = true}} }, { {"text", "World Width:"} }, true);
+        UI::Elements::text(container, { 200, -100 }, true, anchorMID, "World Width:", fontsize, true);
         UI::addElement(ECS::newEntity(), ui_DRAGINT, { 200, -150 }, { 300,30 }, container, { {"textSize", textSize}, {"ref", ref}, {"min", {.intVal = 10}}, {"max", max}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
         ref; ref.intValp = &map::mapY;
-        UI::addElement(ECS::newEntity(), ui_TEXT, { 200, -200 }, { 300,30 }, container, { {"textSize", {.floatVal = fontsize}}, {"centered", {.boolVal = true}} }, { {"text", "World Height:"} }, true);
+        UI::Elements::text(container, { 200, -200 }, true, anchorMID, "World Height:", fontsize, true);
         UI::addElement(ECS::newEntity(), ui_DRAGINT, { 200, -250}, { 300,30 }, container, {  {"textSize", textSize}, {"ref", ref}, {"min", {.intVal = 10}}, {"max", max}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
         
         UI::addElement(ECS::newEntity(), ui_DISPLAY, { -225, -190 }, { 200, 200 }, container, {}, { {"tex", "worldcreationbg"} }, true);
@@ -390,8 +516,7 @@ namespace StartMenu {
         //-----------------------------------worldcreate----------------------------------------
 
         //-----------------------------------loadingscreen----------------------------------------
-        progressText = ECS::newEntity();
-        UI::addElement(progressText, ui_TEXT, { 0,0 }, { 300,30 }, loadingScreen, { {"centered", {.boolVal = true}}, {"textSize", {.floatVal = globals::fontSize * 3.75f}} }, { {"text", ""} }, true, anchorMID);
+        progressText = UI::Elements::text(container, { 0, 0 }, true, anchorMID, "", globals::fontSize * 3.75f, true);
         //-----------------------------------loadingscreen----------------------------------------
 
         cursor = ECS::newEntity();
@@ -409,6 +534,9 @@ namespace StartMenu {
         dc.position = std::make_shared<glm::vec2>(glm::vec2(0, 0));
         dc.tex = "moon";
         game::drawSys->addComponent(moon, &dc);
+
+        UI::hideChildren(ECS::getComponent<uiC>(uiSystem::body), true);
+        openMenu(mainSelectContainer);
     }
 
 	void run()
@@ -479,8 +607,7 @@ namespace StartMenu {
             game::updateSunAndMoon(sun, moon);
 
             game::drawSys->UpdateBehindBackground();
-            background::renderOne(background::bgNames["forest"]);
-
+            background::renderOne("forest");
 
             game::uiSys->Update();
             game::drawSys->Update();
@@ -493,9 +620,14 @@ namespace StartMenu {
 
             game::drawSys->UpdateFront();
 
+            if (!ECS::getComponent<uiC>(playerdisplay)->hidden) {
+                Player::pos = glm::vec2(0, 0);
+                Player::render();
+            }
+
             game::drawOverlays();
 
-            globals::bgoffset+= 0.0002;
+            globals::bgoffset += 0.0002;
 
             glfwSwapBuffers(globals::window);
             ltime = ctime;
@@ -507,20 +639,28 @@ namespace StartMenu {
                 UI::setTStat(ECS::getComponent<uiC>(progressText), "text", map::worldGenProgress);
             }
             if (map::worldGenProgress == "finished") {
+                map::worldgenthread.join();
                 StartMenu::refreshWorlds();
                 map::worldGenProgress = "";
                 openMenu(worldSelectContainer);
-                map::worldgenthread.join();
             }
         }
 	}
 
 	void handleInput()
 	{
+
+        if (input::shift) {
+            if (input::rpressed(GLFW_KEY_R)) {
+                resources::loadAssets(true, true, true);
+            }
+        }
+
         if (input::pressed(k_PRIMARY)) {
             uiSystem::mouseClicked = true;
         }
         if (input::rpressed(GLFW_KEY_P)) {
+            StartMenu::refreshWorlds();
             ECS::print();
         }
 	}
@@ -568,10 +708,12 @@ namespace StartMenu {
                 y -= 200;
             }
         }
+        ECS::commitQueues();
     }
 
     void refreshPlayers()
     {
+        playerDataBuffer.clear();
         uiStat textSize; textSize.floatVal = globals::fontSize * 2;
         uiStat func; func.funcp = UI::uiCfunc_loadSpecificPlayer;
         uiStat fitText; fitText.boolVal = true;
@@ -587,12 +729,15 @@ namespace StartMenu {
         for (const auto& entry : std::filesystem::directory_iterator(target_path)) {
             std::string filename = entry.path().filename().string();
             if (filename.substr(filename.length() - 4, 4) == ".bak") {
-                std::string world = filename.substr(0, filename.length() - 4);
-                availablePlayers.push_back(world);
+                std::string name = filename.substr(0, filename.length() - 4);
+                availablePlayers.push_back(name);
                 uiStat playerIndex; playerIndex.intVal = i;
-                UI::addElement(ECS::newEntity(),  ui_BUTTON, { 0, y }, { 200, 200 }, playersContainer, { {"func", func}, {"textSize", textSize}, {"fitText", fitText}, {"padding", padding}, {"index", playerIndex}, {"menu", menu} }, { {"tex", "tooltip"}, {"text", world} }, true, anchorTOP);
+                UI::addElement(ECS::newEntity(),  ui_BUTTON, { 0, y }, { 200, 200 }, playersContainer, { {"func", func}, {"textSize", textSize}, {"fitText", fitText}, {"padding", padding}, {"index", playerIndex}, {"menu", menu} }, { {"tex", "tooltip"}, {"text", name} }, true, anchorTOP);
                 i++;
                 y -= 200;
+
+                playerData data = Player::loadToData(name);
+                playerDataBuffer.push_back(data);
             }
         }
     }

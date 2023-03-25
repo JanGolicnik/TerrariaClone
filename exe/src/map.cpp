@@ -7,12 +7,13 @@
 #include <blocks.h>
 #include <startMenu.h>
 #include <items.h>
+#include <liquids.h>
 
 namespace map {
     std::string name;
     std::string tmpname;
 
-    int seed = 1;
+    std::string seed;
 
     int mapX = 1000;
     int mapY = 1000;
@@ -51,7 +52,7 @@ namespace map {
     std::string guideName;
     std::vector<std::string> guidenames;
 
-    int demonaltarsbroken = 0;
+    int shadoworbsbroken = 0;
 
     std::array<std::string, 8> moonphases = {
         "moon1",
@@ -135,12 +136,16 @@ namespace map {
 
 	void generategame()
 	{
+        if (seed == "") srand(time(NULL));
+        else srand(std::hash<std::string>{}(seed));
+
         surfaceH = mapY * 0.8;
         undergroundH = mapY * 0.7;
         underworldH = mapY / 8;
 
         Layer* blocks = Layers::getLayer("blocks");
         Layer* bg = Layers::getLayer("bg");
+        modifyWorldProgress("clearing");
         clear();
         
         std::vector<float> height = noise::generate(0, 1, surfaceScale, seed, mapX / 30);
@@ -268,6 +273,8 @@ namespace map {
         modifyWorldProgress("creating hell :D");
         makeHell();
 
+        modifyWorldProgress("placing liquids");
+        placeLiquids();
 
         modifyWorldProgress("growing grass");
         for (int x = 0; x < mapX; x++) {
@@ -298,12 +305,20 @@ namespace map {
             }
         }
 
+        modifyWorldProgress("generating structures");
+        genStructures();
+
         modifyWorldProgress("growing tress");
         for (int x = 0; x < mapX; x++) {
             for (int y = surfaceH; y < surfaceH + surfaceScale; y++) {
                 if (*Layers::queryBlockName(blocks, { x,y }) == "grass" && *Layers::queryBlockName(blocks, { x,y + 1 }) == "empty") {
                     if (rand() % (int)treeRate == 0) {
                         BRules::growNormalTree(nullptr, {x,y + 1});
+                    }
+                    else {
+                        if (rand() % 400 == 0) {
+                            Layers::placeBlock({ x,y + 1 }, "sunflower");
+                        }
                     }
                 }
                 if (*Layers::queryBlockName(blocks, { x,y }) == "corruptgrass" && *Layers::queryBlockName(blocks, { x,y + 1 }) == "empty") {
@@ -324,7 +339,10 @@ namespace map {
             }
         }
 
-        modifyWorldProgress("adding realism :0");
+        modifyWorldProgress("THE ONE PIECE IS REAL");
+        placeChests();
+
+        modifyWorldProgress("placing shit idfk \\s2WOOOOOOOOOOOOOOOO");
         decorate();
 
         modifyWorldProgress("setting spawn");
@@ -335,9 +353,6 @@ namespace map {
             }
         }
 
-        modifyWorldProgress("generating structures");
-        genStructures();
-
         modifyWorldProgress("beautifying");
         for (int x = 0; x < mapX; x++) {
             for (int y = 0; y < mapY; y++) {
@@ -347,23 +362,27 @@ namespace map {
                 Layers::setLight(bg, { x,y }, glm::vec3(0));
             }
         }
-        modifyWorldProgress("THE ONE PIECE IS REAL");
-        placeChests();
-        placePots();
 
         guideName = guidenames[rand() % guidenames.size()];
+      
+        modifyWorldProgress("settling liquids");
+        liquids::settleAll();
 
         modifyWorldProgress("finished");
+
+        srand(time(NULL));
 	}
 
     void createWorld()
     {
         Layers::setUp();
-        globals::cdayTime = 450;
-        demonaltarsbroken = 0;
+        globals::cdayTime = globals::dayLength/4.0f;
+        globals::dayclr = globals::noonclr;
+        shadoworbsbroken = 0;
         moonphase = 0;
         generategame();
         save();
+        liquids::clean();
         Layers::clean();
     }
 
@@ -374,10 +393,11 @@ namespace map {
         std::ofstream file(filename, std::ios::out | std::ios::binary);
         if (!file) { std::cout << "error opening file for saving\n"; return false; }
 
-        file.write((char*)&map::PlayerSpawn, sizeof(glm::vec2));
+        file.write((char*)&map::PlayerSpawn, sizeof(map::PlayerSpawn));
         file.write((char*)&map::moonphase, sizeof(map::moonphase));
         file.write((char*)&globals::cdayTime, sizeof(globals::cdayTime));
-        file.write((char*)&demonaltarsbroken, sizeof(demonaltarsbroken));
+        file.write((char*)&shadoworbsbroken, sizeof(shadoworbsbroken));
+        file.write((char*)&globals::dayclr, sizeof(globals::dayclr));
 
         file.write((char*)&map::mapX, sizeof(int));
         file.write((char*)&map::mapY, sizeof(int));
@@ -391,6 +411,8 @@ namespace map {
         Layers::childParent->save(&file);
 
         Layers::saveChests(&file);
+
+        liquids::save(&file);
 
         for (auto& layer : Layers::layers) {
             for (int i = 0; i < map::mapX * map::mapY; i++) {
@@ -406,10 +428,11 @@ namespace map {
         std::ifstream file(filename, std::ios::out | std::ios::binary);
         if (!file) { std::cout << "error opening file for laoding\n"; return false; }
 
-        file.read((char*)&map::PlayerSpawn, sizeof(glm::vec2));
+        file.read((char*)&map::PlayerSpawn, sizeof(map::PlayerSpawn));
         file.read((char*)&map::moonphase, sizeof(map::moonphase));
         file.read((char*)&globals::cdayTime, sizeof(globals::cdayTime));
-        file.read((char*)&demonaltarsbroken, sizeof(demonaltarsbroken));
+        file.read((char*)&shadoworbsbroken, sizeof(shadoworbsbroken));
+        file.read((char*)&globals::dayclr, sizeof(globals::dayclr));
 
         file.read((char*)&map::mapX, sizeof(int));
         file.read((char*)&map::mapY, sizeof(int));
@@ -431,6 +454,7 @@ namespace map {
         Layers::childParent->load(&file);
 
         Layers::loadChests(&file);
+        liquids::load(&file);
 
         for (auto& layer : Layers::layers) {
             for (int i = 0; i < map::mapX * map::mapY; i++) {
@@ -637,8 +661,8 @@ namespace map {
             int maxy = caves[i].y - length;
             for (int y = caves[i].y-4; y > maxy; y--) {
                 size = (rand() % 3 + 7) * sizemod;
-                Layers::placeBlock({ x, y }, "ebonstone", { 0, 0, 0 }, size * 1.5);
-                Layers::placeBlock({ x, y }, "ebonstonewall", { 0, 0, 0 }, size*1.5);
+                Layers::placeBlock({ x, y }, "ebonstone", size * 1.5);
+                Layers::placeBlock({ x, y }, "ebonstonewall", size*1.5);
             }
             x = caves[i].x;
 
@@ -657,12 +681,22 @@ namespace map {
             Layers::breakBlock(blocks, { x,y2 }, rand() % 4 + 5);
         }
 
+        y = surfaceH - 55 + rand() % 10;
+        for (int x = worldEvilx1 + 4; x < worldEvilx2 - 4; x++) {
+            if (rand() % 60) continue;
+            int y2 = y + rand() % 25- 3;
+            Layers::placeBlock({ x,y2 }, "ebonstone", 17);
+            Layers::placeBlock({ x,y2 }, "ebonstonewall", 13);
+            Layers::breakBlock(blocks, { x,y2 }, 9);
+            Layers::placeBlock({ x,y2 }, "shadoworb");
+        }
     }
     void makeCrimson(bool left)
     {
     }
     void modifyWorldProgress(std::string progress)
     {
+        std::cout << progress << "\n";
         std::lock_guard<std::mutex> lock(worldGenProgress_mutex);
         worldGenProgress = progress;
     }
@@ -675,18 +709,63 @@ namespace map {
             for (int y = 0; y < mapY; y++) {
                 auto b = Layers::queryBlockName(bl, { x,y });
                 for (auto& d : blocks::decorations) {
-                    if (rand() % (int)ceil(1 / d.chance) == 0) {
+                    if (d.height == "surface") {
+                        if (y < map::surfaceH - map::surfaceScale || y > map::surfaceH + map::surfaceScale) continue;
+                    }else
+                    if (d.height == "underground") {
+                        if (y < map::underworldH + (map::surfaceH - map::underworldH) / 2 || y > map::surfaceH) continue;
+                    }else
+                    if (d.height == "caverns") {
+                        if (y < map::underworldH || y > map::surfaceH - (map::surfaceH - map::underworldH) / 2) continue;
+                    }else
+                    if (d.height == "underworld") {
+                        if (y > map::underworldH) continue;
+                    }
+                    if ((rand() % 10000) < (d.chance * 10000)) {
                         if (d.onbot.count(*b) >= 1) {
-                            Layers::placeBlock({ x, y + 1 }, d.block, { 0,0,0 }, 1, &blocks::nameToInfo[d.block].conditions);
-                        }
+                            Layers::placeBlock({ x, y + 1 }, d.block, 1, &blocks::nameToInfo[d.block].conditions);
+                        }else
                         if (d.ontop.count(*b) >= 1) {
-                            Layers::placeBlock({ x, y - d.size.y }, d.block, { 0,0,0 }, 1, &blocks::nameToInfo[d.block].conditions);
-                        }
+                            Layers::placeBlock({ x, y - d.size.y }, d.block, 1, &blocks::nameToInfo[d.block].conditions);
+                        }else
                         if (d.onright.count(*b) >= 1) {
-                            Layers::placeBlock({ x - d.size.x, y }, d.block, { 0,0,0 }, 1, &blocks::nameToInfo[d.block].conditions);
-                        }
+                            Layers::placeBlock({ x - d.size.x, y }, d.block, 1, &blocks::nameToInfo[d.block].conditions);
+                        }else
                         if (d.onleft.count(*b) >= 1) {
-                            Layers::placeBlock({ x + 1, y }, d.block, { 0,0,0 }, 1, &blocks::nameToInfo[d.block].conditions);
+                            Layers::placeBlock({ x + 1, y }, d.block, 1, &blocks::nameToInfo[d.block].conditions);
+                        }
+                    }
+                }
+            }
+        }
+
+        std::vector<std::function<bool(BlockConditionArgs)>> cond; cond.push_back(BConditions::isreplacable);
+        for (int x = 0; x < mapX; x++) {
+            for (int y = 0; y < mapY; y++) {
+                auto b = Layers::queryBlockName(bl, { x,y });
+                if (*b == "grass") {
+                    if(rand()%3){
+                        int i = 1;
+                        while (Layers::placeBlock(glm::vec2(x,y-i), "normalvines", 1, &cond)) {
+                            if (i > 5) {
+                                if (rand() % 4 == 0) {
+                                    break;
+                                }
+                            }
+                            i++;
+                        }
+                    }
+                }else
+                if (*b == "junglegrass") {
+                    if (rand() % 2) {
+                        int i = 1;
+                        while (Layers::placeBlock(glm::vec2(x, y - i), "junglevines", 1, &cond)) {
+                            if (i > 8) {
+                                if (rand() % 4 == 0) {
+                                    break;
+                                }
+                            }
+                            i++;
                         }
                     }
                 }
@@ -700,39 +779,47 @@ namespace map {
         std::vector<std::function<bool(BlockConditionArgs)>> conditions = blocks::nameToInfo["chest"].conditions;
         conditions.push_back(BConditions::isntreplacablebelow);
         conditions.push_back(BConditions::haswall);
+        conditions.push_back(BConditions::isreplacable);
         for (int x = 0; x < mapX; x++) {
             for (int y = 0; y < mapY; y++) {
                 auto block = Layers::queryBlockName(bs, { x,y });
                 if (rand() % 60 == 0) {
                     if (*block == "stone" && y < undergroundH) {
-                        if (Layers::placeBlock(bs, { x,y + 1 }, "chest", { 0,0,0 }, 1, &conditions)) {
+                        if (Layers::placeBlock(bs, { x,y + 1 }, "goldchest", 1, &conditions)) {
                             fillChest({ x,y+1 }, "underground");
                         }
                     }else
                     if (*block == "grass" || *block == "dirt") {
-                        if (Layers::placeBlock(bs, { x,y + 1 }, "chest", { 0,0,0 }, 1, &conditions)) {
+                        if (Layers::placeBlock(bs, { x,y + 1 }, "chest", 1, &conditions)) {
                             fillChest({ x,y+1}, "surface");
                         }
                     }
+                    else
+                        if (*block == "ash" || *block == "hellstone") {
+                            if (Layers::placeBlock(bs, { x,y + 1 }, "shadowchest", 1, &conditions)) {
+                                fillChest({ x,y + 1 }, "hell");
+                            }
+                        }
+                        else
+                            if (*block == "snow") {
+                                if (Layers::placeBlock(bs, { x,y + 1 }, "frozenchest", 1, &conditions)) {
+                                    fillChest({ x,y + 1 }, "frozen");
+                                }
+                            }
+                            else
+                                if (*block == "junglegrass") {
+                                    if (Layers::placeBlock(bs, { x,y + 1 }, "mahoganychest", 1, &conditions)) {
+                                        fillChest({ x,y + 1 }, "jungle");
+                                    }
+                                }
+                                else
+                                    if (liquids::at({ x,y }) != 0x00000000u) {
+                                        if (Layers::placeBlock(bs, { x,y + 1 }, "waterchest", 1, &conditions)) {
+                                            fillChest({ x,y + 1 }, "water");
+                                        }
+                                    }
                 }
                 
-            }
-        }
-    }
-    void placePots()
-    {
-        auto bs = Layers::getLayer("blocks");
-        std::vector<std::function<bool(BlockConditionArgs)>> conditions = blocks::nameToInfo["chest"].conditions;
-        conditions.push_back(BConditions::haswall);
-        conditions.push_back(BConditions::isntreplacablebelow);
-        for (int x = 0; x < mapX; x++) {
-            for (int y = 0; y < mapY; y++) {
-                auto info = Layers::queryBlockInfo(bs, { x,y });
-                if (!info->collidableTop) continue;
-                if (rand() % 20 == 0) {
-                    Layers::placeBlock(bs, { x,y + 1 }, "pot", { 0,0,0 }, 1, &conditions);
-                }
-
             }
         }
     }
@@ -796,18 +883,18 @@ namespace map {
             for (int x = 0; x < width; x++) {
                 glm::vec2 pos2 = pos + glm::vec2(x, 1);
                 if (rand() % 25 == 0) {
-                    if (Layers::placeBlock(pos2, "chest", { 0,0,0 }, 1, &blocks::nameToInfo["chest"].conditions)) {
+                    if (Layers::placeBlock(pos2, "chest", 1, &blocks::nameToInfo["chest"].conditions)) {
                         fillChest(pos2, "undergroundhouse");
                     }
                 }
                 else if (rand() % 25 == 0) {
-                    Layers::placeBlock(pos2, "anvil", { 0,0,0 }, 1, &blocks::nameToInfo["anvil"].conditions);
+                    Layers::placeBlock(pos2, "anvil", 1, &blocks::nameToInfo["anvil"].conditions);
                 }
                 else if (rand() % 25 == 0) {
-                    Layers::placeBlock(pos2, "craftingbench", { 0,0,0 }, 1, &blocks::nameToInfo["workbench"].conditions);
+                    Layers::placeBlock(pos2, "craftingbench", 1, &blocks::nameToInfo["workbench"].conditions);
                 }
                 else if (rand() % 25 == 0) {
-                    Layers::placeBlock(pos2, "table", { 0,0,0 }, 1, &blocks::nameToInfo["table"].conditions);
+                    Layers::placeBlock(pos2, "table", 1, &blocks::nameToInfo["table"].conditions);
                 }
             }
             if (rand() % 5 != 0) {
@@ -903,22 +990,71 @@ namespace map {
             itemit++;
         }
     }
+    void liquidHole(glm::vec2 pos, std::string liquid, glm::vec2 r, bool half, bool breakwall)
+    {
+
+        for (int y = pos.y + r.y; y > pos.y - r.y; y--) {
+            for (int x = pos.x - r.x; x < pos.x + r.x; x++) {
+                if (((x - pos.x) * (x - pos.x) * r.y * r.y + (y - pos.y) * (y - pos.y) * r.x * r.x) > (r.x * r.x * r.y * r.y)) continue;
+                if(breakwall) Layers::breakBlock(Layers::getLayer("bg"), { x,y });
+                Layers::breakBlock(Layers::getLayer("blocks"), {x,y});
+                if (half) if (y > pos.y) continue;
+                liquids::place(liquid, { x,y }, 0x8);
+            }
+        }
+    }
+    void placeLiquids()
+    {
+        auto bs = Layers::getLayer("blocks");
+        auto bg = Layers::getLayer("bg");
+
+        int meja = mapY / 17;
+        for (int x = 0; x < mapX; x++) {
+            for (int y = 0; y < meja * 0.3; y++) {
+                if (*Layers::queryBlockName(bs, { x,y }) == "empty") {
+                    liquids::place("lava", { x,y }, 0x8);
+                }
+            }
+        }
+
+        //underground
+        for (int x = 0; x < mapX; x++) {
+            for (int y = underworldH; y < undergroundH; y++) {
+                if (rand() % 8000 != 0) continue;
+                glm::vec2 r(rand() % 10 + 5, rand() % 5 + 4);
+                std::string liquid = "water";
+                if (y < undergroundH / 2) {
+                    if (rand() % 2) liquid = "lava";
+                }
+                liquidHole({ x,y }, liquid, r, (bool)(rand() % 2), false);
+            }
+        }
+
+
+        //surface
+        for (int x = 0; x < mapX; x++) {
+            for (int y = 0; y < surfaceH + surfaceScale; y++) {
+                if (!Layers::queryBlockInfo(bs, { x,y + 1 })->notReplacable && Layers::queryBlockInfo(bs, { x,y })->notReplacable) {
+                    if (rand() % 240 == 0) {
+                        glm::vec2 r((rand() % 10) + 5, (rand() % 8) + 4);
+                        liquidHole({ x,y }, "water", r, true, false);
+                    }
+                }
+            }
+        }
+
+    }
     void makeHell()
     {
         auto bs = Layers::getLayer("blocks");
 
-        //celo nafilamo
-        for (int x = 0; x < mapX; x++) {
-            for (int y = 40; y < underworldH; y++) {
-                Layers::fastPlaceBlock({ x,y }, "ash");
-            }
-        }
+        int meja = mapY / 17;
 
         //hilli navrh
         std::vector<float> height = noise::generate(0, 1, 40, seed, mapX / 30);
         for (int x = 0; x < mapX; x++) {
-            float y2 = 40 * noise::sampleCosine((float)x / mapX, &height) / 2;
-            for (int y = 40; y > -40; y--) {
+            float y2 = meja * noise::sampleCosine((float)x / mapX, &height) / 2;
+            for (int y = meja; y >= 0; y--) {
                 if (y < y2) {
                     Layers::fastPlaceBlock({ x,y + underworldH}, "ash");
                 }
@@ -928,10 +1064,11 @@ namespace map {
         //spice zgori
         height = noise::generate(0, 1, 40, seed, mapX / 5);
         for (int x = 0; x < mapX; x++) {
-            float y2 = 40 * noise::sampleCosine((float)x / mapX, &height) / 2;
-            for (int y = 40; y > -40; y--) {
+            float y2 = meja * noise::sampleCosine((float)x / mapX, &height) / 2;
+            for (int y = meja; y > 0; y--) {
                 if (y < y2) {
-                    Layers::breakBlock(bs, { x,y + underworldH* 0.6});
+                    //Layers::breakBlock(bs, { x,y + underworldH - meja});
+                    Layers::fastPlaceBlock({ x, underworldH - y }, "ash");
                 }
             }
         }
@@ -939,8 +1076,8 @@ namespace map {
         //spice spodi
         height = noise::generate(0, 1, 40, seed, mapX / 15);
         for (int x = 0; x < mapX; x++) {
-            float y2 = 90 * noise::sampleCosine((float)x / mapX, &height) / 2;
-            for (int y = 90; y > 0; y--) {
+            float y2 = meja * 2 * noise::sampleCosine((float)x / mapX, &height) / 2;
+            for (int y = meja * 2; y > 0; y--) {
                 if (y < y2) {
                     Layers::fastPlaceBlock({ x,y }, "ash");
                 }
@@ -960,7 +1097,7 @@ namespace map {
 
         //damo hellstone
         for (int x = 0; x < mapX; x++) {
-            for (int y = 0; y < 90; y++) {
+            for (int y = 0; y < meja * 2; y++) {
                 if (*Layers::queryBlockName(bs, { x,y }) == "ash") {
                     if (rand() % 30 == 0) {
                         map::growBlock({ x,y }, "hellstone", 10, 4);
@@ -968,6 +1105,5 @@ namespace map {
                 }
             }
         }
-    
     }
 }

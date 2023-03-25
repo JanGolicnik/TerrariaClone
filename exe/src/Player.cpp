@@ -13,6 +13,9 @@
 #include <input.h>
 #include <buffs.h>
 #include <gameLoop.h>
+#include <liquids.h>
+#include <game.h>
+#include <sounds.h>
 
 namespace Player {
 
@@ -87,7 +90,6 @@ namespace Player {
     float maxsummons = 1;
     float currsummons = 0;
 
-
     std::vector<ExtraJump> extrajump;
     std::vector<ExtraJump> availablejumps;
 
@@ -99,18 +101,54 @@ namespace Player {
     float thorns = 0;
 
     int heartcrystals;
+    int manacrystals;
 
     float enemyChance;
-    float critterChance;
+    bool spawnCap;
+
+    bool wantToAutoUse = false;
+    std::string activeSetBonus = "";
+
+    float hue = 0;
+
+    float breathtimer = 2000;
+
+    bool dead = false;
+    int deathtimer = 0;
+
+    std::string timeToRespawn;
 
     void update()
     {
         auto bs = Layers::getLayer("blocks");
         auto phys = ECS::getComponent<physicsC>(entity);
 
-        hp += regeneration / 60;
-        mana += manaregeneration / 60;
+        if (dead) {
+            hp = 0;
+            mana = 0;
+            timeToRespawn = "\\c255100100Respawning in: " + std::to_string((int)deathtimer / 60) + " seconds";
+            for (int i = 0; i < buffs.size(); i++) {
+                buffs[i] = {"nothing", -1, globals::time};
+            }
+            if (deathtimer <= 0) {
+                timeToRespawn = "";
+                *phys->position = map::PlayerSpawn;
+                dead = false;
+                hp = 100;
+                mana = currmaxmana;
+                gameLoop::respawned();
+            }
+            deathtimer--;
+            return;
+        }
+        dead = false;
 
+        hp += regeneration / 60;
+        bool smaller = mana < currmaxmana;
+        mana += manaregeneration / 60;
+        if (smaller && mana >= currmaxmana) {
+            sounds::manafull();
+        }
         iframes--;
         if (mana > currmaxmana) {
             mana = currmaxmana;
@@ -119,15 +157,16 @@ namespace Player {
             hp = currmaxhp;
         }
         if (hp < 0) {
-            *phys->position = map::PlayerSpawn;
-            hp = 100;
+            dead = true;
+            deathtimer = 600;
+            dropCoins();
+            return;
         }
 
         itemtimer--;
         phys->ignorebot = ignorebot;
         ignorebot = false;
         center = pos + glm::vec2(width / 2, height / 2);
-        pos = *phys->position;
         phys->weight = 1;
         vel = phys->vel;
         phys->stoponcollision = true;
@@ -177,6 +216,7 @@ namespace Player {
                 particles::spawnEffect(availablejumps[0].effect, Player::pos - glm::vec2(0, height / 2));
                 currJumpTime = availablejumps[0].jumpDuration;
                 availablejumps.erase(availablejumps.begin());
+                sounds::doubleJump();
             }
             wantstojump = false;
         }
@@ -194,40 +234,78 @@ namespace Player {
         curritem = UI::hotbar->at({ invBlock, 0 })->item;
         itemInfo* curriteminfo = items::getInfo(curritem);
         Layers::addLight(pos, curriteminfo->light);
-
-        glm::vec2 vec = globals::mouseBlockCoordsZoomed();
-
         itemtimer--;
         if (itemtimer < 0) itemtimer = 0;
-        if (input::mousePressed(GLFW_MOUSE_BUTTON_RIGHT)) {
-            Layers::doBlockFunction(vec);
-            itemtimer = 20;
+        pos = *phys->position;
+
+        int topleft = liquids::at(round(* phys->position + glm::vec2(-phys->size.x / 4, phys->size.y / 2)));
+        int topright = liquids::at(round(* phys->position + glm::vec2(phys->size.x / 4, phys->size.y / 2)));
+        if (topleft != 0x00000000u || topright != 0x00000000u) {
+            if (breathtimer > 1440) breathtimer = 1440;
+            breathtimer--;
+            ECS::getComponent<uiC>(gameLoop::breathbar)->stats["hide"].boolVal = false;
+        }
+        else {
+            breathtimer+=10;
+            if (breathtimer >= 1440) {
+                ECS::getComponent<uiC>(gameLoop::breathbar)->stats["hide"].boolVal = true;
+            }
+        }
+        
+        if (breathtimer == 0) {
+            sounds::drown();
         }
 
-        bool use = false;
-
-        if (input::mousePressed(GLFW_MOUSE_BUTTON_LEFT)) {
-            use = true;
+        if (breathtimer < 0) {
+            hp -= 2;
         }
 
-        bool canAutouse = curriteminfo->autouse;
-        if (curriteminfo->families.count(if_MEELE) >= 1 && meeleAutoswing) {
-            canAutouse = true;
-        }
-
-        if (canAutouse && input::mouseHeld(GLFW_MOUSE_BUTTON_LEFT)) {
-            use = true;
-        }
-
-        if (use) {
-            while (itemtimer < 1) {
-                useItem(curritem, curriteminfo);
+        if (iframes < 0) {
+            if (phys->isinliquid == 1) {
+                hp -= 50;
+                iframes = globals::iframes;
+                addBuff("onfire", 180);
             }
         }
 
     }
+    void doPrimary(std::string item)
+    {
+        auto info = items::getInfo(item);
+        wantToAutoUse = true;
+        while (itemtimer < 1) {
+            useItem(item, info);
+        }
+    }
+    void doPrimaryHold(std::string item)
+    {
+        auto info = items::getInfo(item);
+        bool canAutouse = info->autouse;
+        if (info->families.count(if_MEELE) >= 1 && meeleAutoswing) {
+            canAutouse = true;
+        }
+
+        if (wantToAutoUse && canAutouse) {
+            while (itemtimer < 1) {
+                useItem(item, info);
+            }
+        }
+        else {
+            wantToAutoUse = false;
+        }
+    }
+    void doSecondary(std::string item)
+    {
+        if (input::pressed(k_SECONDARY)) {
+            glm::vec2 vec = globals::mouseBlockCoords();
+            Layers::doBlockFunction(vec);
+            itemtimer = 20;
+        }
+    }
+
     void render()
     {
+        if (dead) return;
         glUseProgram(globals::spriteShaderID);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textures::spriteSheet);
@@ -238,13 +316,13 @@ namespace Player {
         glBindVertexArray(playerVA);
         glBindBuffer(GL_ARRAY_BUFFER, playerVB);
         bool flip = dir < 0 ? true : false;
-        glm::vec4 light = glm::vec4(Layers::queryBlock(Layers::getLayer("blocks"), pos)->light, 1);
+        glm::vec3 light =  Layers::queryBlock(Layers::getLayer("blocks"), pos)->light;
         
         memset(vertices, 0, numsprites * 4 * sizeof(SpriteVertex));
-        memcpy(vertices, utils::CreateSpriteRect(glm::vec3(pos, 0), animations::getFrame(anim), glm::vec2(width, height), light, flip).data(), 4 * sizeof(SpriteVertex));
-        memcpy(vertices + 4, utils::CreateSpriteRect(glm::vec3(pos + glm::vec2(0, 1), 0), textures::nametocoords[UI::helmetItem.item]->coords, glm::vec2(1, 1), light, flip).data(), 4 * sizeof(SpriteVertex));
-        memcpy(vertices + 8, utils::CreateSpriteRect(glm::vec3(pos + glm::vec2(0, 0), 0), textures::nametocoords[UI::breastplateItem.item]->coords, glm::vec2(2, 2), light, flip).data(), 4 * sizeof(SpriteVertex));
-        memcpy(vertices + 12, utils::CreateSpriteRect(glm::vec3(pos + glm::vec2(0, -1), 0), textures::nametocoords[UI::greavesItem.item]->coords, glm::vec2(1, 1), light, flip).data(), 4 * sizeof(SpriteVertex));
+        memcpy(vertices, utils::CreateSpriteRect(glm::vec3(pos, 0), animations::getFrame(anim), glm::vec2(width, height), glm::vec4(utils::hsvToRgb(glm::vec3(hue, 1, 1)) * light,1), flip).data(), 4 * sizeof(SpriteVertex));
+        memcpy(vertices + 4, utils::CreateSpriteRect(glm::vec3(pos + glm::vec2(0, 1), 0), textures::nametocoords[UI::helmetItem.item]->coords, glm::vec2(1, 1), glm::vec4(light, 1), flip).data(), 4 * sizeof(SpriteVertex));
+        memcpy(vertices + 8, utils::CreateSpriteRect(glm::vec3(pos + glm::vec2(0, 0), 0), textures::nametocoords[UI::breastplateItem.item]->coords, glm::vec2(2, 2), glm::vec4(light, 1), flip).data(), 4 * sizeof(SpriteVertex));
+        memcpy(vertices + 12, utils::CreateSpriteRect(glm::vec3(pos + glm::vec2(0, -1), 0), textures::nametocoords[UI::greavesItem.item]->coords, glm::vec2(1, 1), glm::vec4(light, 1), flip).data(), 4 * sizeof(SpriteVertex));
         
         glBufferSubData(GL_ARRAY_BUFFER, 0, numsprites * 4 * sizeof(SpriteVertex), vertices);
         glDrawElements(GL_TRIANGLES, numsprites * 6, GL_UNSIGNED_INT, 0);
@@ -272,14 +350,14 @@ namespace Player {
         jumpms = jumpmsBASE;
         editsize = editsizeBASE;
         pickupRange = pickupRangeBASE;
-        currmaxhp = currmaxhpBASE + heartcrystals*20;
-        currmaxmana = currmaxmanaBASE;
+        currmaxhp = currmaxhpBASE + heartcrystals * 20;
+        currmaxmana = currmaxmanaBASE + manacrystals * 20;
         jumpSpeed = jumpSpeedBASE;
         jumpDuration = jumpDurationBASE;
         defense = 0;
         meeleAttackSpeed = 1;
         enemyChance = 1;
-        critterChance = 1;
+        spawnCap = true;
         meeleDamage = 1;
         thorns = 0;
         extrajump.clear();
@@ -324,7 +402,11 @@ namespace Player {
         addStatsFromItem(UI::accessory5Item.item);
 
         if (items::info[UI::breastplateItem.item].set == items::info[UI::greavesItem.item].set && items::info[UI::greavesItem.item].set == items::info[UI::helmetItem.item].set) {
-            items::setBonuses[items::info[UI::breastplateItem.item].set]();
+            items::setBonuses[items::info[UI::breastplateItem.item].set].func();
+            activeSetBonus = items::info[UI::breastplateItem.item].set;
+        }
+        else {
+            activeSetBonus = "";
         }
 
         if (velocity()->x == 0) {
@@ -367,7 +449,6 @@ namespace Player {
             extrajump.push_back({ str, duration });
         }
     }
-
     bool save()
     {
         std::string filename = "players/" + name + ".bak";
@@ -380,6 +461,8 @@ namespace Player {
         file.write((char*)(&mana), sizeof(mana));
         file.write((char*)(&currmaxmana), sizeof(currmaxmana));
         file.write((char*)(&heartcrystals), sizeof(heartcrystals));
+        file.write((char*)(&manacrystals), sizeof(manacrystals));
+        file.write((char*)(&hue), sizeof(hue));
 
         UI::saveInvItemVector(&UI::PlayerHotbar, &file);
         UI::saveInvItemVector(&UI::PlayerInventory, &file);
@@ -408,6 +491,8 @@ namespace Player {
         file.read((char*)(&mana), sizeof(mana));
         file.read((char*)(&currmaxmana), sizeof(currmaxmana));
         file.read((char*)(&heartcrystals), sizeof(heartcrystals));
+        file.read((char*)(&manacrystals), sizeof(manacrystals));
+        file.read((char*)(&hue), sizeof(hue));
 
         UI::loadInvItemVector(&UI::PlayerHotbar, &file);
         UI::loadInvItemVector(&UI::PlayerInventory, &file);
@@ -428,7 +513,8 @@ namespace Player {
     }
     void useItem(std::string item, itemInfo* iteminfo)
     {
-        glm::vec2 vec = globals::mouseBlockCoordsZoomed();
+        if (dead) return;
+        glm::vec2 vec = globals::mouseBlockCoords();
 
         for (auto& cond : items::getInfo(item)->conditions) {
             if (!cond(item)) {
@@ -437,8 +523,8 @@ namespace Player {
             }
         }
         tool = -1;
-
         auto info = items::getInfo(item);
+        info->soundsfunc();
         float usetime = info->useSpeed;
         float damagemult = 1;
         if (info->families.count(if_MEELE) >= 1) {
@@ -455,7 +541,7 @@ namespace Player {
 
         if (itemtimer > 0) {
             tool = ECS::newEntity();
-            toolSystem::makeTool(tool, pos, curritem, ceil(itemtimer), glm::rotate(glm::mat4(1.0f), float(45 * PI / 180.0f), glm::vec3(0, 0, 1)));
+            toolSystem::makeTool(tool, pos, item, ceil(itemtimer), glm::rotate(glm::mat4(1.0f), float(45 * PI / 180.0f), glm::vec3(0, 0, 1)));
         }
         for (auto& func : iteminfo->onleftclick) {
             func(item, tool);
@@ -509,19 +595,23 @@ namespace Player {
         num = UI::inventory->add(item, num);
         if (prevamount - num > 0) {
             bool found = false;
-            auto container = ECS::getComponent<uiC>(gameLoop::pickuptextcontainer);
-            for (int i = 0; i < container->children.size(); i++) {
-                auto child = ECS::getComponent<uiC>(container->children[i]);
-                if (UI::getTStat(child, "text") == item) {
-                    UI::getStat(child, "num")->intVal += prevamount - num;
-                    found = true;
-                    break;
+            if (globals::pickuptext) {
+                auto container = ECS::getComponent<uiC>(gameLoop::pickuptextcontainer);
+                for (int i = 0; i < container->children.size(); i++) {
+                    auto child = ECS::getComponent<uiC>(container->children[i]);
+                    if (UI::getTStat(child, "text") == item) {
+                        UI::getStat(child, "num")->intVal += prevamount - num;
+                        child->pos = Player::center;
+                        ECS::getComponent<drawC>(container->children[i])->opacity = 1;
+                        found = true;
+                        break;
+                    }
                 }
-            }
-            if (!found) {
-                int e = ECS::newEntity();
-                UI::addElement(e, ui_PICKUPTEXT, Player::center, { 0,0 }, gameLoop::pickuptextcontainer, { {"num", {.intVal = prevamount - num }} }, { {"text", item} }, false, anchorNONE);
-                ECS::getComponent<drawC>(e)->color = items::getRarityColor(items::getInfo(item)->rarity);
+                if (!found) {
+                    int e = ECS::newEntity();
+                    UI::addElement(e, ui_PICKUPTEXT, Player::center, { 0,0 }, gameLoop::pickuptextcontainer, { {"num", {.intVal = prevamount - num }} }, { {"text", item} }, false, anchorNONE);
+                    ECS::getComponent<drawC>(e)->color = items::getRarityColor(items::getInfo(item)->rarity);
+                }
             }
             auto func = &items::info[item].onpickup;
             if (*func) {
@@ -530,6 +620,41 @@ namespace Player {
         }
 
         return num;
+    }
+    void dropCoins()
+    {
+        int numPlat = 0;
+        int numSilver = 0;
+        int numGold = 0;
+        int numCopper = 0;
+        for (auto& i : *UI::inventory->items) {
+            if (i->item == "platinumcoin" || i->item == "goldcoin" || i->item =="silvercoin" ||i->item == "coppercoin") {
+                game::droppedItemSys->dropItem(pos, i->item, ceil(i->num/2.0f), false);
+                if (i->item == "platinumcoin") {
+                    numPlat += ceil(i->num / 2.0f);
+                }else if(i->item == "platinumcoin") {
+                    numGold += ceil(i->num / 2.0f);
+                }else if (i->item == "platinumcoin") {
+                    numSilver += ceil(i->num / 2.0f);
+                }
+                else {
+                    numCopper += ceil(i->num / 2.0f);
+                }
+                i->num /= 2;
+            }
+        }
+        std::string text = "\\c255100100";
+        if (numPlat + numSilver + numGold + numCopper == 0) {
+            text += "You didnt drop any coins :D";
+        }
+        else {
+            text += "You dropped " + (numPlat > 0 ? (std::to_string(numPlat) + " platinum ") : "")
+                + (numGold > 0 ? (std::to_string(numGold) + " gold ") : "")
+                + (numSilver > 0 ? (std::to_string(numSilver) + " silver ") : "")
+                + (numCopper > 0 ? (std::to_string(numCopper) + " copper ") : "") + " coins :(";
+        }
+
+        UI::setTStat(ECS::getComponent<uiC>(gameLoop::droppedCoinsText), "text", text);
     }
     void create()
     {

@@ -14,8 +14,7 @@
 #include <layers.h>
 #include <sstream>
 #include <iomanip>
-
-
+#include <animations.h>
 
 #define args std::string item, int ent
 namespace items
@@ -27,6 +26,7 @@ namespace items
 	std::unordered_map<std::string, itemChance> potItems;
 	std::unordered_map<std::string, std::function<void(mobC*, physicsC*)>> buffs;
 	std::unordered_map<std::string, setBonus> setBonuses;
+	std::unordered_map<std::string, std::array<glm::vec4, 13>> armorsprites;
 
 	void addItem(std::string itemName, std::string displayName, std::string tex,
 		std::vector<std::function<void(args)>> onleftclick,
@@ -119,6 +119,12 @@ namespace items
 	{
 		if (info.count(item) >= 1) {
 			info[item].light = light;
+		}
+	}
+	void addSound(const char* item, void(*func)())
+	{
+		if (info.count(item) >= 1) {
+			info[item].soundsfunc = func;
 		}
 	}
 	void addSizeMod(const char* item, float sizemod)
@@ -257,6 +263,67 @@ namespace items
 		recipes.clear();
 	}
 
+	void addArmorSprites(std::string name, glm::vec4 coords, glm::vec4 legcoords)
+	{
+		/*
+		0 body
+		1 roka dol
+		2 roka za udart
+		3 shoulderguard
+		4 druga roka skok
+		5 roka hods
+		6 druga roka hods
+		7 druga roka stojis
+		8 glava
+		9 legsstand
+		10 legsjump
+		*/
+		std::array<glm::vec4, 13> sprites;
+		glm::vec4 spritesheet = glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
+		sprites[0] = coords;
+		sprites[1] = coords + glm::vec4(20, 0, 20, 0) / spritesheet;
+		sprites[2] = coords + glm::vec4(40, 0, 40, 0) / spritesheet;
+		sprites[3] = coords + glm::vec4(0, -24, 0, -24) / spritesheet;
+		sprites[4] = coords + glm::vec4(20, -24, 20, -24) / spritesheet;
+		sprites[5] = coords + glm::vec4(40, -24, 40, -24) / spritesheet;
+		sprites[6] = coords + glm::vec4(40, -48, 40, -48) / spritesheet;
+		sprites[7] = coords + glm::vec4(20, -48, 20, -48) / spritesheet;
+		sprites[8] = coords + glm::vec4(0, -24, 0, -24) / spritesheet;
+		sprites[9] = coords + glm::vec4(-20, 0, -20, 0) / spritesheet;
+		sprites[10] = coords + glm::vec4(-20, -24, -20, -24) / spritesheet;
+		sprites[11] = coords + glm::vec4(0, -48, 0, -48) / spritesheet;
+		sprites[12] = coords + glm::vec4(-20, -48, -20, -48) / spritesheet;
+		armorsprites.insert(std::make_pair(name, sprites));
+
+		std::vector<animations::keyframe> tmpframes;
+		int pixels = 20;
+		for (int i = 0; i < 4; i++) {
+			tmpframes.push_back({ i * 5, {i * pixels, 0, i * pixels, 0}, ft_OFFSET1 });
+		}
+		animations::createAnim(name + "armuse", items::armorsprites[name][2], tmpframes, 5 * 4);
+
+		tmpframes.clear();
+		pixels = 20;
+		for (int i = 0; i < 4; i++) {
+			tmpframes.push_back({ i * 28, {i * pixels, 0, i * pixels, 0}, ft_OFFSET1 });
+		}
+		animations::createAnim(name + "frontarmwalk", items::armorsprites[name][5], tmpframes, 28 * 4);
+
+		tmpframes.clear();
+		pixels = 20;
+		for (int i = 0; i < 4; i++) {
+			tmpframes.push_back({ i * 28, {i * pixels, 0, i * pixels, 0}, ft_OFFSET1 });
+		}
+		animations::createAnim(name + "backarmwalk", items::armorsprites[name][6], tmpframes, 28 * 4);
+
+		tmpframes.clear();
+		pixels = 24;
+		for (int i = 0; i < 14; i++) {
+			tmpframes.push_back({ i * 8, {0, -i * pixels, 0,  -i * pixels}, ft_OFFSET1 });
+		}
+		animations::createAnim(name + "legswalk", legcoords, tmpframes, 8 * 14);
+	}
+
 	void playeronfirebuff(mobC* p, physicsC* phys)
 	{
 		Player::hp--;
@@ -270,7 +337,7 @@ namespace itemFuncs {
 	}
 
 	void place(args) {
-		glm::vec2 coords = globals::mouseBlockCoordsZoomed();
+		glm::vec2 coords = globals::mouseBlockCoords();
 		float dist = sqrt(pow(coords.x - Player::pos.x, 2) + pow(coords.y - Player::pos.y, 2));
 		if (dist < Player::editRange) {
 			auto blocks = Layers::getLayer("blocks");
@@ -286,7 +353,7 @@ namespace itemFuncs {
 
 	void placeSapling(args)
 	{
-		glm::vec2 coords = globals::mouseBlockCoordsZoomed();
+		glm::vec2 coords = globals::mouseBlockCoords();
 		coords.y--;
 		auto block = Layers::queryBlockName(Layers::getLayer("blocks"), coords);
 		coords.y++;
@@ -307,7 +374,7 @@ namespace itemFuncs {
 	void dig(args) {
 		auto blocks = Layers::getLayer("blocks");
 		auto bg = Layers::getLayer("bg");
-		glm::vec2 coords = globals::mouseBlockCoordsZoomed();
+		glm::vec2 coords = globals::mouseBlockCoords();
 		float dist = sqrt(pow(coords.x - Player::pos.x, 2) + pow(coords.y - Player::pos.y, 2));
 		if (dist < Player::editRange) {
 			auto info = items::getInfo(item);
@@ -351,7 +418,7 @@ namespace itemFuncs {
 		projectile.pc.bounce += items::getStat(item, "projectileBounce").valueBool;
 		projectile.pc.size += items::getStat(item, "projectileHitbox").valueVec2;
 		float spread = ((rand()%1000)/500.0f - 1) * items::getStat(item, "projectileSpread").valueFloat;
-		glm::vec2 target = globals::mouseBlockCoordsZoomed(false) - Player::pos;
+		glm::vec2 target = globals::mouseBlockCoords(false) - Player::pos;
 		float angleRad = spread * PI / 180.0f;
 		glm::vec2 vel = glm::normalize(target);
 		vel.x = cos(angleRad) * vel.x - sin(angleRad) * vel.y;
@@ -391,7 +458,7 @@ namespace itemFuncs {
 		auto ppos = std::make_shared<glm::vec2>(Player::pos);
 		projectile.dc.position = ppos;
 		projectile.pc.position = ppos;
-		projectile.pc.vel = glm::normalize(globals::mouseBlockCoordsZoomed(false) - Player::pos);
+		projectile.pc.vel = glm::normalize(globals::mouseBlockCoords(false) - Player::pos);
 
 		drawSystem::addComponent(e, &projectile.dc, false);
 		ECS::queueComponent<physicsC>(e, projectile.pc);
@@ -403,23 +470,26 @@ namespace itemFuncs {
 	}
 	void throwSelf(args)
 	{
-		enemies::spawnEnemy("bomb", Player::center, glm::normalize(globals::mouseBlockCoordsZoomed(false) - Player::center));
+		enemies::spawnEnemy("bomb", Player::center, false, glm::normalize(globals::mouseBlockCoords(false) - Player::center));
 	}
 	void removeAmmo(args)
 	{
 		std::string ammo = items::getStatT(item, "ammo").data();
-		if (UI::hotbar->remove(ammo)) return;
-		if (UI::inventory->remove(ammo)) return;
 		if (UI::cursorItem.item == item) {
 			UI::cursorItem.num--;
 			if (UI::cursorItem.num <= 0) {
 				UI::cursorItem.item = "empty";
 			}
+			return;
 		}
+		if (UI::hotbar->remove(ammo)) return;
+		if (UI::inventory->remove(ammo)) return;
+
 	}
 	void summonEye(args)
 	{
-		enemies::spawnEnemy("demoneye", globals::mouseBlockCoordsZoomed(false));
+		if(globals::cdayTime > globals::dayLength/2.0f)
+		enemies::spawnEnemy("eyeofcthulu", globals::mouseBlockCoords(false));
 	}
 	void takeMana(args)
 	{
@@ -429,7 +499,7 @@ namespace itemFuncs {
 	void starfuryStar(args)
 	{
 		int distX = rand() % 13;
-		glm::vec2 pos = glm::vec2(globals::mouseBlockCoordsZoomed(false).x - Player::dir * distX, Player::pos.y + Layers::trueBsOnScr.y / 2 + 10);
+		glm::vec2 pos = glm::vec2(globals::mouseBlockCoords(false).x - Player::dir * distX, Player::pos.y + Layers::trueBsOnScr.y / 2 + 10);
 		std::string projName = items::getStatT(item, "projectile").data();
 		if (items::projectiles.count(projName) <= 0) return;
 		int e = ECS::newEntity();
@@ -440,7 +510,7 @@ namespace itemFuncs {
 		auto ppos = std::make_shared<glm::vec2>(pos);
 		projectile.dc.position = ppos;
 		projectile.pc.position = ppos;
-		projectile.pc.vel = glm::normalize(globals::mouseBlockCoordsZoomed(false) - pos) * glm::vec2(1);
+		projectile.pc.vel = glm::normalize(globals::mouseBlockCoords(false) - pos) * glm::vec2(1);
 
 		drawSystem::addComponent(e, &projectile.dc, false);
 		ECS::queueComponent<physicsC>(e, projectile.pc);
@@ -513,7 +583,7 @@ namespace itemFuncs {
 			projectile.pc.prevpos = *projectile.pc.position;
 			projectile.dc.position = projectile.pc.position;
 			projectile.dc.parent = globals::projectileLayer;
-			projectile.pc.vel = glm::normalize(globals::mouseBlockCoordsZoomed(false) - Player::pos) * glm::vec2(1.2);
+			projectile.pc.vel = glm::normalize(globals::mouseBlockCoords(false) - Player::pos) * glm::vec2(1.2);
 			projectile.dc.opacity = 0;
 
 			projectile.ac.stats["rotoffset"].intVal = 15;
@@ -564,7 +634,7 @@ namespace itemFuncs {
 	}
 	void vilethorn(args)
 	{
-		glm::vec2 dir = glm::normalize(globals::mouseBlockCoordsZoomed(false) - Player::pos);
+		glm::vec2 dir = glm::normalize(globals::mouseBlockCoords(false) - Player::pos);
 		float a = int(utils::angleOfVector(dir) + 90) % 360;
 		glm::mat4 mat = glm::rotate(glm::mat4(1.0f), float(a * PI / 180.0f), glm::vec3(0, 0, 1));
 
@@ -598,14 +668,14 @@ namespace itemFuncs {
 	}
 	void opticStaff(args)
 	{
-		enemies::spawnEnemy("twinssummon1", globals::mouseBlockCoordsZoomed(false));
-		enemies::spawnEnemy("twinssummon2", globals::mouseBlockCoordsZoomed(false));
+		enemies::spawnEnemy("twinssummon1", globals::mouseBlockCoords(false));
+		enemies::spawnEnemy("twinssummon2", globals::mouseBlockCoords(false));
 		Player::addBuff("twins", -1);
 		Player::currsummons++;
 	}
 	void impStaff(args)
 	{
-		enemies::spawnEnemy("imp", globals::mouseBlockCoordsZoomed(false));
+		enemies::spawnEnemy("imp", globals::mouseBlockCoords(false));
 		Player::addBuff("imp", -1);
 		Player::currsummons++;
 	}
@@ -627,13 +697,18 @@ namespace itemFuncs {
 			projectile.pc.prevpos = *projectile.pc.position;
 			projectile.dc.position = projectile.pc.position;
 			projectile.dc.parent = globals::projectileLayer;
-			projectile.pc.vel = glm::normalize(globals::mouseBlockCoordsZoomed(false) - Player::pos) * glm::vec2(0.8);
+			projectile.pc.vel = glm::normalize(globals::mouseBlockCoords(false) - Player::pos) * glm::vec2(0.8);
 			int e = ECS::newEntity();
 			drawSystem::addComponent(e, &projectile.dc, false);
 			ECS::queueComponent<physicsC>(e, projectile.pc);
 			ECS::queueComponent<mobC>(e, projectile.mc);
 			ECS::queueComponent<aiC>(e, projectile.ac);
 			ECS::queueComponent<particleEmmiterC>(e, projectile.pec);
+	}
+	void manaCrystal(args)
+	{
+		Player::manacrystals += 1;
+		Player::mana += 20;
 	}
 	void nonearmorbonus()
 	{
@@ -664,8 +739,21 @@ namespace itemFuncs {
 	}
 	void coppercoinonpickup()
 	{
-		if (UI::inventory->contains("coppercoin", 100)) {
-			if (UI::inventory->add("silvercoin", 1) == 0) {
+		if (UI::hotbar->contains("coppercoin", 100)) {
+			if (UI::hotbar->add("silvercoin", 1) == 0) {
+				UI::hotbar->take("coppercoin", 100);
+				silvercoinonpickup();
+			}else if(UI::inventory->add("silvercoin", 1) == 0) {
+				UI::inventory->take("coppercoin", 100);
+				silvercoinonpickup();
+			}
+		}
+		else if (UI::inventory->contains("coppercoin", 100)) {
+			if (UI::hotbar->add("silvercoin", 1) == 0) {
+				UI::hotbar->take("coppercoin", 100);
+				silvercoinonpickup();
+			}
+			else if (UI::inventory->add("silvercoin", 1) == 0) {
 				UI::inventory->take("coppercoin", 100);
 				silvercoinonpickup();
 			}
@@ -673,18 +761,47 @@ namespace itemFuncs {
 	}
 	void goldcoinonpickup()
 	{
-		if (UI::inventory->contains("goldcoin", 100)) {
-			if (UI::inventory->add("platinumcoin", 1) == 0) {
+		if (UI::hotbar->contains("goldcoin", 100)) {
+			if (UI::hotbar->add("platinumcoin", 1) == 0) {
+				UI::hotbar->take("goldcoin", 100);
+				silvercoinonpickup();
+			}
+			else if (UI::inventory->add("platinumcoin", 1) == 0) {
 				UI::inventory->take("goldcoin", 100);
+				silvercoinonpickup();
+			}
+		}
+		else if (UI::inventory->contains("goldcoin", 100)) {
+			if (UI::hotbar->add("platinumcoin", 1) == 0) {
+				UI::hotbar->take("goldcoin", 100);
+				silvercoinonpickup();
+			}
+			else if (UI::inventory->add("platinumcoin", 1) == 0) {
+				UI::inventory->take("goldcoin", 100);
+				silvercoinonpickup();
 			}
 		}
 	}
 	void silvercoinonpickup()
 	{
-		if (UI::inventory->contains("silvercoin", 100)) {
-			if (UI::inventory->add("goldcoin", 1) == 0) {
+		if (UI::hotbar->contains("silvercoin", 100)) {
+			if (UI::hotbar->add("goldcoin", 1) == 0) {
+				UI::hotbar->take("silvercoin", 100);
+				silvercoinonpickup();
+			}
+			else if (UI::inventory->add("goldcoin", 1) == 0) {
 				UI::inventory->take("silvercoin", 100);
-				goldcoinonpickup();
+				silvercoinonpickup();
+			}
+		}
+		else if (UI::inventory->contains("silvercoin", 100)) {
+			if (UI::hotbar->add("goldcoin", 1) == 0) {
+				UI::hotbar->take("silvercoin", 100);
+				silvercoinonpickup();
+			}
+			else if (UI::inventory->add("goldcoin", 1) == 0) {
+				UI::inventory->take("silvercoin", 100);
+				silvercoinonpickup();
 			}
 		}
 	}
@@ -728,6 +845,10 @@ bool itemConditions::hasSummonSpace(itemconditionargs)
 bool itemConditions::heartCrystal(itemconditionargs)
 {
 	return Player::heartcrystals < 15;
+}
+bool itemConditions::manaCrystal(itemconditionargs)
+{
+	return Player::manacrystals < 9;
 }
 bool itemConditions::heal(itemconditionargs)
 {

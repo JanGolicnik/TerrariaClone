@@ -14,6 +14,7 @@ namespace utils {
 	void freeImage(stbi_uc* pixels);
 	void createShader(const char* fragPath, const char* vertPath, GLuint* id);
 	void createFrameBuffer(GLuint* framebuffer, GLuint* tex, glm::vec2 res, bool nearest = true, bool depth = false);
+	void createFrameBufferMultisampled(GLuint* framebuffer, GLuint* tex, glm::vec2 res, int samples = 4);
 	void cout2(glm::vec2);
 
 	double approach(float val1, float val2, float step);
@@ -32,6 +33,7 @@ namespace utils {
 
 	glm::vec3 hsvToRgb(glm::vec3 hsv);
 
+	glm::vec2 rotateVecByAngle(glm::vec2 vec, float angle);
 	void rotateVecByAngle(glm::vec2* vec, float angle);
 	void rotateVecByAngleRad(glm::vec2* vec, float angle);
 }

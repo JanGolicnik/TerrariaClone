@@ -4,6 +4,7 @@
 #include <core.h>
 #include <functional>
 #include <globals.h>
+#include <sounds.h>
 
 struct physicsC {
     std::shared_ptr<glm::vec2> position;
@@ -25,6 +26,7 @@ struct physicsC {
     bool ignoretop = false;
     bool ignoreleft = false;
     bool ignoreright = false;
+    bool wantstoskip = false;
     bool affectedByLiquid = true;
     int isinliquid = -1;
 };
@@ -128,6 +130,10 @@ struct mobC {
     std::vector<ActiveBuff> buffs;
     int directDamageTo = -1;
     bool damageInLava = true;
+    void(*damageSound)() = sounds::normalhit;
+    void(*deathSound)() = sounds::normaldie;
+    std::string gore = "";
+    int slots = 1;
 };
 
 enum itemAnim {
@@ -201,8 +207,10 @@ struct uiC {
     std::function<void(uiCfunctionArguments)> onnothover;
     std::function<void(uiCfunctionArguments)> onrightclick;
     std::function<void(uiCfunctionArguments)> onhold;
+    std::function<void(uiCfunctionArguments)> onrighthold;
+    std::function<void(uiCfunctionArguments)> onenter;
     bool removed = false;
-    bool holding = false;
+    int holdingtime = 0;
     bool hovering = false;
 };
 

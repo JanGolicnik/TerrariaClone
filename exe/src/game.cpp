@@ -14,6 +14,8 @@
 #include <background.h>
 #include <text.h>
 #include <world.h>
+#include <sounds.h>
+#include <liquids.h>
 
 namespace game {
 
@@ -35,6 +37,71 @@ namespace game {
     int currRes = 0;
     std::string currResText;
 
+    std::string windowName() {
+        switch (rand() % 20) {
+        case 0:
+            return "Airarret";
+        case 1:
+            return "Airarret: Also try SNKRX!";
+        case 2:
+            return "Airarret: Now with more things to kill you!";
+        case 3:
+            return "Airarret: 1 + 1 = 10";
+        case 4:
+            return "Airarret: Rise of the Slimes";
+            break;
+        case 5:
+            return "Airarret : Rumors of the Guides' death were greatly exaggerated";
+            break;
+        case 6:
+            return "Airarret: Also try Brotato!";
+            break;
+        case 7:
+            break;
+            return "Airarret: Also try Terraria!";
+        case 8:
+            return "Airarret: Also try         !";
+            break;
+        case 9:
+            return "Airarret 2: Electric Boogaloo";
+            break;
+        case 10:
+            return "Airarret: Better than life";
+            break;
+        case 11:
+            break;
+            return "Airarret: NOT THE BEES!!!";
+        case 12:
+            return "Airarret: Cthulhu is mad... and is missing an eye!";
+            break;
+        case 13:
+            return "Airarret : Airarret : Airarret : ";
+            break;
+        case 14:
+            return "Airarret: What's that purple spiked thing?";
+            break;
+        case 15:
+            return "Airarret: I don't know that-- aaaaa!";
+            break;
+        case 16:
+            return "Airarret: Now in 1D";
+            break;
+        case 17:
+            return "Airarret: Press alt-f4";
+            break;
+        case 18:
+            return "Airarret: Dividing by zero";
+            break;
+        case 19:
+            return "Airarret: Now with SOUND";
+            break;
+        default:
+                return "Airarret";
+                break;
+        }
+        return "Airarret";
+    }
+
     void glfwErrorCallback(int error, const char* description)
     {
         fprintf(stderr, "Glfw Error %d: %s\n", error, description);
@@ -50,8 +117,9 @@ namespace game {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
         glfwWindowHint(GLFW_RESIZABLE, true);
+        glfwWindowHint(GLFW_SAMPLES, 4);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        globals::window = glfwCreateWindow(globals::resX, globals::resY, "airarret", NULL, NULL);
+        globals::window = glfwCreateWindow(globals::resX, globals::resY, windowName().c_str(), NULL, NULL);
         if (globals::window == NULL) {
             std::cout << "failed to create window" << std::endl;
             glfwTerminate();
@@ -99,10 +167,6 @@ namespace game {
         glEnableVertexAttribArray(1);
 
         glBindVertexArray(0);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, globals::tmpFB);
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
 
         physSys = ECS::registerSystem<physicsSystem, physicsC>();
         drawSys = ECS::registerSystem<drawSystem, drawC>();
@@ -187,11 +251,7 @@ namespace game {
         game::initCore();
         Layers::init();
         Player::create();
-        globals::engine = irrklang::createIrrKlangDevice();
-        if (globals::engine) {
-            globals::engine->play2D("tehma123.mp3", true);
-            globals::engine->setSoundVolume(globals::volume);
-        }
+        sounds::init();
     }
 
     void run()
@@ -203,8 +263,13 @@ namespace game {
         while (!glfwWindowShouldClose(globals::window)) {
             glfwPollEvents();
 
-            globals::engine->setSoundVolume(globals::volume);
-            if (globals::transparency != 1) {
+            sounds::music->setSoundVolume(sounds::musicvolume * sounds::mastervolume);
+            sounds::sounds->setSoundVolume(sounds::soundsvolume * sounds::mastervolume);
+
+            static float lasttransparency = 0;
+            if (globals::transparency != lasttransparency) {
+                globals::transparency = glm::clamp(globals::transparency, 0.0f, 1.0f);
+                lasttransparency = globals::transparency;
                 glfwSetWindowOpacity(globals::window, globals::transparency);
             }
             currResText = std::to_string(globals::resX) + "x" + std::to_string(globals::resY);
@@ -217,6 +282,7 @@ namespace game {
                     break;
             }
             if (swapTo != NONE) {
+                currScene = swapTo;
                 initBase();
                 switch (swapTo) {
                     case STARTMENU:
@@ -226,7 +292,6 @@ namespace game {
                         gameLoop::init();
                         break;
                 }
-                currScene = swapTo;
                 swapTo = NONE;
             }
         }
@@ -236,14 +301,17 @@ namespace game {
     {
         ECS::empty();
         Layers::clean();
+        liquids::clean();
         animations::clearRunning();
 
         drawSystem::mainDrawable = ECS::newEntity();
-        ECS::addComponent<drawC>(drawSystem::mainDrawable, { nullptr, "", glm::mat4(0), glm::vec2(0) });
+        ECS::addComponent<drawC>(drawSystem::mainDrawable, { std::make_shared<glm::vec2>(glm::vec2(0)), "", glm::mat4(0), glm::vec2(0) });
         drawSystem::behindBackground = ECS::newEntity();
-        ECS::addComponent<drawC>(drawSystem::behindBackground, { nullptr, "", glm::mat4(0), glm::vec2(0) });
+        ECS::addComponent<drawC>(drawSystem::behindBackground, { std::make_shared<glm::vec2>(glm::vec2(0)), "", glm::mat4(0), glm::vec2(0) });
         drawSystem::front = ECS::newEntity();
-        ECS::addComponent<drawC>(drawSystem::front, { nullptr, "", glm::mat4(0), glm::vec2(0) });
+        ECS::addComponent<drawC>(drawSystem::front, { std::make_shared<glm::vec2>(glm::vec2(0)), "", glm::mat4(0), glm::vec2(0) });
+        drawSystem::behindBlocks = ECS::newEntity();
+        ECS::addComponent<drawC>(drawSystem::behindBlocks, { std::make_shared<glm::vec2>(glm::vec2(0)), "", glm::mat4(0), glm::vec2(0)});
 
         drawC dc;
         dc.hidden = true;
@@ -289,11 +357,28 @@ namespace game {
         std::ofstream file(filename, std::ios::out | std::ios::binary);
         if (!file) { std::cout << "error opening settings for saving\n"; return; }
 
-        file.write((char*)&globals::volume, sizeof(globals::volume));
+        file.write((char*)&sounds::mastervolume, sizeof(sounds::mastervolume));
+        file.write((char*)&sounds::musicvolume, sizeof(sounds::musicvolume));
+        file.write((char*)&sounds::soundsvolume, sizeof(sounds::soundsvolume));
         file.write((char*)&globals::transparency, sizeof(globals::transparency));
         file.write((char*)&globals::resX, sizeof(globals::resX));
         file.write((char*)&globals::resY, sizeof(globals::resY));
         file.write((char*)&globals::fullscreen, sizeof(globals::fullscreen));
+        file.write((char*)&globals::zoom, sizeof(globals::zoom));
+        file.write((char*)&globals::pickuptext, sizeof(globals::pickuptext));
+        file.write((char*)&globals::tilegrid, sizeof(globals::tilegrid));
+        file.write((char*)&globals::hovertext, sizeof(globals::hovertext));
+        file.write((char*)&globals::particles, sizeof(globals::particles));
+        file.write((char*)&globals::cursorhue, sizeof(globals::cursorhue));
+        file.write((char*)&globals::cursorsaturation, sizeof(globals::cursorsaturation));
+        file.write((char*)&globals::cursorvalue, sizeof(globals::cursorvalue));
+        file.write((char*)&globals::cursorborderhue, sizeof(globals::cursorborderhue));
+        file.write((char*)&globals::cursorbordersaturation, sizeof(globals::cursorbordersaturation));
+        file.write((char*)&globals::cursorbordervalue, sizeof(globals::cursorbordervalue));
+        file.write((char*)&globals::cursorsize, sizeof(globals::cursorsize));
+        file.write((char*)&globals::background, sizeof(globals::background));
+
+        input::saveMap(&file);
 
         file.close();
     }
@@ -304,11 +389,28 @@ namespace game {
         std::ifstream file(filename, std::ios::in | std::ios::binary);
         if (!file) { std::cout << "error opening settings for leagind\n"; return; }
 
-        file.read((char*)&globals::volume, sizeof(globals::volume));
+        file.read((char*)&sounds::mastervolume, sizeof(sounds::mastervolume));
+        file.read((char*)&sounds::musicvolume, sizeof(sounds::musicvolume));
+        file.read((char*)&sounds::soundsvolume, sizeof(sounds::soundsvolume));
         file.read((char*)&globals::transparency, sizeof(globals::transparency));
         file.read((char*)&globals::resX, sizeof(globals::resX));
         file.read((char*)&globals::resY, sizeof(globals::resY));
         file.read((char*)&globals::fullscreen, sizeof(globals::fullscreen));
+        file.read((char*)&globals::zoom, sizeof(globals::zoom));
+        file.read((char*)&globals::pickuptext, sizeof(globals::pickuptext));
+        file.read((char*)&globals::tilegrid, sizeof(globals::tilegrid));
+        file.read((char*)&globals::hovertext, sizeof(globals::hovertext));
+        file.read((char*)&globals::particles, sizeof(globals::particles));
+        file.read((char*)&globals::cursorhue, sizeof(globals::cursorhue));
+        file.read((char*)&globals::cursorsaturation, sizeof(globals::cursorsaturation));
+        file.read((char*)&globals::cursorvalue, sizeof(globals::cursorvalue));
+        file.read((char*)&globals::cursorborderhue, sizeof(globals::cursorborderhue));
+        file.read((char*)&globals::cursorbordersaturation, sizeof(globals::cursorbordersaturation));
+        file.read((char*)&globals::cursorbordervalue, sizeof(globals::cursorbordervalue));
+        file.read((char*)&globals::cursorsize, sizeof(globals::cursorsize));
+        file.read((char*)&globals::background, sizeof(globals::background));
+
+        input::loadMap(&file);
 
         file.close();
     }
@@ -358,8 +460,8 @@ namespace game {
         a = int(utils::angleOfVector(glm::normalize(offset + glm::vec2(0, Layers::blocksOnScreen.y / 2.0f) - *sundraw->position)) - 90) % 360;
         moondraw->mat = glm::rotate(glm::mat4(1.0f), float(a * PI / 180.0f), glm::vec3(0, 0, 1));
 
-        if (input::mouseHeld(GLFW_MOUSE_BUTTON_LEFT)) {
-            glm::vec2 mc = globals::mouseBlockCoords(false);
+        if (input::held(k_PRIMARY)) {
+            glm::vec2 mc = globals::mouseBlockCoordsGlobal(false);
             if (glm::distance(mc, *sundraw->position) < 5) {
                 globals::cdayTime = (sundraw->position->x - offset.x) / Layers::blocksOnScreen.x + 0.5f;
                 globals::cdayTime *= 1800;

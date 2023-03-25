@@ -390,7 +390,7 @@ void utils::createFrameBuffer(GLuint* framebuffer, GLuint* tex, glm::vec2 res, b
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *tex, 0);
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
@@ -403,6 +403,28 @@ void utils::createFrameBuffer(GLuint* framebuffer, GLuint* tex, glm::vec2 res, b
         glBindRenderbuffer(GL_RENDERBUFFER, rbo);
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, res.x, res.y);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);
+    }
+
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void utils::createFrameBufferMultisampled (GLuint* framebuffer, GLuint* tex, glm::vec2 res, int samples)
+{
+    glGenFramebuffers(1, framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, *framebuffer);
+
+    glGenTextures(1, tex);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, *tex);
+
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGBA32F, res.x, res.y, GL_TRUE);
+
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, *tex, 0);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        std::cout << "\nframebuffer error\n";
     }
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -519,4 +541,67 @@ float utils::distPointLine(glm::vec2 p, glm::vec2 ls, glm::vec2 le) {
 
 
 
+}
+
+glm::vec3 utils::hsvToRgb(glm::vec3 hsv)
+{
+    hsv.x = glm::clamp(hsv.x, 0.0f, 359.99f);
+    hsv.x /= 60;
+    int hSec = hsv.x;
+    float hRem = hsv.x - hSec;
+    float c = hsv.y * hsv.z;
+    float x = c * (1 - abs(hRem - 1));
+    
+    glm::vec3 rgb(0);
+    
+    switch (hSec) {
+    case 0:
+        rgb.r = c;
+        rgb.g = x;
+        break;
+    case 1:
+        rgb.g = c;
+        rgb.r = x;
+        break;
+    case 2:
+        rgb.g = c;
+        rgb.b = x;
+        break;
+    case 3:
+        rgb.b = c;
+        rgb.g = x;
+        break;
+    case 4:
+        rgb.b = c;
+        rgb.r = x;
+        break;
+    case 5:
+        rgb.r = c;
+        rgb.b = x;
+        break;
+    }
+
+    rgb += hsv.z - c;
+
+    return rgb;
+}
+
+void utils::rotateVecByAngle(glm::vec2* vec, float angle)
+{
+    float x = vec->x;
+    float y = vec->y;
+
+    double a = angle * PI / 180;
+
+    vec->x = cos(a) * x - sin(a) * y;
+    vec->y = sin(a) * x + cos(a) * y;
+}
+
+void utils::rotateVecByAngleRad(glm::vec2* vec, float angle)
+{
+    float x = vec->x;
+    float y = vec->y;
+
+    vec->x = cos(angle) * x - sin(angle) * y;
+    vec->y = sin(angle) * x + cos(angle) * y;
 }

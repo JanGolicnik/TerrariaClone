@@ -1,6 +1,7 @@
 #pragma once
 
 #include <componentsystems.h>
+#include <core.h>
 
 namespace StartMenu
 {
@@ -9,6 +10,7 @@ namespace StartMenu
 	extern int worldSelectContainer;
 	extern int loadingScreen;
 	extern int playerSelectContainer;
+	extern std::vector <playerData> playerDataBuffer;
 
 	void init();
 	void run();

@@ -390,7 +390,7 @@ void utils::createFrameBuffer(GLuint* framebuffer, GLuint* tex, glm::vec2 res, b
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *tex, 0);
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
@@ -403,6 +403,28 @@ void utils::createFrameBuffer(GLuint* framebuffer, GLuint* tex, glm::vec2 res, b
         glBindRenderbuffer(GL_RENDERBUFFER, rbo);
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, res.x, res.y);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);
+    }
+
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void utils::createFrameBufferMultisampled (GLuint* framebuffer, GLuint* tex, glm::vec2 res, int samples)
+{
+    glGenFramebuffers(1, framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, *framebuffer);
+
+    glGenTextures(1, tex);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, *tex);
+
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGBA32F, res.x, res.y, GL_TRUE);
+
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, *tex, 0);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        std::cout << "\nframebuffer error\n";
     }
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -562,6 +584,19 @@ glm::vec3 utils::hsvToRgb(glm::vec3 hsv)
     rgb += hsv.z - c;
 
     return rgb;
+}
+
+glm::vec2 utils::rotateVecByAngle(glm::vec2 vec, float angle)
+{
+    float x = vec.x;
+    float y = vec.y;
+
+    double a = angle * PI / 180;
+
+    vec.x = cos(a) * x - sin(a) * y;
+    vec.y = sin(a) * x + cos(a) * y;
+
+    return vec;
 }
 
 void utils::rotateVecByAngle(glm::vec2* vec, float angle)

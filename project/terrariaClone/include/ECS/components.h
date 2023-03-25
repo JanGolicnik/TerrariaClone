@@ -96,6 +96,8 @@ public:
     }
 
     void EntityDestroyed(int entity) override {
+        if (entityToComponent.count(entity) <= 0) return;
+
         int lastId = components.size() - 1;
         int delId = entityToComponent[entity];
 

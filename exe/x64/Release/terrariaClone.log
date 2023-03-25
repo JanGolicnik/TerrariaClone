@@ -1,0 +1,185 @@
+﻿  Scanning sources for module dependencies...
+  map.cpp
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(23,20): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(26,24): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(38,23): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(139,35): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(140,50): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(142,25): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(143,29): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(144,28): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(151,59): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(158,24): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(167,24): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(178,24): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(186,24): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(210,24): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(227,35): warning C4244: '=': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(229,23): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(230,23): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(234,28): warning C4244: 'initializing': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(235,28): warning C4244: 'initializing': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(255,24): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(281,24): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(313,24): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(373,19): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(405,45): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(473,16): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(475,24): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(477,16): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(482,20): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(491,20): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(501,23): warning C4244: '-=': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(502,20): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(528,19): warning C4244: 'initializing': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(551,20): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(635,15): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(645,24): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(660,19): warning C4244: 'initializing': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(661,22): warning C4244: 'initializing': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(662,24): warning C4244: 'initializing': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(663,41): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(664,64): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(665,67): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(667,25): warning C4244: '=': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(669,24): warning C4244: 'initializing': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(670,41): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(684,27): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(837,71): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(862,18): warning C4244: 'initializing': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(956,20): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(996,20): warning C4244: 'initializing': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(997,24): warning C4244: 'initializing': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\src\map.cpp(1022,24): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\include\ECS\components.h(101,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\include\ECS\components.h(98): message : while compiling class template member function 'void ComponentArray<particleEmmiterC>::EntityDestroyed(int)'
+C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Tools\MSVC\14.32.31326\include\type_traits(327): message : see reference to class template instantiation 'ComponentArray<particleEmmiterC>' being compiled
+C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Tools\MSVC\14.32.31326\include\memory(1443): message : see reference to class template instantiation 'std::is_convertible<_Yty *,_Ty *>' being compiled
+          with
+          [
+              _Yty=ComponentArray<particleEmmiterC>,
+              _Ty=ComponentArrayBase
+          ]
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\include\componentsystems.h(373): message : see reference to class template instantiation 'std::_SP_pointer_compatible<ComponentArray<particleEmmiterC>,ComponentArrayBase>' being compiled
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\include\ECS\components.h(72,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\include\ECS\components.h(65): message : while compiling class template member function 'int ComponentArray<particleEmmiterC>::addComponent(int,T)'
+          with
+          [
+              T=particleEmmiterC
+          ]
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\include\ECS\systems.h(38): message : see reference to function template instantiation 'int ComponentArray<particleEmmiterC>::addComponent(int,T)' being compiled
+          with
+          [
+              T=particleEmmiterC
+          ]
+C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Tools\MSVC\14.32.31326\include\utility(190,48): warning C4267: 'initializing': conversion from 'size_t' to '_Ty2', possible loss of data
+          with
+          [
+              _Ty2=int
+          ]
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\include\ECS\components.h(70): message : see reference to function template instantiation 'std::pair<_Kty,_Ty>::pair<int&,unsigned __int64,0>(_Other1,_Other2 &&) noexcept' being compiled
+          with
+          [
+              _Kty=int,
+              _Ty=int,
+              _Other1=int &,
+              _Other2=unsigned __int64
+          ]
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\include\ECS\components.h(70): message : see reference to function template instantiation 'std::pair<_Kty,_Ty>::pair<int&,unsigned __int64,0>(_Other1,_Other2 &&) noexcept' being compiled
+          with
+          [
+              _Kty=int,
+              _Ty=int,
+              _Other1=int &,
+              _Other2=unsigned __int64
+          ]
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\include\ECS\components.h(65): message : while compiling class template member function 'int ComponentArray<particleEmmiterC>::addComponent(int,T)'
+          with
+          [
+              T=particleEmmiterC
+          ]
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\include\ECS\systems.h(38): message : see reference to function template instantiation 'int ComponentArray<particleEmmiterC>::addComponent(int,T)' being compiled
+          with
+          [
+              T=particleEmmiterC
+          ]
+C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Tools\MSVC\14.32.31326\include\utility(190,48): warning C4267: 'initializing': conversion from 'size_t' to '_Ty1', possible loss of data
+          with
+          [
+              _Ty1=int
+          ]
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\include\ECS\components.h(71): message : see reference to function template instantiation 'std::pair<_Kty,_Ty>::pair<unsigned __int64,int&,0>(_Other1 &&,_Other2) noexcept' being compiled
+          with
+          [
+              _Kty=int,
+              _Ty=int,
+              _Other1=unsigned __int64,
+              _Other2=int &
+          ]
+C:\dev\c++\OpenGL\projects\terrariaClone\project\terrariaClone\include\ECS\components.h(71): message : see reference to function template instantiation 'std::pair<_Kty,_Ty>::pair<unsigned __int64,int&,0>(_Other1 &&,_Other2) noexcept' being compiled
+          with
+          [
+              _Kty=int,
+              _Ty=int,
+              _Other1=unsigned __int64,
+              _Other2=int &
+          ]
+LINK : warning LNK4098: defaultlib 'MSVCRTD' conflicts with use of other libs; use /NODEFAULTLIB:library
+  Generating code
+  4 of 12546 functions (<0.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    38 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  terrariaClone.vcxproj -> C:\dev\c++\OpenGL\projects\terrariaClone\project\x64\Release\terrariaClone.exe

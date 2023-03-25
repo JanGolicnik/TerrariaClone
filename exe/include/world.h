@@ -11,7 +11,7 @@ namespace map
 	extern std::string name;
 	extern std::string tmpname;
 
-	extern int seed;
+	extern std::string seed;
 	extern int mapX;
 	extern int mapY;
 	extern glm::vec2 PlayerSpawn;
@@ -40,7 +40,7 @@ namespace map
 	extern int moonphase;
 	extern std::array<std::string, 8> moonphases;
 
-	extern int demonaltarsbroken;
+	extern int shadoworbsbroken;
 
 	void growBlock(glm::vec2 pos, std::string block, int depth, int chance, std::set<std::string>ignore = {});
 	void clear();
@@ -78,5 +78,8 @@ namespace map
 	void makeHell();
 
 	void spawnDebugSetup(glm::vec2 pos);
+
+	void liquidHole(glm::vec2 pos, std::string liquid, glm::vec2 size, bool half, bool breakwall);
+	void placeLiquids();
 };
 

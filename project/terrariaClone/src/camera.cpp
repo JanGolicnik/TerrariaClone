@@ -10,6 +10,7 @@ namespace camera {
     glm::mat4 base = glm::mat4(1.0f);
     glm::mat4 trans = glm::mat4(1.0f);
     glm::vec2 pos = glm::vec2(0.0f);
+    glm::vec2 truepos = glm::vec2(0);
     glm::vec2 vel = glm::vec2(0.0f);
     glm::vec2 tvel = glm::vec2(0.0f);
     float accel = 0;
@@ -27,22 +28,24 @@ namespace camera {
             vel += glm::normalize(glm::vec2(rand() % 100 - 50, rand() % 100 - 50)) * shakes[i].strength;
         }
 
-        pos = -Player::pos;
+        truepos = -Player::pos;
 
         //limitamo v world size
-        glm::vec2 c = -glm::vec2(pos.x, pos.y);
+        glm::vec2 c = -glm::vec2(truepos.x, truepos.y);
         if (c.x < Layers::blocksOnScreen.x / 2 + 2) {
-            pos.x = -(Layers::blocksOnScreen.x / 2) + 2;
+            truepos.x = -(Layers::blocksOnScreen.x / 2) + 2;
         }
         if (c.x > map::mapX- Layers::blocksOnScreen.x / 2 - 2) {
-            pos.x = -map::mapX + Layers::blocksOnScreen.x / 2 - 2;
+            truepos.x = -map::mapX + Layers::blocksOnScreen.x / 2 - 2;
         }
         if (c.y < Layers::blocksOnScreen.y / 2 + 2) {
-            pos.y = -Layers::blocksOnScreen.y / 2 + 2;
+            truepos.y = -Layers::blocksOnScreen.y / 2 + 2;
         }
         if (c.y > map::mapY - Layers::blocksOnScreen.y / 2 - 2) {
-            pos.y = -map::mapY + Layers::blocksOnScreen.y / 2 - 2;
+            truepos.y = -map::mapY + Layers::blocksOnScreen.y / 2 - 2;
         }
+
+        pos = truepos;
 
         updateNormal();
 	}

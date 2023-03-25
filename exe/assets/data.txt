@@ -14,11 +14,11 @@ woodwall { 472,24,488,8 } {2,2}
 grassdecor { 48,176,56,166 } {1,1}
 grassdecor2 { 56,176,64,166 } {1,1}
 player { 8,32,24,8 } {1,1}
-trunk { 24,168,32,160 } {1,1}
-trunkbase1 { 24,176,32,168 } {1,1}
-trunkbase2 { 16,176,24,168 } {1,1}
-trunkbase3 { 32,176,40,168 } {1,1}
-leaves { 8,160,48,120 } {7,7}
+trunk { 24,176,32,168 } {1,1}
+trunkbase1 { 24,184,32,176 } {1,1}
+trunkbase2 { 16,184,24,176 } {1,1}
+trunkbase3 { 32,184,40,176 } {1,1}
+leaves { 8,168,48,128 } {7,7}
 invempty { 448, 496, 496, 448 } {1,1}
 torch  { 16, 258, 25, 248 } {1,1}
 err { 0, 500, 2, 488 } {1,1}
@@ -141,14 +141,14 @@ handgun {72, 102, 92, 88} {1,1}
 twinssummon2 {304, 219, 328, 208} {1,1}
 twinssummon1 {304, 235, 328, 224} {1,1}
 fallenstar {256, 20, 267, 8} {1,1}
-sapling {88, 176, 96, 168} {1,1}
-borealtrunk {104, 168, 112, 160} {1,1}
-borealtrunkbase1 {104, 176, 112, 168} {1,1}
-borealtrunkbase2 {96, 176, 104, 168} {1,1}
-borealtrunkbase3 {112, 176, 120, 168} {1,1}
-borealleaves {88, 160, 128, 120} {7,7}
-borealtrunktop {120, 168, 128, 160} {1,1}
-borealsapling {168, 176, 176, 168} {1,1}
+sapling {88, 184, 96, 176} {1,1}
+borealtrunk {104, 176, 112, 168} {1,1}
+borealtrunkbase1 {104, 184, 112, 176} {1,1}
+borealtrunkbase2 {96, 184, 104, 176} {1,1}
+borealtrunkbase3 {112, 184, 120, 176} {1,1}
+borealleaves {88, 168, 128, 128} {7,7}
+borealtrunktop {120, 176, 128, 168} {1,1}
+borealsapling {168, 184, 176, 176} {1,1}
 corrupttrunk {24, 232, 32, 224} {1,1}
 corrupttrunkbase1 {24, 240, 32, 232} {1,1}
 corrupttrunkbase2 {16, 240, 24, 232} {1,1}
@@ -163,7 +163,6 @@ mahoganytrunkbase3 {112, 240, 120, 232} {1,1}
 mahoganyleaves {88, 224, 128, 184} {7,7}
 mahoganytrunktop {120, 232, 128, 224} {1,1}
 mahoganysapling {168, 240, 176, 232} {1,1}
-pot {80, 288, 88, 280} {1,1}
 cactustop {128, 280, 136, 272} {1,1}
 cactusmid {128, 288, 136, 280} {1,1}
 cactusright {128, 296, 136, 288} {1,1}
@@ -203,7 +202,7 @@ ashitem {576, 456, 584, 448} {1,1}
 sliderpaddle {364, 502, 368, 488} {1,1}
 toggleoff {377, 495, 384, 488} {1,1}
 toggleon {369, 495, 376, 488} {1,1}
-slider {354, 510, 440, 504} {1,1}
+slider {352, 510, 440, 504} {1,1}
 sliderrainbow {350, 560, 440, 552} {1,1}
 tooltip {408, 480, 409, 479} {1,1}
 logo {360, 440, 602, 368} {1,1}
@@ -218,17 +217,17 @@ hardenedsandwall {600, 152, 616, 136} {2,2}
 ebonstone {192, 552, 200, 544} {1,1}
 ebonstoneitem {560, 512, 568, 504} {1,1}
 ebonstonewall {600, 215, 616, 200} {2,2}
-normalgrassdecor {48, 176, 56, 168} {1,1}
+normalgrassdecor {48, 184, 56, 176} {1,1}
 corruptgrassdecor {48, 240, 56, 232} {1,1}
 junglegrassdecor {128, 240, 136, 232} {1,1}
-normalbranchr {56, 160, 64, 152} {1,1}
-normalbranchl {56, 144, 64, 136} {1,1}
+normalbranchr {56, 168, 64, 160} {1,1}
+normalbranchl {56, 152, 64, 144} {1,1}
 corruptbranchr {56, 224, 64, 216} {1,1}
 corruptbranchl {56, 208, 64, 200} {1,1}
 junglebranchr {136, 224, 144, 216} {1,1}
 junglebranchl {136, 208, 144, 200} {1,1}
-borealbranchr {136, 160, 144, 152} {1,1}
-borealbranchl {136, 144, 144, 136} {1,1}
+borealbranchr {136, 168, 144, 160} {1,1}
+borealbranchl {136, 152, 144, 144} {1,1}
 icicle {112, 328, 120, 320} {1,1}
 stalaktit {144, 328, 152, 320} {1,1}
 corruptstalaktit {176, 328, 184, 320} {1,1}
@@ -236,8 +235,9 @@ sandstalaktit {208, 328, 216, 320} {1,1}
 stalagmit {144, 344, 152, 336} {1,1}
 corruptstalagmit {176, 344, 184, 336} {1,1}
 sandstalagmit {208, 344, 216, 336} {1,1}
-smallrock {112, 368, 120, 360} {1,1}
-mediumrock {112, 376, 120, 368} {1,1}
+smallrock {8, 624, 16, 616} {1,1}
+mediumrock {8, 632, 16, 624} {1,1}
+bigrock {160, 664, 168, 656} {1,1}
 dirtparticle {20, 487, 21, 486} {1,1}
 woodenhelmet {355, 520, 366, 512} {1,1}
 woodenbreastplate {352, 530, 367, 520} {1,1}
@@ -271,6 +271,8 @@ cloudpart2 {567, 284, 571, 280} {1,1}
 icepart {562, 284, 566, 280} {1,1}
 terrapart {556, 284, 561, 280} {1,1}
 purplepart {572, 283, 575, 280} {1,1}
+waterpart {612, 300, 616, 296} {1,1}
+lavapart {607, 300, 611, 296} {1,1}
 coppercoindrop {270, 14, 276, 8} {1,1}
 platinumcoindrop {277, 16, 284, 8} {1,1}
 goldcoindrop {286, 16, 292, 8} {1,1}
@@ -301,7 +303,7 @@ silverore { 232, 464, 240, 472} {1,1}
 placedbottle { 144, 280, 152, 272} {1,1}
 placedhpbottle { 152, 280, 160, 272} {1,1}
 placedmanabottle { 160, 280, 168, 272} {1,1}
-mushroom { 56, 128, 64, 120} {1,1}
+mushroom { 56, 136, 64, 128} {1,1}
 unholyarrow { 72, 64, 88, 56} {1,1}
 lightsbane { 96, 106, 114, 88} {1,1}
 demonbow { 119, 109, 128, 88} {1,1}
@@ -399,7 +401,7 @@ potionsicknessbuff {424, 576, 440, 560} {1,1}
 chilledbuff {392, 608, 408, 592} {1,1}
 poisonedbuff {408, 608, 424, 592} {1,1}
 obsidianitem {552, 520, 560, 512} {1,1}
-obsidian {232, 512, 240, 403} {1,1}
+obsidian {232, 512, 240, 504} {1,1}
 hellforge {72, 328, 80, 320} {1,1}
 hellforgeitem {472, 566, 487, 552} {1,1}
 copperbow {288, 624, 296, 608} {1,1}
@@ -473,6 +475,97 @@ cloud7 {512, 864, 584, 836} {1,1}
 cloud8 {488, 896, 572, 870} {1,1}
 cloud9 {368, 896, 481, 862} {1,1}
 cloud10 {312, 880, 351, 846} {1,1}
+water {808, 320, 816, 312} {1.2,1.2}
+lava {784, 320, 792, 312} {1.2,1.2}
+worldcreationbg {40, 701, 77, 664} {1,1}
+worldcreationborder {40, 746, 82, 704} {1,1}
+worldcreationleft {88, 704, 125, 667} {1,1}
+worldcreationlarge {88, 744, 125, 707} {1,1}
+worldcreationmedium {114, 704, 151, 667} {1,1}
+worldcreationsmall {128, 744, 165, 707} {1,1}
+bubble {395, 480, 406, 469} {1,1}
+daybloom {64, 136, 72, 128} {1,1}
+junglespores {160, 202, 168, 192} {1,1}
+voodoodollitem {624, 448, 632, 434} {1,1}
+junglesporesitem {720, 473, 730, 464} {1,1}
+vinesitem {739, 460, 748, 448} {1,1}
+bladeofgrass {368, 666, 402, 632} {1,1}
+stinger {736, 472, 744, 464} {1,1}
+bladeofgrassprojectile {688, 25, 703, 16} {1,1}
+pengu1 {712, 35, 724, 16} {1,1}
+pengu2 {712, 92, 724, 73} {1,1}
+pengu3 {712, 150, 724, 130} {1,1}
+pengu4 {712, 209, 724, 190} {1,1}
+grasshopper {376, 213, 384, 208} {1,1}
+fireflylit {368, 213, 373, 208} {1,1}
+firefly {368, 222, 373, 217} {1,1}
+guide {384, 32, 400, 8} {1,1}
+guidewalk {408, 32, 424, 8} {1,1}
+tombstone {88, 304, 104, 288} {1,1}
+normalvines {56, 264, 64, 256} {1,1}
+junglevines {96, 264, 104, 256} {1,1}
+pot {16, 424, 24, 416} {1,1}
+icepot {16, 408, 24, 400} {1,1}
+junglepot {48, 408, 56, 400} {1,1}
+hellpot {48, 424, 56, 416} {1,1}
+shadowchest {64, 392, 72, 384} {1,1}
+mahoganychest {80, 392, 88, 384} {1,1}
+frozenchest {96, 392, 104, 384} {1,1}
+waterchest {112, 392, 120, 384} {1,1}
+goldchest {128, 392, 136, 384} {1,1}
+shadowchestitem {488, 566, 504, 552} {1,1}
+goldchestitem {504, 566, 520, 552} {1,1}
+mahoganychestitem {504, 582, 520, 568} {1,1}
+waterchestitem {488, 582, 504, 568} {1,1}
+frozenchestitem {520, 566, 536, 552} {1,1}
+bunnygore1 {880, 896, 888, 888} {1,1}
+bunnygore2 {888, 896, 896, 885} {1,1}
+demoneyegore1 {863, 896, 872, 885} {1,1}
+demoneyegore2 {872, 896, 880, 885} {1,1}
+servantofcthulugore1 {886, 872, 896, 859} {1,1}
+servantofcthulugore2 {886, 880, 896, 873} {1,1}
+zombiegore1 {850, 896, 863, 881} {1,1}
+zombiegore2 {837, 896, 848, 889} {1,1}
+zombiegore3 {821, 896, 832, 886} {1,1}
+eyeofcthulugore1 {832, 880, 856, 854} {1,1}
+eyeofcthulugore2 {857, 880, 880, 864} {1,1}
+eyeofcthulugore3 {806, 880, 832, 840} {1,1}
+eaterofworldsheadgore1 {777, 896, 800, 869} {1,1}
+eaterofworldsbodygore1 {778, 864, 800, 846} {1,1}
+eaterofworldsbodygore2 {786, 840, 800, 822} {1,1}
+eaterofworldsbodygore3 {864, 776, 838, 763} {1,1}
+eaterofworldsbodygore4 {763, 896, 776, 868} {1,1}
+eaterofworldstailgore1 {806, 840, 824, 810} {1,1}
+devourerheadgore1 {857, 848, 872, 827} {1,1}
+devourerbodygore1 {846, 848, 856, 829} {1,1}
+devourertailgore1 {831, 848, 840, 831} {1,1}
+wormheadgore1 {863, 824, 872, 810} {1,1}
+wormbodygore1 {856, 824, 862, 812} {1,1}
+wormtailgore1 {847, 824, 854, 811} {1,1}
+eaterofsoulsgore1 {877, 832, 896, 806} {1,1}
+eaterofsoulsgore2 {877, 856, 896, 833} {1,1}
+skeletongore1 {832, 824, 842, 813} {1,1}
+demongore1 {748, 856, 760, 843} {1,1}
+demongore2 {739, 840, 760, 818} {1,1}
+vulturegore1 {727, 880, 736, 869} {1,1}
+vulturegore2 {742, 880, 760, 863} {1,1}
+potgore1 {751, 896, 760, 888} {1,1}
+potgore2 {753, 888, 760, 880} {1,1}
+antliongore1 {723, 896, 736, 882} {1,1}
+antliongore2 {737, 896, 743, 885} {1,1}
+normalflowers {8, 128, 16, 120} {1,1}
+corruptflowers {8, 648, 16, 640} {1,1}
+jungleflowers {8, 664, 16, 656} {1,1}
+undergroundskeletondecor {56, 624, 64, 616} {1,1}
+undergroundtooldecor {56, 632, 64, 624} {1,1}
+smallice {128, 624, 136, 616} {1,1}
+mediumice {112, 648, 120, 640} {1,1}
+bigice {160, 680, 168, 672} {1,1}
+smalldesert {120, 632, 128, 624} {1,1}
+mediumdesert {168, 632, 176, 624} {1,1}
+bigdesert {160, 696, 168, 688} {1,1}
+mediumjungle {208, 648, 216, 640} {1,1}
+bigjungle {160, 648, 168, 640} {1,1}
 ]
 items
 [
@@ -711,6 +804,41 @@ chestitem
 99
 t ammo chest
 t places chest
+}
+goldchest {
+20
+goldchestitem
+99
+t ammo goldchest
+t places goldchest
+}
+mahoganychest {
+20
+mahoganychestitem
+99
+t ammo mahoganychest
+t places mahoganychest
+}
+shadowchest {
+20
+shadowchestitem
+99
+t ammo shadowchest
+t places shadowchest
+}
+frozenchest {
+20
+frozenchestitem
+99
+t ammo frozenchest
+t places frozenchest
+}
+waterchest {
+20
+waterchestitem
+99
+t ammo waterchest
+t places waterchest
 }
 door {
 20
@@ -951,6 +1079,13 @@ heartcrystalitem
 999
 t desc Permanently increases maximum life by 20
 t ammo heartcrystal
+}
+manacrystal {
+20
+manacrystal
+999
+t desc Permanently increases maximum mana by 20
+t ammo manacrystal
 }
 bottle {
 20
@@ -1344,6 +1479,32 @@ obsidianitem
 t ammo obsidian
 t places obsidian
 }
+vines {
+20
+vinesitem
+9999
+}
+junglespores {
+20
+junglesporesitem
+9999
+}
+voodoodoll {
+20
+voodoodollitem
+1
+t desc 'You are a terrible person.'
+}
+stinger {
+20
+stinger
+9999
+}
+daybloom {
+20
+daybloom
+999
+}
 bandofregeneration {
 20
 regenband
@@ -1722,6 +1883,14 @@ volcano
 1
 f damage 40
 f knockback 6.5
+i rarity 4
+}
+bladeofgrass {
+40
+bladeofgrass
+1
+f damage 18
+f knockback 4.5
 i rarity 4
 }
 moltenfury {

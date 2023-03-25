@@ -36,6 +36,8 @@ typedef int32_t int32;
 typedef int16_t int16;
 typedef int8_t int8;
 
+typedef glm::vec3 hsv;
+
 enum AI {
     ai_GREENSLIME = 0,
     ai_TEST = 1,
@@ -81,7 +83,7 @@ enum UIFunction {
     ui_RADIAL,
     ui_LOGO,
     ui_KEYBIND,
-    ui_INFOFORCRAFTING
+    ui_INFOFORCRAFTING,
 };
 
 struct OverlayVertex {
@@ -100,7 +102,7 @@ struct BlockVertex {
     glm::vec2 Position;
     glm::vec2 SpriteCoords;
     glm::vec2 TexCoords;
-    glm::vec3 light;
+    glm::vec3 light = glm::vec3(1);
     float breaking;
 };
 
@@ -118,6 +120,7 @@ enum SpriteType {
     st_WATER,
     st_VINES,
     st_POT,
+    st_MULTISPRITE
 };
 
 enum frametype {
@@ -160,6 +163,25 @@ struct InventoryItem {
     std::string item;
     int num;
     int pos;
+};
+
+struct playerData {
+    float hp;
+    float currmaxhp;
+    float mana;
+    float currmaxmana;
+    int heartcrystals;
+    int manacrystals;
+    int hairid;
+    hsv hairclr_hsv;
+    hsv shirtclr_hsv;
+    hsv skinclr_hsv;
+    hsv pantsclr_hsv;
+    hsv eyeclr_hsv;
+    hsv shoeclr_hsv;
+    std::string headarmor;
+    std::string bodyarmor;
+    std::string legsarmor;
 };
 
 #endif 

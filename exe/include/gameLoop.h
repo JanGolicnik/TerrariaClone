@@ -13,10 +13,13 @@ namespace gameLoop {
 	extern int chestInvC;
 	extern int equipmentC;
 	extern int hpbarC;
+	extern int breathbar;
 	extern int NPCDialogue;
 	extern int buffcontainer;
 	extern int pickuptextcontainer;
 	extern int zoomedcursoritem;
+	extern int droppedCoinsText;
+	extern int guideslot;
 
 	void init();
 	void run();
@@ -24,6 +27,8 @@ namespace gameLoop {
 
 	void createUI();
 	void createSettingsMenu();
+
+	void respawned();
 
 	void handleInput();
 

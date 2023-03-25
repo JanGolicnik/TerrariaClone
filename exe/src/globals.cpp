@@ -36,10 +36,13 @@ namespace globals {
     GLuint lightShaderID;
     GLuint zoomShaderID;
     GLuint bloomShaderID;
+    GLuint waterShaderID;
 
     GLuint broken1Tex;
     GLuint broken2Tex;
     GLuint broken3Tex;
+
+    GLuint liquidTex;
 
     bool doslimemerger = false;
 
@@ -83,25 +86,47 @@ namespace globals {
 
     float cheaterlight;
 
-    float volume = 0.3;
     float transparency = 1;
 
     float bgoffset = 0.0f;
+    float bgoffsetY = 0.0f;
     glm::vec3 textHightlightColor = glm::vec3(1, 1, 0);
     glm::vec3 textColor = glm::vec3(1,1,1);
     glm::vec3 itemslotColor = glm::vec3(0.1, 0.1, 0.5);
     glm::vec3 selecteditemslotColor = glm::vec3(1,1,0);
 
-    irrklang::ISoundEngine* engine;
     bool fullscreen;
 
     unsigned long long time;
     
     bool lag = false;
 
+    bool pickuptext = true;
+    bool tilegrid = true;
+    bool hovertext = true;
+    bool particles = true;
+
+    float cursorhue = 360;
+    float cursorborderhue = 360;
+    float cursorsaturation = 1;
+    float cursorbordersaturation = 1;
+    float cursorvalue = 1;
+    float cursorbordervalue = 1;
+    float cursorsize = 1;
     glm::vec3 tooltipcolor = glm::vec3(0.7, 0.7, 0.7);
 
-    glm::vec2 mouseBlockCoords(bool round, glm::vec2 clampx, glm::vec2 clampy)
+    glm::vec3 backcolor2 = glm::vec3(0.0, 1, 0.2);
+    glm::vec3 backcolor3 = glm::vec3(0.7);
+    glm::vec3 buttonhovercolor = glm::vec3(0.4);
+    glm::vec3 buttonborderhovercolor = glm::vec3(1, 1, 0);
+    glm::vec3 blackcolor = glm::vec3(0);
+    glm::vec3 keybindcolor = glm::vec3(0,0.25,0.045);
+
+    int waterid;
+
+    bool background = true;
+
+    glm::vec2 mouseBlockCoordsGlobal(bool round, glm::vec2 clampx, glm::vec2 clampy)
     {
         double x, y;
         glfwGetCursorPos(window, &x, &y);
@@ -130,7 +155,7 @@ namespace globals {
         }
         return glm::vec2(x, y);
     }
-    glm::vec2 mouseBlockCoordsZoomed(bool round, glm::vec2 clampx, glm::vec2 clampy)
+    glm::vec2 mouseBlockCoords(bool round, glm::vec2 clampx, glm::vec2 clampy)
     {
         double x, y;
         glfwGetCursorPos(window, &x, &y);
@@ -144,7 +169,7 @@ namespace globals {
         y = y - 0.5;
 
         //apply zoom
-        x /=zoom;
+        x /= zoom;
         y /= zoom;
 
         //clamp?

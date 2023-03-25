@@ -10,6 +10,9 @@
 #include <enemies.h>
 #include <game.h>
 #include <world.h>
+#include <liquids.h>
+#include <sounds.h>
+#include <particles.h>
 
 namespace blocks {
 	std::unordered_map<std::string, BlockInfo> nameToInfo;
@@ -79,21 +82,6 @@ namespace blocks {
 	{24,0,24,0}
 	};
 
-	glm::vec4 smallrockSc[6] = {
-		{0,0,0,0},
-		{8,0,8,0},
-		{16,0,16,0},
-		{24,0,24,0},
-		{32,0,32,0},
-		{40,0,40,0}
-	};
-
-	glm::vec4 mediumrockSc[3] = {
-		{0,0,0,0},
-		{16,0,16,0},
-		{32,0,32,0}
-	};
-
 	glm::vec4 platformSc[8] = {
 	{0,0,0,0},
 	{-8,0,-8,0},
@@ -104,6 +92,20 @@ namespace blocks {
 	{8,0,8,0},
 	{16,0,16,0}
 	};
+
+	glm::vec4 waterSc[9] = {
+	{0,0,0,0},
+	{0,8,0,8},
+	{0,16,0,16},
+	{-8,0,-8,0},
+	{-8,8,-8,8},
+	{-8,16,-8,16},
+	{-16,0,-16,0},
+	{-16,8,-16,8},
+	{-16,16,-16,16}
+	};
+
+	int nextnumsprites = -1;
 
 	void addBlock(std::string name, std::string texture, bool collidable, bool solid, std::string itemname, std::string layer,
 		bool updates, SpriteType spriteType, glm::vec2 size, float friction,
@@ -117,6 +119,7 @@ namespace blocks {
 			tmp.collidableBot = collidable;
 			tmp.collidableLeft = collidable;
 			tmp.collidableRight = collidable;
+			tmp.canpassliquid = !collidable;
 			tmp.notReplacable = solid;
 			tmp.texture = texture;
 			tmp.drops = itemname;
@@ -136,6 +139,10 @@ namespace blocks {
 			tmp.onUpdate = BFuncs::nothing;
 			tmp.updates = updates;
 			tmp.biome = "none";
+			if (nextnumsprites != -1) {
+				tmp.numsprites = nextnumsprites;
+				nextnumsprites = -1;
+			}
 			nameToInfo.insert(std::make_pair(name, tmp));
 			idToInfo.insert(std::make_pair(id, tmp));
 			idToName.insert(std::make_pair(id, name));
@@ -196,11 +203,13 @@ namespace blocks {
 	}
 	void addDamageParticle(std::string name, std::string particle)
 	{
+		if (nameToInfo.count(name) <= 0) return;
 		nameToInfo[name].damageParticle = particle;
 		idToInfo[nameToID[name]].damageParticle = particle;
 	}
 	void addBiome(std::string name, std::string biome)
 	{
+		if (Layers::biomes.count(biome) <= 0) return;
 		nameToInfo[name].biome = biome;
 		idToInfo[nameToID[name]].biome = biome;
 	}
@@ -230,6 +239,11 @@ namespace blocks {
 	{
 		nameToInfo[name].buff = buff;
 		idToInfo[nameToID[name]].buff = buff;
+	}
+	void canPassLiquid(std::string name)
+	{
+		nameToInfo[name].canpassliquid = true;
+		idToInfo[nameToID[name]].canpassliquid = true;
 	}
 	void emitSkyLight(std::string name)
 	{
@@ -451,46 +465,32 @@ namespace blocks {
 				}
 			}
 			break;
-			case st_MEDIUMROCK: {
+			case st_MULTISPRITE: {
 				PremadeBlock tmp;
-				for (int i = 0; i < 3; i++) {
-					glm::vec4 sC = stalaktitSc[i] / glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
-					auto vertices = utils::CreateQuad(0, 0, textures::nametocoords[texture]->coords + sC, { 0,0,0 }, textures::nametocoords[texture]->size);
+				glm::vec4 coords = textures::nametocoords[texture]->coords;
+				float w = coords.b - coords.r;
+				float h = coords.a - coords.g;
+				glm::vec2 s = textures::nametocoords[texture]->size;
+				for (int i = 0; i < nextnumsprites; i++) {
 
-					tmp.v0 = vertices[0];
-					tmp.v1 = vertices[1];
-					tmp.v2 = vertices[2];
-					tmp.v3 = vertices[3];
+					for (int x = 0; x < size.x; x++) {
+						for (int y = 0; y < size.y; y++) {
+							coords = textures::nametocoords[texture]->coords;
+							float difx = w * x;
+							float dify = h * y;
 
-					vec.push_back(tmp);
+							coords += glm::vec4((w * i * size.x) + difx, dify, (w * i * size.x) + difx, dify);
+							auto vertices = utils::CreateQuad(0, 0, coords, { 0,0,0 }, s);
 
-					sC = textures::nametocoords[texture]->coords + sC;
-					float difx = (sC.b - sC.r);
-					sC.r += difx;
-					sC.b += difx;
-					vertices = utils::CreateQuad(0, 0, sC, { 0,0,0 }, textures::nametocoords[texture]->size);
+							tmp.v0 = vertices[0];
+							tmp.v1 = vertices[1];
+							tmp.v2 = vertices[2];
+							tmp.v3 = vertices[3];
 
-					tmp.v0 = vertices[0];
-					tmp.v1 = vertices[1];
-					tmp.v2 = vertices[2];
-					tmp.v3 = vertices[3];
+							vec.push_back(tmp);
+						}
+					}
 
-					vec.push_back(tmp);
-				}
-			}
-			break;
-			case st_SMALLROCK: {
-				PremadeBlock tmp;
-				for (int i = 0; i < 6; i++) {
-					glm::vec4 sC = smallrockSc[i] / glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
-					auto vertices = utils::CreateQuad(0, 0, textures::nametocoords[texture]->coords + sC, { 0,0,0 }, textures::nametocoords[texture]->size);
-
-					tmp.v0 = vertices[0];
-					tmp.v1 = vertices[1];
-					tmp.v2 = vertices[2];
-					tmp.v3 = vertices[3];
-
-					vec.push_back(tmp);
 				}
 			}
 			break;
@@ -507,17 +507,104 @@ namespace blocks {
 
 					vec.push_back(tmp);
 				}
+
+			case st_WATER: {
+				PremadeBlock tmp;
+				for (int i = 0; i < 9; i++) {
+					glm::vec4 sC = waterSc[i] / glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
+					auto vertices = utils::CreateQuad(0, 0, textures::nametocoords[texture]->coords + sC, { 0,0,0 }, textures::nametocoords[texture]->size);
+
+					tmp.v0 = vertices[0];
+					tmp.v1 = vertices[1];
+					tmp.v2 = vertices[2];
+					tmp.v3 = vertices[3];
+
+					vec.push_back(tmp);
+				}
+			}
 			}
 		 break;
+			case st_VINES: {
+				PremadeBlock tmp;
+				for (int i = 0; i < 5; i++) {
+					glm::vec4 sC = glm::vec4(8*i,0,8*i,0) / glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
+					auto vertices = utils::CreateQuad(0, 0, textures::nametocoords[texture]->coords + sC, { 0,0,0 }, textures::nametocoords[texture]->size);
+
+					tmp.v0 = vertices[0];
+					tmp.v1 = vertices[1];
+					tmp.v2 = vertices[2];
+					tmp.v3 = vertices[3];
+
+					vec.push_back(tmp);
+				}
+				for (int i = 0; i < 5; i++) {
+					glm::vec4 sC = glm::vec4(8 * i, 8, 8 * i, 8) / glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
+					auto vertices = utils::CreateQuad(0, 0, textures::nametocoords[texture]->coords + sC, { 0,0,0 }, textures::nametocoords[texture]->size);
+
+					tmp.v0 = vertices[0];
+					tmp.v1 = vertices[1];
+					tmp.v2 = vertices[2];
+					tmp.v3 = vertices[3];
+
+					vec.push_back(tmp);
+				}
+			}
+			break;
+			case st_POT: {
+				{
+					PremadeBlock tmp;
+					for (int x = 0; x < size.x; x++) {
+						for (int y = 0; y < size.y; y++) {
+							glm::vec4 sC = textures::nametocoords[texture]->coords;
+
+							float difx = (sC.b - sC.r) * x;
+							float dify = (sC.a - sC.g) * y;
+							sC.r += difx;
+							sC.b += difx;
+							sC.g += dify;
+							sC.a += dify;
+
+							auto vertices = utils::CreateQuad(0, 0, sC, { 0,0,0 }, textures::nametocoords[texture]->size);
+							tmp.v0 = vertices[0];
+							tmp.v1 = vertices[1];
+							tmp.v2 = vertices[2];
+							tmp.v3 = vertices[3];
+
+							vec.push_back(tmp);
+						}
+					}
+					for (int x = size.x; x < size.x * 2; x++) {
+						for (int y = 0; y < size.y; y++) {
+							glm::vec4 sC = textures::nametocoords[texture]->coords;
+
+							float difx = (sC.b - sC.r) * x;
+							float dify = (sC.a - sC.g) * y;
+							sC.r += difx;
+							sC.b += difx;
+							sC.g += dify;
+							sC.a += dify;
+
+							auto vertices = utils::CreateQuad(0, 0, sC, { 0,0,0 }, textures::nametocoords[texture]->size);
+							tmp.v0 = vertices[0];
+							tmp.v1 = vertices[1];
+							tmp.v2 = vertices[2];
+							tmp.v3 = vertices[3];
+
+							vec.push_back(tmp);
+						}
+					}
+				}	break;
+			}
 		}
 		blockBuffer.push_back(vec);
 		return blockBuffer.size() - 1;
 	}
-	void addDecor(std::string block, float chance, std::set<std::string> ontop, std::set<std::string> onbot, std::set<std::string> onleft, std::set<std::string> onright)
+	void addDecor(std::string block, float chance, std::string height, std::set<std::string> ontop, std::set<std::string> onbot, std::set<std::string> onleft, std::set<std::string> onright)
 	{
 		Decor tmp;
 		tmp.block = block;
 		tmp.chance = chance;
+		tmp.height = height;
 		tmp.onbot = onbot;
 		tmp.ontop = ontop;
 		tmp.onleft = onleft;
@@ -529,6 +616,10 @@ namespace blocks {
 	{
 		return 1.0f;
 	}
+	void setNextNumSprites(int n)
+	{
+		nextnumsprites = n;
+	}
 }
 
 namespace BRules {
@@ -536,15 +627,20 @@ namespace BRules {
 	{
 		Layers::breakBlock(Layers::getLayer(rule->layer), pos, 1, rule->exBool, false, true, true);
 	}
+	void breakSelfAndUpdateBelow(BlockRuleArgs)
+	{
+		Layers::breakBlock(Layers::getLayer(rule->layer), pos, 1, rule->exBool, false, true, true);
+		Layers::updateBlock(Layers::getLayer("blocks"), pos - glm::vec2(0, 1));
+	}
 	void replaceWith(BlockRuleArgs) {
 		Layers::placeBlock(pos, rule->block);
 	}
 	void growNormalTree(BlockRuleArgs) {
 		std::vector<std::function<bool(BlockConditionArgs)>> tmpCond = { BConditions::isntreplacablebelow };
 		int height = rand() % 5 + 10;
-		Layers::placeBlock(pos, "trunkbase1", glm::vec3(0.0f), 1, &tmpCond);
-		Layers::placeBlock({ pos.x - 1, pos.y }, "trunkbase2", glm::vec3(0.0f), 1, &tmpCond);
-		Layers::placeBlock({pos.x + 1, pos.y}, "trunkbase3", glm::vec3(0.0f), 1, &tmpCond);
+		Layers::placeBlock(pos, "trunkbase1", 1, &tmpCond);
+		Layers::placeBlock({ pos.x - 1, pos.y }, "trunkbase2", 1, &tmpCond);
+		Layers::placeBlock({pos.x + 1, pos.y}, "trunkbase3", 1, &tmpCond);
 		int branchesright = 0;
 		int branchesleft = 0;
 		for (int y2 = 1; y2 < height; y2++) {
@@ -564,7 +660,7 @@ namespace BRules {
 				}
 			}
 		}
-		Layers::placeBlock({ pos.x, pos.y + height }, "leaves", glm::vec3(0.0f), 1.0f);
+		Layers::placeBlock({ pos.x, pos.y + height }, "leaves");
 		Layers::placeBlock({ pos.x, pos.y - 1 }, "dirt");
 		Layers::placeBlock({ pos.x + 1, pos.y - 1 }, "dirt");
 		Layers::placeBlock({ pos.x - 1, pos.y - 1 }, "dirt");
@@ -572,9 +668,9 @@ namespace BRules {
 	void growCorruptTree(BlockRuleArgs) {
 		std::vector<std::function<bool(BlockConditionArgs)>> tmpCond = {BConditions::isntreplacablebelow};
 		int height = rand() % 9 + 10;
-		Layers::placeBlock(pos, "corrupttrunkbase1", glm::vec3(0.0f), 1, &tmpCond);
-		Layers::placeBlock({ pos.x - 1, pos.y }, "corrupttrunkbase2", glm::vec3(0.0f), 1, &tmpCond);
-		Layers::placeBlock({ pos.x + 1, pos.y }, "corrupttrunkbase3", glm::vec3(0.0f), 1, &tmpCond);
+		Layers::placeBlock(pos, "corrupttrunkbase1", 1, &tmpCond);
+		Layers::placeBlock({ pos.x - 1, pos.y }, "corrupttrunkbase2", 1, &tmpCond);
+		Layers::placeBlock({ pos.x + 1, pos.y }, "corrupttrunkbase3", 1, &tmpCond);
 		int branchesright = 0;
 		int branchesleft = 0;
 		for (int y2 = 1; y2 < height; y2++) {
@@ -594,7 +690,7 @@ namespace BRules {
 				}
 			}
 		}
-		Layers::placeBlock({ pos.x, pos.y + height }, "corruptleaves", glm::vec3(0.0f), 1.0f);
+		Layers::placeBlock({ pos.x, pos.y + height }, "corruptleaves");
 		Layers::placeBlock({ pos.x, pos.y - 1 }, "dirt");
 		Layers::placeBlock({ pos.x + 1, pos.y - 1 }, "dirt");
 		Layers::placeBlock({ pos.x - 1, pos.y - 1 }, "dirt");
@@ -604,9 +700,9 @@ namespace BRules {
 	{
 		std::vector<std::function<bool(BlockConditionArgs)>> tmpCond = { BConditions::isntreplacablebelow };
 		int height = rand() % 10 + 8;
-		Layers::placeBlock(pos, "mahoganytrunkbase1", glm::vec3(0.0f), 1, &tmpCond);
-		Layers::placeBlock({ pos.x - 1, pos.y }, "mahoganytrunkbase2", glm::vec3(0.0f), 1, &tmpCond);
-		Layers::placeBlock({ pos.x + 1, pos.y }, "mahoganytrunkbase3", glm::vec3(0.0f), 1, &tmpCond);
+		Layers::placeBlock(pos, "mahoganytrunkbase1", 1, &tmpCond);
+		Layers::placeBlock({ pos.x - 1, pos.y }, "mahoganytrunkbase2", 1, &tmpCond);
+		Layers::placeBlock({ pos.x + 1, pos.y }, "mahoganytrunkbase3", 1, &tmpCond);
 		int branchesright = 0;
 		int branchesleft = 0;
 		for (int y2 = 1; y2 < height; y2++) {
@@ -626,7 +722,7 @@ namespace BRules {
 				}
 			}
 		}
-		Layers::placeBlock({ pos.x, pos.y + height }, "mahoganyleaves", glm::vec3(0.0f), 1.0f);
+		Layers::placeBlock({ pos.x, pos.y + height }, "mahoganyleaves");
 		Layers::placeBlock({ pos.x, pos.y - 1 }, "mud");
 		Layers::placeBlock({ pos.x + 1, pos.y - 1 }, "mud");
 		Layers::placeBlock({ pos.x - 1, pos.y - 1 }, "mud");
@@ -636,9 +732,9 @@ namespace BRules {
 	{
 		std::vector<std::function<bool(BlockConditionArgs)>> tmpCond = { BConditions::isntreplacablebelow };
 		int height = rand() % 4 + 15;
-		Layers::placeBlock(pos, "borealtrunkbase1", glm::vec3(0.0f), 1, &tmpCond);
-		Layers::placeBlock({ pos.x - 1, pos.y }, "borealtrunkbase2", glm::vec3(0.0f), 1, &tmpCond);
-		Layers::placeBlock({ pos.x + 1, pos.y }, "borealtrunkbase3", glm::vec3(0.0f), 1, &tmpCond);
+		Layers::placeBlock(pos, "borealtrunkbase1", 1, &tmpCond);
+		Layers::placeBlock({ pos.x - 1, pos.y }, "borealtrunkbase2", 1, &tmpCond);
+		Layers::placeBlock({ pos.x + 1, pos.y }, "borealtrunkbase3", 1, &tmpCond);
 		int branchesright = 0;
 		int branchesleft = 0;
 		for (int y2 = 1; y2 < height; y2++) {
@@ -658,7 +754,7 @@ namespace BRules {
 				}
 			}
 		}
-		Layers::placeBlock({ pos.x, pos.y + height }, "borealleaves", glm::vec3(0.0f), 1.0f);
+		Layers::placeBlock({ pos.x, pos.y + height }, "borealleaves", 1.0f);
 		Layers::placeBlock({ pos.x, pos.y - 1 }, "snow");
 		Layers::placeBlock({ pos.x + 1, pos.y - 1 }, "snow");
 		Layers::placeBlock({ pos.x - 1, pos.y - 1 }, "snow");
@@ -690,108 +786,118 @@ namespace BFuncs {
 		std::string b = *Layers::queryBlockName(Layers::getLayer("blocks"), pos);
 		
 		std::vector<std::function<bool(BlockConditionArgs)>> tmp = { BConditions::isreplacable };
+
+		int state = -1;
+
 		if (b == "door") {
 			if (Player::dir > 0) {
 				Layers::breakBlock(Layers::getLayer("blocks"), pos);
-				if (!Layers::placeBlock(pos, "doorright", { 0,0,0 }, 1, &tmp)) {
+				state = 0;
+				if (!Layers::placeBlock(pos, "doorright", 1, &tmp)) {
 					Layers::placeBlock(pos, "door");
 				}
 			}
 			else {
 				Layers::breakBlock(Layers::getLayer("blocks"), pos);
-				if (!Layers::placeBlock({ pos.x - 1, pos.y }, "doorleft", { 0,0,0 }, 1, &tmp)) {
+				if (!Layers::placeBlock({ pos.x - 1, pos.y }, "doorleft", 1, &tmp)) {
 					Layers::placeBlock(pos, "door");
 				}
 			}
-			return false;
 		}
 		else if (b == "doorright") {
 			Layers::breakBlock(Layers::getLayer("blocks"), pos);
-			Layers::placeBlock(pos, "door", { 0,0,0 }, 1, &tmp);
-			return false;
+			Layers::placeBlock(pos, "door", 1, &tmp);
+			state = 1;
 		}
 		else if (b == "doorleft") {
 			Layers::breakBlock(Layers::getLayer("blocks"), pos);
-			Layers::placeBlock({ pos.x + 1, pos.y }, "door", { 0,0,0 }, 1, &tmp);
-			return false;
+			Layers::placeBlock({ pos.x + 1, pos.y }, "door", 1, &tmp);
+			state = 1;
 		}
 
 		if (b == "borealdoor") {
 			if (Player::dir > 0) {
 				Layers::breakBlock(Layers::getLayer("blocks"), pos);
-				if (!Layers::placeBlock(pos, "borealdoorright", { 0,0,0 }, 1, &tmp)) {
+				state = 0;
+				if (!Layers::placeBlock(pos, "borealdoorright", 1, &tmp)) {
 					Layers::placeBlock(pos, "borealdoor");
 				}
 			}
 			else {
 				Layers::breakBlock(Layers::getLayer("blocks"), pos);
-				if (!Layers::placeBlock({ pos.x - 1, pos.y }, "borealdoorleft", { 0,0,0 }, 1, &tmp)) {
+				if (!Layers::placeBlock({ pos.x - 1, pos.y }, "borealdoorleft", 1, &tmp)) {
 					Layers::placeBlock(pos, "borealdoor");
 				}
 			}
-			return false;
 		}
 		else if (b == "borealdoorright") {
 			Layers::breakBlock(Layers::getLayer("blocks"), pos);
-			Layers::placeBlock(pos, "borealdoor", { 0,0,0 }, 1, &tmp);
-			return false;
+			Layers::placeBlock(pos, "borealdoor", 1, &tmp);
+			state = 1;
 		}
 		else if (b == "borealdoorleft") {
 			Layers::breakBlock(Layers::getLayer("blocks"), pos);
-			Layers::placeBlock({ pos.x + 1, pos.y }, "borealdoor", { 0,0,0 }, 1, &tmp);
-			return false;
+			Layers::placeBlock({ pos.x + 1, pos.y }, "borealdoor", 1, &tmp);
+			state = 1;
 		}
 
 		if (b == "mahoganydoor") {
 			if (Player::dir > 0) {
 				Layers::breakBlock(Layers::getLayer("blocks"), pos);
-				if (!Layers::placeBlock(pos, "mahoganydoorright", { 0,0,0 }, 1, &tmp)) {
+				state = 0;
+				if (!Layers::placeBlock(pos, "mahoganydoorright", 1, &tmp)) {
 					Layers::placeBlock(pos, "mahoganydoor");
 				}
 			}
 			else {
 				Layers::breakBlock(Layers::getLayer("blocks"), pos);
-				if (!Layers::placeBlock({ pos.x - 1, pos.y }, "mahoganydoorleft", { 0,0,0 }, 1, &tmp)) {
+				if (!Layers::placeBlock({ pos.x - 1, pos.y }, "mahoganydoorleft", 1, &tmp)) {
 					Layers::placeBlock(pos, "mahoganydoor");
 				}
 			}
-			return false;
 		}
 		else if (b == "mahoganydoorright") {
 			Layers::breakBlock(Layers::getLayer("blocks"), pos);
-			Layers::placeBlock(pos, "mahoganydoor", { 0,0,0 }, 1, &tmp);
-			return false;
+			Layers::placeBlock(pos, "mahoganydoor", 1, &tmp);
+			state = 1;
 		}
 		else if (b == "mahoganydoorleft") {
 			Layers::breakBlock(Layers::getLayer("blocks"), pos);
-			Layers::placeBlock({ pos.x + 1, pos.y }, "mahoganydoor", { 0,0,0 }, 1, &tmp);
-			return false;
+			Layers::placeBlock({ pos.x + 1, pos.y }, "mahoganydoor", 1, &tmp);
+			state = 1;
 		}
 
 		if (b == "ebonwooddoor") {
 			if (Player::dir > 0) {
 				Layers::breakBlock(Layers::getLayer("blocks"), pos);
-				if (!Layers::placeBlock(pos, "ebonwooddoorright", { 0,0,0 }, 1, &tmp)) {
+				state = 0;
+				if (!Layers::placeBlock(pos, "ebonwooddoorright", 1, &tmp)) {
 					Layers::placeBlock(pos, "ebonwooddoor");
 				}
 			}
 			else {
 				Layers::breakBlock(Layers::getLayer("blocks"), pos);
-				if (!Layers::placeBlock({ pos.x - 1, pos.y }, "ebonwooddoorleft", { 0,0,0 }, 1, &tmp)) {
+				if (!Layers::placeBlock({ pos.x - 1, pos.y }, "ebonwooddoorleft", 1, &tmp)) {
 					Layers::placeBlock(pos, "ebonwooddoor");
 				}
 			}
-			return false;
 		}
 		else if (b == "ebonwooddoorright") {
 			Layers::breakBlock(Layers::getLayer("blocks"), pos);
-			Layers::placeBlock(pos, "ebonwooddoor", { 0,0,0 }, 1, &tmp);
-			return false;
+			Layers::placeBlock(pos, "ebonwooddoor", 1, &tmp);
+			state = 1;
 		}
 		else if (b == "ebonwooddoorleft") {
 			Layers::breakBlock(Layers::getLayer("blocks"), pos);
-			Layers::placeBlock({ pos.x + 1, pos.y }, "ebonwooddoor", { 0,0,0 }, 1, &tmp);
-			return false;
+			Layers::placeBlock({ pos.x + 1, pos.y }, "ebonwooddoor", 1, &tmp);
+			state = 1;
+		}
+
+		if (state == 0) {
+			sounds::openDoor();
+		}
+		else if (state == 1) {
+			sounds::closeDoor();
 		}
 
 		return false;
@@ -811,6 +917,7 @@ namespace BFuncs {
 	}
 	bool chestOnBreak(BlockFuncArgs)
 	{
+		if (game::currScene != GAME) return false;
 		int c = Layers::vecToInt(pos);
 		if (Layers::chests.count(c) >= 1) {
 			for (auto& i : Layers::chests[c].items) {
@@ -829,6 +936,9 @@ namespace BFuncs {
 	}
 	bool potOnBreak(BlockFuncArgs)
 	{
+		if (game::currScene != GAME) return false;
+		particles::dropGore(pos, "pot");
+
 		//https://terraria.fandom.com/wiki/Pot
 		int choice = rand() % 6;
 		switch (choice) {
@@ -893,8 +1003,10 @@ namespace BFuncs {
 				game::droppedItemSys->dropItem(pos, "coppercoin", 1);
 			}
 
-			return false;
 		}
+
+
+		return false;
 	}
 	bool craftingStationOnUpdate(BlockFuncArgs)
 	{
@@ -950,15 +1062,28 @@ namespace BFuncs {
 		Player::addBuff(info->buff, 10);
 		return true;
 	}
-	bool demonAltarOnBreak(BlockFuncArgs)
+	bool shadoworbOnBreak(BlockFuncArgs)
 	{
-		map::demonaltarsbroken++;
-		if (map::demonaltarsbroken % 3 == 0) {
-			enemies::spawnEnemy("eaterofworlds", pos + glm::vec2(rand() % 100 - 50, -100 - rand() % 50));
+		if (game::currScene != GAME) return false;
+		map::shadoworbsbroken++;
+		if (map::shadoworbsbroken % 3 == 0) {
+			enemies::spawnEnemy("eaterofworldshead", pos + glm::vec2(rand() % 100 - 50, -100 - rand() % 50));
 		}
 		if (rand() % 3 == 0) {
 			game::droppedItemSys->dropItem(pos, "vilethorn", 1, true);
 		}
+		return false;
+	}
+	bool hellstoneOnBreak(BlockFuncArgs)
+	{
+		if (game::currScene != GAME) return false;
+		liquids::place("lava", pos, 14);
+		return false;
+	}
+	bool grasssoundOnBreak(BlockFuncArgs)
+	{
+		if(game::currScene == GAME)
+		sounds::grass();
 		return false;
 	}
 }
@@ -1052,4 +1177,9 @@ bool BConditions::bottle(BlockConditionArgs)
 		}
 	}
 	return true;
+}
+
+bool BConditions::isempty(BlockConditionArgs)
+{
+	return Layers::isAreaEmpty(pos, info->size);
 }

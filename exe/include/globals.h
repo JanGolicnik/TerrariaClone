@@ -24,10 +24,13 @@ namespace globals {
 	extern GLuint lightShaderID;
 	extern GLuint zoomShaderID;
 	extern GLuint bloomShaderID;
+	extern GLuint waterShaderID;
 
 	extern GLuint broken1Tex;
 	extern GLuint broken2Tex;
 	extern GLuint broken3Tex;
+
+	extern GLuint liquidTex;
 
 	extern glm::vec3 dayclr;
 	extern glm::vec3 noonclr;
@@ -74,14 +77,13 @@ namespace globals {
 	extern float cheaterlight;
 
 	extern float bgoffset;
+	extern float bgoffsetY;
 	
 	extern float fontSize;
 	extern glm::vec3 textHightlightColor;
 	extern glm::vec3 textColor;
 	extern glm::vec3 itemslotColor;
 	extern glm::vec3 selecteditemslotColor;
-	extern irrklang::ISoundEngine* engine;
-	extern float volume;
 	extern float transparency;
 	extern bool fullscreen;
 
@@ -89,8 +91,32 @@ namespace globals {
 
 	extern glm::vec3 tooltipcolor;
 
+	extern bool pickuptext;
+	extern bool tilegrid;
+	extern bool hovertext;
+	extern bool particles;
+	extern float cursorhue;
+	extern float cursorborderhue;
+	extern float cursorsaturation;
+	extern float cursorbordersaturation;
+	extern float cursorvalue;
+	extern float cursorbordervalue;
+	extern float cursorsize;
+
+	extern glm::vec3 backcolor1;
+	extern glm::vec3 backcolor2;
+	extern glm::vec3 backcolor3;
+	extern glm::vec3 buttonhovercolor;
+	extern glm::vec3 buttonborderhovercolor;
+	extern glm::vec3 blackcolor;
+	extern glm::vec3 keybindcolor;
+
+	extern int waterid;
+
+	extern bool background;
+
+	glm::vec2 mouseBlockCoordsGlobal(bool round = true, glm::vec2 clampx = glm::vec2(-0.5, 0.5), glm::vec2 clampy = glm::vec2(-0.5, 0.5));
 	glm::vec2 mouseBlockCoords(bool round = true, glm::vec2 clampx = glm::vec2(-0.5, 0.5), glm::vec2 clampy = glm::vec2(-0.5, 0.5));
-	glm::vec2 mouseBlockCoordsZoomed(bool round = true, glm::vec2 clampx = glm::vec2(-0.5, 0.5), glm::vec2 clampy = glm::vec2(-0.5, 0.5));
 	glm::vec2 normMouseCoords();
 	glm::vec2 mouseCoords();
 }

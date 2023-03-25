@@ -27,10 +27,7 @@ namespace ECS {
 
     bool entityExists(int entityid)
     {
-        if (entities.count(entityid) >= 1) {
-            return true;
-        }
-        return false;
+        return entities.count(entityid) >= 1;
     }
 
     void commitQueues()

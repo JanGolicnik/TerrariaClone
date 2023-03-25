@@ -11,6 +11,8 @@
 #include <game.h>
 #include <world.h>
 #include <liquids.h>
+#include <sounds.h>
+#include <particles.h>
 
 namespace blocks {
 	std::unordered_map<std::string, BlockInfo> nameToInfo;
@@ -55,7 +57,7 @@ namespace blocks {
 		{-16, -16, -16 ,-16}, // ena spodi ena levo 12
 		{-16, -29, -16, -29}, //levo zgori spodi 13
 		{-29, -16, -29, -16}, //levo spodi desno 14
-		{-25, -25, -33, -33} //vse okol 15
+		{-25, -25, -34, -34} //vse okol 15
 	};
 
 	glm::vec4 torchSc[4] = {
@@ -78,21 +80,6 @@ namespace blocks {
 	{8,0,8,0},
 	{16,0,16,0},
 	{24,0,24,0}
-	};
-
-	glm::vec4 smallrockSc[6] = {
-		{0,0,0,0},
-		{8,0,8,0},
-		{16,0,16,0},
-		{24,0,24,0},
-		{32,0,32,0},
-		{40,0,40,0}
-	};
-
-	glm::vec4 mediumrockSc[3] = {
-		{0,0,0,0},
-		{16,0,16,0},
-		{32,0,32,0}
 	};
 
 	glm::vec4 platformSc[8] = {
@@ -118,6 +105,8 @@ namespace blocks {
 	{-16,16,-16,16}
 	};
 
+	int nextnumsprites = -1;
+
 	void addBlock(std::string name, std::string texture, bool collidable, bool solid, std::string itemname, std::string layer,
 		bool updates, SpriteType spriteType, glm::vec2 size, float friction,
 		std::vector<std::function<bool(BlockConditionArgs)>> placeConditions, bool updateLeft, bool updateTop, bool updateBot, bool updateRight) {
@@ -126,6 +115,7 @@ namespace blocks {
 			int id = addToBuffer(texture, size, spriteType);
 			BlockInfo tmp;
 			tmp.life = 100;
+			tmp.collidable = collidable;
 			tmp.collidableTop = collidable;
 			tmp.collidableBot = collidable;
 			tmp.collidableLeft = collidable;
@@ -150,6 +140,10 @@ namespace blocks {
 			tmp.onUpdate = BFuncs::nothing;
 			tmp.updates = updates;
 			tmp.biome = "none";
+			if (nextnumsprites != -1) {
+				tmp.numsprites = nextnumsprites;
+				nextnumsprites = -1;
+			}
 			nameToInfo.insert(std::make_pair(name, tmp));
 			idToInfo.insert(std::make_pair(id, tmp));
 			idToName.insert(std::make_pair(id, name));
@@ -216,6 +210,7 @@ namespace blocks {
 	}
 	void addBiome(std::string name, std::string biome)
 	{
+		if (Layers::biomes.count(biome) <= 0) return;
 		nameToInfo[name].biome = biome;
 		idToInfo[nameToID[name]].biome = biome;
 	}
@@ -303,6 +298,9 @@ namespace blocks {
 	int addToBuffer(std::string texture, glm::vec2 size, SpriteType st)
 	{
 		std::vector<PremadeBlock> vec;
+
+		glm::vec4 spritesheet = glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
+
 		switch (st) {
 			case st_SINGLE:
 			{
@@ -328,11 +326,11 @@ namespace blocks {
 					}
 				}
 			}	break;
-			case st_BLOCK:
+			case st_BLOCK: {
 				PremadeBlock tmp;
 				auto vertices = utils::CreateQuad(0, 0, textures::nametocoords[texture]->coords, { 0,0,0 }, textures::nametocoords[texture]->size);
 				for (int i = 0; i < 16; i++) {
-					glm::vec4 sC = (glm::vec4(blockSc[i].x, blockSc[i].y, blockSc[i].x, blockSc[i].y) * glm::vec4(8.0f)) / glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
+					glm::vec4 sC = (glm::vec4(blockSc[i].x, blockSc[i].y, blockSc[i].x, blockSc[i].y) * glm::vec4(8.0f)) / spritesheet;
 
 					tmp.v0 = vertices[0];
 					tmp.v1 = vertices[1];
@@ -343,14 +341,14 @@ namespace blocks {
 					tmp.v1.SpriteCoords += glm::vec2(sC.b, sC.g);
 					tmp.v2.SpriteCoords += glm::vec2(sC.b, sC.a);
 					tmp.v3.SpriteCoords += glm::vec2(sC.r, sC.a);
-					
+
 					vec.push_back(tmp);
 				}
-				break;
+			}	break;
 			case st_TORCH: {
 				PremadeBlock tmp;
 				for (int i = 0; i < 4; i++) {
-					glm::vec4 sC = torchSc[i] / glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
+					glm::vec4 sC = torchSc[i] / spritesheet;
 					auto vertices = utils::CreateQuad(0, 0, textures::nametocoords[texture]->coords + sC, { 0,0,0 }, textures::nametocoords[texture]->size);
 
 					tmp.v0 = vertices[0];
@@ -367,7 +365,7 @@ namespace blocks {
 			{
 				PremadeBlock tmp;
 				for (int i = 0; i < 15; i++) {
-					glm::vec4 sC = glm::vec4(wallSc[i].x, wallSc[i].y, wallSc[i].x, wallSc[i].y) / glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
+					glm::vec4 sC = glm::vec4(wallSc[i].x, wallSc[i].y, wallSc[i].x, wallSc[i].y) / spritesheet;
 					auto vertices = utils::CreateQuad(0, 0, textures::nametocoords[texture]->coords + sC, { 0,0,0 }, textures::nametocoords[texture]->size);
 
 					tmp.v0 = vertices[0];
@@ -378,8 +376,8 @@ namespace blocks {
 					vec.push_back(tmp);
 				}
 
-				glm::vec4 sC = glm::vec4(wallSc[15].x, wallSc[15].y, wallSc[15].x, wallSc[15].y) / glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
-				
+				glm::vec4 sC = glm::vec4(wallSc[15].x, wallSc[15].y, wallSc[15].z, wallSc[15].w) / spritesheet;
+				auto vertices = utils::CreateQuad(0, 0, textures::nametocoords[texture]->coords + sC, { 0,0,0 }, { 1, 1 });
 				tmp.v0 = vertices[0];
 				tmp.v1 = vertices[1];
 				tmp.v2 = vertices[2];
@@ -390,7 +388,7 @@ namespace blocks {
 			case st_GRASS: {
 				PremadeBlock tmp;
 				for (int i = 0; i < 5; i++) {
-					glm::vec4 sC = grassSc[i] / glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
+					glm::vec4 sC = grassSc[i] / spritesheet;
 					auto vertices = utils::CreateQuad(0, 0, textures::nametocoords[texture]->coords + sC, { 0,0,0 }, textures::nametocoords[texture]->size);
 
 					tmp.v0 = vertices[0];
@@ -418,7 +416,7 @@ namespace blocks {
 			case st_STALAKTIT: {
 				PremadeBlock tmp;
 				for (int i = 0; i < 3; i++) {
-					glm::vec4 sC = stalaktitSc[i] / glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
+					glm::vec4 sC = stalaktitSc[i] / spritesheet;
 					auto vertices = utils::CreateQuad(0, 0, textures::nametocoords[texture]->coords + sC, { 0,0,0 }, textures::nametocoords[texture]->size);
 
 					tmp.v0 = vertices[0];
@@ -446,7 +444,7 @@ namespace blocks {
 			case st_STALAGMIT: {
 				PremadeBlock tmp;
 				for (int i = 0; i < 3; i++) {
-					glm::vec4 sC = stalaktitSc[i] / glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
+					glm::vec4 sC = stalaktitSc[i] / spritesheet;
 					auto vertices = utils::CreateQuad(0, 0, textures::nametocoords[texture]->coords + sC, { 0,0,0 }, textures::nametocoords[texture]->size);
 
 					tmp.v0 = vertices[0];
@@ -471,67 +469,39 @@ namespace blocks {
 				}
 			}
 			break;
-			case st_MEDIUMROCK: {
+			case st_MULTISPRITE: {
 				PremadeBlock tmp;
-				for (int i = 0; i < 3; i++) {
-					glm::vec4 sC = stalaktitSc[i] / glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
-					auto vertices = utils::CreateQuad(0, 0, textures::nametocoords[texture]->coords + sC, { 0,0,0 }, textures::nametocoords[texture]->size);
+				glm::vec4 coords = textures::nametocoords[texture]->coords;
+				float w = coords.b - coords.r;
+				float h = coords.a - coords.g;
+				glm::vec2 s = textures::nametocoords[texture]->size;
+				for (int i = 0; i < nextnumsprites; i++) {
 
-					tmp.v0 = vertices[0];
-					tmp.v1 = vertices[1];
-					tmp.v2 = vertices[2];
-					tmp.v3 = vertices[3];
+					for (int x = 0; x < size.x; x++) {
+						for (int y = 0; y < size.y; y++) {
+							coords = textures::nametocoords[texture]->coords;
+							float difx = w * x;
+							float dify = h * y;
 
-					vec.push_back(tmp);
+							coords += glm::vec4((w * i * size.x) + difx, dify, (w * i * size.x) + difx, dify);
+							auto vertices = utils::CreateQuad(0, 0, coords, { 0,0,0 }, s);
 
-					sC = textures::nametocoords[texture]->coords + sC;
-					float difx = (sC.b - sC.r);
-					sC.r += difx;
-					sC.b += difx;
-					vertices = utils::CreateQuad(0, 0, sC, { 0,0,0 }, textures::nametocoords[texture]->size);
+							tmp.v0 = vertices[0];
+							tmp.v1 = vertices[1];
+							tmp.v2 = vertices[2];
+							tmp.v3 = vertices[3];
 
-					tmp.v0 = vertices[0];
-					tmp.v1 = vertices[1];
-					tmp.v2 = vertices[2];
-					tmp.v3 = vertices[3];
+							vec.push_back(tmp);
+						}
+					}
 
-					vec.push_back(tmp);
-				}
-			}
-			break;
-			case st_SMALLROCK: {
-				PremadeBlock tmp;
-				for (int i = 0; i < 6; i++) {
-					glm::vec4 sC = smallrockSc[i] / glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
-					auto vertices = utils::CreateQuad(0, 0, textures::nametocoords[texture]->coords + sC, { 0,0,0 }, textures::nametocoords[texture]->size);
-
-					tmp.v0 = vertices[0];
-					tmp.v1 = vertices[1];
-					tmp.v2 = vertices[2];
-					tmp.v3 = vertices[3];
-
-					vec.push_back(tmp);
 				}
 			}
 			break;
 			case st_PLATFORM: {
 				PremadeBlock tmp;
 				for (int i = 0; i < 8; i++) {
-					glm::vec4 sC = platformSc[i] / glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
-					auto vertices = utils::CreateQuad(0, 0, textures::nametocoords[texture]->coords + sC, { 0,0,0 }, textures::nametocoords[texture]->size);
-
-					tmp.v0 = vertices[0];
-					tmp.v1 = vertices[1];
-					tmp.v2 = vertices[2];
-					tmp.v3 = vertices[3];
-
-					vec.push_back(tmp);
-				}
-
-			case st_WATER: {
-				PremadeBlock tmp;
-				for (int i = 0; i < 9; i++) {
-					glm::vec4 sC = waterSc[i] / glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
+					glm::vec4 sC = platformSc[i] / spritesheet;
 					auto vertices = utils::CreateQuad(0, 0, textures::nametocoords[texture]->coords + sC, { 0,0,0 }, textures::nametocoords[texture]->size);
 
 					tmp.v0 = vertices[0];
@@ -542,12 +512,25 @@ namespace blocks {
 					vec.push_back(tmp);
 				}
 			}
+			case st_WATER: {
+				PremadeBlock tmp;
+				for (int i = 0; i < 9; i++) {
+					glm::vec4 sC = waterSc[i] / spritesheet;
+					auto vertices = utils::CreateQuad(0, 0, textures::nametocoords[texture]->coords + sC, { 0,0,0 }, textures::nametocoords[texture]->size);
+
+					tmp.v0 = vertices[0];
+					tmp.v1 = vertices[1];
+					tmp.v2 = vertices[2];
+					tmp.v3 = vertices[3];
+
+					vec.push_back(tmp);
+				}
 			}
 		 break;
 			case st_VINES: {
 				PremadeBlock tmp;
 				for (int i = 0; i < 5; i++) {
-					glm::vec4 sC = glm::vec4(8*i,0,8*i,0) / glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
+					glm::vec4 sC = glm::vec4(8*i,0,8*i,0) / spritesheet;
 					auto vertices = utils::CreateQuad(0, 0, textures::nametocoords[texture]->coords + sC, { 0,0,0 }, textures::nametocoords[texture]->size);
 
 					tmp.v0 = vertices[0];
@@ -558,7 +541,7 @@ namespace blocks {
 					vec.push_back(tmp);
 				}
 				for (int i = 0; i < 5; i++) {
-					glm::vec4 sC = glm::vec4(8 * i, 8, 8 * i, 8) / glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
+					glm::vec4 sC = glm::vec4(8 * i, 8, 8 * i, 8) / spritesheet;
 					auto vertices = utils::CreateQuad(0, 0, textures::nametocoords[texture]->coords + sC, { 0,0,0 }, textures::nametocoords[texture]->size);
 
 					tmp.v0 = vertices[0];
@@ -619,11 +602,12 @@ namespace blocks {
 		blockBuffer.push_back(vec);
 		return blockBuffer.size() - 1;
 	}
-	void addDecor(std::string block, float chance, std::set<std::string> ontop, std::set<std::string> onbot, std::set<std::string> onleft, std::set<std::string> onright)
+	void addDecor(std::string block, float chance, std::string height, std::set<std::string> ontop, std::set<std::string> onbot, std::set<std::string> onleft, std::set<std::string> onright)
 	{
 		Decor tmp;
 		tmp.block = block;
 		tmp.chance = chance;
+		tmp.height = height;
 		tmp.onbot = onbot;
 		tmp.ontop = ontop;
 		tmp.onleft = onleft;
@@ -634,6 +618,10 @@ namespace blocks {
 	float potCoinMod(glm::vec2)
 	{
 		return 1.0f;
+	}
+	void setNextNumSprites(int n)
+	{
+		nextnumsprites = n;
 	}
 }
 
@@ -801,9 +789,13 @@ namespace BFuncs {
 		std::string b = *Layers::queryBlockName(Layers::getLayer("blocks"), pos);
 		
 		std::vector<std::function<bool(BlockConditionArgs)>> tmp = { BConditions::isreplacable };
+
+		int state = -1;
+
 		if (b == "door") {
 			if (Player::dir > 0) {
 				Layers::breakBlock(Layers::getLayer("blocks"), pos);
+				state = 0;
 				if (!Layers::placeBlock(pos, "doorright", 1, &tmp)) {
 					Layers::placeBlock(pos, "door");
 				}
@@ -814,22 +806,22 @@ namespace BFuncs {
 					Layers::placeBlock(pos, "door");
 				}
 			}
-			return false;
 		}
 		else if (b == "doorright") {
 			Layers::breakBlock(Layers::getLayer("blocks"), pos);
 			Layers::placeBlock(pos, "door", 1, &tmp);
-			return false;
+			state = 1;
 		}
 		else if (b == "doorleft") {
 			Layers::breakBlock(Layers::getLayer("blocks"), pos);
 			Layers::placeBlock({ pos.x + 1, pos.y }, "door", 1, &tmp);
-			return false;
+			state = 1;
 		}
 
 		if (b == "borealdoor") {
 			if (Player::dir > 0) {
 				Layers::breakBlock(Layers::getLayer("blocks"), pos);
+				state = 0;
 				if (!Layers::placeBlock(pos, "borealdoorright", 1, &tmp)) {
 					Layers::placeBlock(pos, "borealdoor");
 				}
@@ -840,22 +832,22 @@ namespace BFuncs {
 					Layers::placeBlock(pos, "borealdoor");
 				}
 			}
-			return false;
 		}
 		else if (b == "borealdoorright") {
 			Layers::breakBlock(Layers::getLayer("blocks"), pos);
 			Layers::placeBlock(pos, "borealdoor", 1, &tmp);
-			return false;
+			state = 1;
 		}
 		else if (b == "borealdoorleft") {
 			Layers::breakBlock(Layers::getLayer("blocks"), pos);
 			Layers::placeBlock({ pos.x + 1, pos.y }, "borealdoor", 1, &tmp);
-			return false;
+			state = 1;
 		}
 
 		if (b == "mahoganydoor") {
 			if (Player::dir > 0) {
 				Layers::breakBlock(Layers::getLayer("blocks"), pos);
+				state = 0;
 				if (!Layers::placeBlock(pos, "mahoganydoorright", 1, &tmp)) {
 					Layers::placeBlock(pos, "mahoganydoor");
 				}
@@ -866,22 +858,22 @@ namespace BFuncs {
 					Layers::placeBlock(pos, "mahoganydoor");
 				}
 			}
-			return false;
 		}
 		else if (b == "mahoganydoorright") {
 			Layers::breakBlock(Layers::getLayer("blocks"), pos);
 			Layers::placeBlock(pos, "mahoganydoor", 1, &tmp);
-			return false;
+			state = 1;
 		}
 		else if (b == "mahoganydoorleft") {
 			Layers::breakBlock(Layers::getLayer("blocks"), pos);
 			Layers::placeBlock({ pos.x + 1, pos.y }, "mahoganydoor", 1, &tmp);
-			return false;
+			state = 1;
 		}
 
 		if (b == "ebonwooddoor") {
 			if (Player::dir > 0) {
 				Layers::breakBlock(Layers::getLayer("blocks"), pos);
+				state = 0;
 				if (!Layers::placeBlock(pos, "ebonwooddoorright", 1, &tmp)) {
 					Layers::placeBlock(pos, "ebonwooddoor");
 				}
@@ -892,17 +884,23 @@ namespace BFuncs {
 					Layers::placeBlock(pos, "ebonwooddoor");
 				}
 			}
-			return false;
 		}
 		else if (b == "ebonwooddoorright") {
 			Layers::breakBlock(Layers::getLayer("blocks"), pos);
 			Layers::placeBlock(pos, "ebonwooddoor", 1, &tmp);
-			return false;
+			state = 1;
 		}
 		else if (b == "ebonwooddoorleft") {
 			Layers::breakBlock(Layers::getLayer("blocks"), pos);
 			Layers::placeBlock({ pos.x + 1, pos.y }, "ebonwooddoor", 1, &tmp);
-			return false;
+			state = 1;
+		}
+
+		if (state == 0) {
+			sounds::openDoor();
+		}
+		else if (state == 1) {
+			sounds::closeDoor();
 		}
 
 		return false;
@@ -922,6 +920,7 @@ namespace BFuncs {
 	}
 	bool chestOnBreak(BlockFuncArgs)
 	{
+		if (game::currScene != GAME) return false;
 		int c = Layers::vecToInt(pos);
 		if (Layers::chests.count(c) >= 1) {
 			for (auto& i : Layers::chests[c].items) {
@@ -940,6 +939,9 @@ namespace BFuncs {
 	}
 	bool potOnBreak(BlockFuncArgs)
 	{
+		if (game::currScene != GAME) return false;
+		particles::dropGore(pos, "pot");
+
 		//https://terraria.fandom.com/wiki/Pot
 		int choice = rand() % 6;
 		switch (choice) {
@@ -985,9 +987,9 @@ namespace BFuncs {
 			int coins = (rand() % 1000) / 1000.0f * 280 + 80;
 			coins *= blocks::potCoinMod(pos);
 
-			int numPlatinum = coins / 1000000;
+			int numPlatinum = coins / 1'000'000;
 			coins %= 1000000;
-			int numGold = coins / 10000;
+			int numGold = coins / 10'000;
 			coins %= 10000;
 			int numSilver = coins / 100;
 			coins %= 100;
@@ -1004,8 +1006,10 @@ namespace BFuncs {
 				game::droppedItemSys->dropItem(pos, "coppercoin", 1);
 			}
 
-			return false;
 		}
+
+
+		return false;
 	}
 	bool craftingStationOnUpdate(BlockFuncArgs)
 	{
@@ -1063,6 +1067,7 @@ namespace BFuncs {
 	}
 	bool shadoworbOnBreak(BlockFuncArgs)
 	{
+		if (game::currScene != GAME) return false;
 		map::shadoworbsbroken++;
 		if (map::shadoworbsbroken % 3 == 0) {
 			enemies::spawnEnemy("eaterofworldshead", pos + glm::vec2(rand() % 100 - 50, -100 - rand() % 50));
@@ -1074,7 +1079,14 @@ namespace BFuncs {
 	}
 	bool hellstoneOnBreak(BlockFuncArgs)
 	{
+		if (game::currScene != GAME) return false;
 		liquids::place("lava", pos, 14);
+		return false;
+	}
+	bool grasssoundOnBreak(BlockFuncArgs)
+	{
+		if(game::currScene == GAME)
+		sounds::grass();
 		return false;
 	}
 }
@@ -1168,4 +1180,9 @@ bool BConditions::bottle(BlockConditionArgs)
 		}
 	}
 	return true;
+}
+
+bool BConditions::isempty(BlockConditionArgs)
+{
+	return Layers::isAreaEmpty(pos, info->size);
 }

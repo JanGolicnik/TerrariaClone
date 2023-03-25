@@ -78,8 +78,10 @@ enum UIFunction {
     ui_BACK,
     ui_BUFF,
     ui_BOSSBAR,
-    ui_RADIAL
-    
+    ui_RADIAL,
+    ui_LOGO,
+    ui_KEYBIND,
+    ui_INFOFORCRAFTING,
 };
 
 struct OverlayVertex {
@@ -112,12 +114,11 @@ enum SpriteType {
     st_STALAGMIT,
     st_SMALLROCK,
     st_MEDIUMROCK,
-    st_PLATFORM
-};
-
-struct light {
-    glm::vec2 pos;
-    glm::vec3 light;
+    st_PLATFORM,
+    st_WATER,
+    st_VINES,
+    st_POT,
+    st_MULTISPRITE
 };
 
 enum frametype {

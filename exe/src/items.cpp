@@ -15,6 +15,8 @@
 #include <sstream>
 #include <iomanip>
 
+
+
 #define args std::string item, int ent
 namespace items
 {
@@ -24,9 +26,9 @@ namespace items
 	std::unordered_map<std::string, naturalChest> naturalChests;
 	std::unordered_map<std::string, itemChance> potItems;
 	std::unordered_map<std::string, std::function<void(mobC*, physicsC*)>> buffs;
-	std::unordered_map<std::string, std::function<void()>> setBonuses;
+	std::unordered_map<std::string, setBonus> setBonuses;
 
-	void addItem(std::string itemName, std::string tex,
+	void addItem(std::string itemName, std::string displayName, std::string tex,
 		std::vector<std::function<void(args)>> onleftclick,
 		float useSpeed, std::set<itemFamily> families,
 		std::unordered_map<std::string, itemStat> stats, std::vector<std::function<bool(itemconditionargs)>> conditions, itemAnim animType, float sizeMod)
@@ -34,6 +36,7 @@ namespace items
 		if (info.count(itemName) >= 1) return;
 		itemInfo tmp;
 		tmp.tex = tex;
+		tmp.displayName = displayName;
 		tmp.onleftclick = onleftclick;
 		tmp.stats = stats;
 		tmp.conditions = conditions;
@@ -54,6 +57,7 @@ namespace items
 		for (int i = 0; i < rec.items.size(); i++) {
 			if (info.count(rec.items[i].item) >= 1) {
 				info[rec.items[i].item].inRecipes.push_back(index);
+				info[rec.items[i].item].families.insert(if_MATERIAL);
 			}
 		}
 	}
@@ -117,6 +121,12 @@ namespace items
 			info[item].light = light;
 		}
 	}
+	void addSound(const char* item, void(*func)())
+	{
+		if (info.count(item) >= 1) {
+			info[item].soundsfunc = func;
+		}
+	}
 	void addSizeMod(const char* item, float sizemod)
 	{
 		if (info.count(item) >= 1) {
@@ -157,9 +167,9 @@ namespace items
 			info[item].set = set;
 		}
 	}
-	void addSet(std::string set, std::function<void()> func)
+	void addSet(std::string set, std::function<void()> func, std::string description)
 	{
-		setBonuses.insert(std::make_pair(set, func));
+		setBonuses.insert(std::make_pair(set, setBonus(func, description)));
 	}
 
 
@@ -266,12 +276,12 @@ namespace itemFuncs {
 	}
 
 	void place(args) {
-		glm::vec2 coords = globals::mouseBlockCoordsZoomed();
+		glm::vec2 coords = globals::mouseBlockCoords();
 		float dist = sqrt(pow(coords.x - Player::pos.x, 2) + pow(coords.y - Player::pos.y, 2));
 		if (dist < Player::editRange) {
 			auto blocks = Layers::getLayer("blocks");
 			std::string places = items::getStatT(item, "places").data();
-			if (Layers::placeBlock(coords, places, glm::vec3(0), Player::editsize, &blocks::nameToInfo[places].conditions)) {
+			if (Layers::placeBlock(coords, places, Player::editsize, &blocks::nameToInfo[places].conditions)) {
 				removeAmmo(item, ent);
 				Layers::updateBlock(Layers::getLayer("blocks"), coords);
 				Layers::updateBlock(Layers::getLayer("bg"), coords);
@@ -282,30 +292,51 @@ namespace itemFuncs {
 
 	void placeSapling(args)
 	{
-		glm::vec2 coords = globals::mouseBlockCoordsZoomed();
+		glm::vec2 coords = globals::mouseBlockCoords();
 		coords.y--;
 		auto block = Layers::queryBlockName(Layers::getLayer("blocks"), coords);
 		coords.y++;
 		if (*block == "grass") {
-			Layers::placeBlock(coords, "sapling", { 0,0,0 }, 1, &blocks::nameToInfo["sapling"].conditions);
+			Layers::placeBlock(coords, "sapling", 1, &blocks::nameToInfo["sapling"].conditions);
 		}else if(*block == "junglegrass") {
-			Layers::placeBlock(coords, "mahoganysapling", { 0,0,0 }, 1, &blocks::nameToInfo["mahoganysapling"].conditions);
+			Layers::placeBlock(coords, "mahoganysapling", 1, &blocks::nameToInfo["mahoganysapling"].conditions);
 
 		}else if(*block == "corruptgrass") {
-			Layers::placeBlock(coords, "corruptsapling", { 0,0,0 }, 1, &blocks::nameToInfo["corruptsapling"].conditions);
+			Layers::placeBlock(coords, "corruptsapling", 1, &blocks::nameToInfo["corruptsapling"].conditions);
 
 		}else if (*block == "snow") {
-			Layers::placeBlock(coords, "borealsapling", { 0,0,0 }, 1, &blocks::nameToInfo["borealsapling"].conditions);
+			Layers::placeBlock(coords, "borealsapling", 1, &blocks::nameToInfo["borealsapling"].conditions);
 
 		}
 	}
 
 	void dig(args) {
-		glm::vec2 coords = globals::mouseBlockCoordsZoomed();
+		auto blocks = Layers::getLayer("blocks");
+		auto bg = Layers::getLayer("bg");
+		glm::vec2 coords = globals::mouseBlockCoords();
 		float dist = sqrt(pow(coords.x - Player::pos.x, 2) + pow(coords.y - Player::pos.y, 2));
 		if (dist < Player::editRange) {
-			if (Layers::damageBlock(Layers::getLayer(items::getStatT(item, "layer", "blocks")), coords, items::getStat(item, "digstrength", {.valueFloat = 0}).valueFloat, Player::editsize, true, items::getInfo(item))) {
-				sounds::digSound();
+			auto info = items::getInfo(item);
+			if (info->families.count(if_PICKAXE) > 0) {
+				float digstrength = items::getStat(item, "digstrength", { .valueFloat = 0 }).valueFloat;
+				if (Layers::damageBlock(blocks, coords, digstrength , Player::editsize, true, if_PICKAXE)) {
+					sounds::digSound();
+				}
+			}
+			if (info->families.count(if_HAMMER) > 0) {
+				float hammerstrength = items::getStat(item, "hammerstrength", { .valueFloat = 0 }).valueFloat;
+				if (Layers::damageBlock(bg, coords, hammerstrength, Player::editsize, true, if_HAMMER)) {
+					sounds::digSound();
+				}
+				if (Layers::damageBlock(blocks, coords, hammerstrength, Player::editsize, true, if_HAMMER)) {
+					sounds::digSound();
+				}
+			}
+			if (info->families.count(if_AXE) > 0) {
+				float axestrength = items::getStat(item, "axestrength", { .valueFloat = 0 }).valueFloat;
+				if (Layers::damageBlock(blocks, coords, axestrength, Player::editsize, true, if_AXE)) {
+					sounds::digSound();
+				}
 			}
 		}
 	}
@@ -326,7 +357,7 @@ namespace itemFuncs {
 		projectile.pc.bounce += items::getStat(item, "projectileBounce").valueBool;
 		projectile.pc.size += items::getStat(item, "projectileHitbox").valueVec2;
 		float spread = ((rand()%1000)/500.0f - 1) * items::getStat(item, "projectileSpread").valueFloat;
-		glm::vec2 target = globals::mouseBlockCoordsZoomed(false) - Player::pos;
+		glm::vec2 target = globals::mouseBlockCoords(false) - Player::pos;
 		float angleRad = spread * PI / 180.0f;
 		glm::vec2 vel = glm::normalize(target);
 		vel.x = cos(angleRad) * vel.x - sin(angleRad) * vel.y;
@@ -366,7 +397,7 @@ namespace itemFuncs {
 		auto ppos = std::make_shared<glm::vec2>(Player::pos);
 		projectile.dc.position = ppos;
 		projectile.pc.position = ppos;
-		projectile.pc.vel = glm::normalize(globals::mouseBlockCoordsZoomed(false) - Player::pos);
+		projectile.pc.vel = glm::normalize(globals::mouseBlockCoords(false) - Player::pos);
 
 		drawSystem::addComponent(e, &projectile.dc, false);
 		ECS::queueComponent<physicsC>(e, projectile.pc);
@@ -378,16 +409,24 @@ namespace itemFuncs {
 	}
 	void throwSelf(args)
 	{
-		enemies::spawnEnemy("bomb", Player::center, glm::normalize(globals::mouseBlockCoordsZoomed(false) - Player::center));
+		enemies::spawnEnemy("bomb", Player::center, false, glm::normalize(globals::mouseBlockCoords(false) - Player::center));
 	}
 	void removeAmmo(args)
 	{
-		if(!UI::hotbar->remove(items::getStatT(item, "ammo").data()))
-		UI::inventory->remove(items::getStatT(item, "ammo").data());
+		std::string ammo = items::getStatT(item, "ammo").data();
+		if (UI::hotbar->remove(ammo)) return;
+		if (UI::inventory->remove(ammo)) return;
+		if (UI::cursorItem.item == item) {
+			UI::cursorItem.num--;
+			if (UI::cursorItem.num <= 0) {
+				UI::cursorItem.item = "empty";
+			}
+		}
 	}
 	void summonEye(args)
 	{
-		enemies::spawnEnemy("demoneye", globals::mouseBlockCoordsZoomed(false));
+		if(globals::cdayTime > globals::dayLength/2.0f)
+		enemies::spawnEnemy("eyeofcthulu", globals::mouseBlockCoords(false));
 	}
 	void takeMana(args)
 	{
@@ -397,7 +436,7 @@ namespace itemFuncs {
 	void starfuryStar(args)
 	{
 		int distX = rand() % 13;
-		glm::vec2 pos = glm::vec2(globals::mouseBlockCoordsZoomed(false).x - Player::dir * distX, Player::pos.y + Layers::trueBsOnScr.y / 2 + 10);
+		glm::vec2 pos = glm::vec2(globals::mouseBlockCoords(false).x - Player::dir * distX, Player::pos.y + Layers::trueBsOnScr.y / 2 + 10);
 		std::string projName = items::getStatT(item, "projectile").data();
 		if (items::projectiles.count(projName) <= 0) return;
 		int e = ECS::newEntity();
@@ -408,7 +447,7 @@ namespace itemFuncs {
 		auto ppos = std::make_shared<glm::vec2>(pos);
 		projectile.dc.position = ppos;
 		projectile.pc.position = ppos;
-		projectile.pc.vel = glm::normalize(globals::mouseBlockCoordsZoomed(false) - pos) * glm::vec2(1);
+		projectile.pc.vel = glm::normalize(globals::mouseBlockCoords(false) - pos) * glm::vec2(1);
 
 		drawSystem::addComponent(e, &projectile.dc, false);
 		ECS::queueComponent<physicsC>(e, projectile.pc);
@@ -481,7 +520,7 @@ namespace itemFuncs {
 			projectile.pc.prevpos = *projectile.pc.position;
 			projectile.dc.position = projectile.pc.position;
 			projectile.dc.parent = globals::projectileLayer;
-			projectile.pc.vel = glm::normalize(globals::mouseBlockCoordsZoomed(false) - Player::pos) * glm::vec2(1.2);
+			projectile.pc.vel = glm::normalize(globals::mouseBlockCoords(false) - Player::pos) * glm::vec2(1.2);
 			projectile.dc.opacity = 0;
 
 			projectile.ac.stats["rotoffset"].intVal = 15;
@@ -532,7 +571,7 @@ namespace itemFuncs {
 	}
 	void vilethorn(args)
 	{
-		glm::vec2 dir = glm::normalize(globals::mouseBlockCoordsZoomed(false) - Player::pos);
+		glm::vec2 dir = glm::normalize(globals::mouseBlockCoords(false) - Player::pos);
 		float a = int(utils::angleOfVector(dir) + 90) % 360;
 		glm::mat4 mat = glm::rotate(glm::mat4(1.0f), float(a * PI / 180.0f), glm::vec3(0, 0, 1));
 
@@ -566,14 +605,14 @@ namespace itemFuncs {
 	}
 	void opticStaff(args)
 	{
-		enemies::spawnEnemy("twinssummon1", globals::mouseBlockCoordsZoomed(false));
-		enemies::spawnEnemy("twinssummon2", globals::mouseBlockCoordsZoomed(false));
+		enemies::spawnEnemy("twinssummon1", globals::mouseBlockCoords(false));
+		enemies::spawnEnemy("twinssummon2", globals::mouseBlockCoords(false));
 		Player::addBuff("twins", -1);
 		Player::currsummons++;
 	}
 	void impStaff(args)
 	{
-		enemies::spawnEnemy("imp", globals::mouseBlockCoordsZoomed(false));
+		enemies::spawnEnemy("imp", globals::mouseBlockCoords(false));
 		Player::addBuff("imp", -1);
 		Player::currsummons++;
 	}
@@ -586,6 +625,27 @@ namespace itemFuncs {
 	{
 		Player::hp += items::getStat(item, "heal", {.valueFloat = 0}).valueFloat;
 		Player::addBuff("potionsickness", items::getStat(item, "sickness", { .valueInt = 0 }).valueInt);
+	}
+	void bladeOfGrass(args)
+	{
+			projectileBase projectile = items::projectiles["bladeofgrassprojectile"];
+			auto ppos = std::make_shared<glm::vec2>(*(ECS::getComponent<physicsC>(ent)->position));
+			projectile.pc.position = ppos;
+			projectile.pc.prevpos = *projectile.pc.position;
+			projectile.dc.position = projectile.pc.position;
+			projectile.dc.parent = globals::projectileLayer;
+			projectile.pc.vel = glm::normalize(globals::mouseBlockCoords(false) - Player::pos) * glm::vec2(0.8);
+			int e = ECS::newEntity();
+			drawSystem::addComponent(e, &projectile.dc, false);
+			ECS::queueComponent<physicsC>(e, projectile.pc);
+			ECS::queueComponent<mobC>(e, projectile.mc);
+			ECS::queueComponent<aiC>(e, projectile.ac);
+			ECS::queueComponent<particleEmmiterC>(e, projectile.pec);
+	}
+	void manaCrystal(args)
+	{
+		Player::manacrystals += 1;
+		Player::mana += 20;
 	}
 	void nonearmorbonus()
 	{
@@ -655,7 +715,8 @@ bool itemConditions::nothing(itemconditionargs)
 
 bool itemConditions::hasAmmo(itemconditionargs)
 {
-	return UI::inventory->has(items::getStatT(item, "ammo").data()) || UI::hotbar->has(items::getStatT(item, "ammo").data());
+	std::string ammo = items::getStatT(item, "ammo").data();
+	return UI::inventory->has(ammo) || UI::hotbar->has(ammo) || UI::cursorItem.item == ammo;
 }
 bool itemConditions::hasMana(itemconditionargs)
 {
@@ -679,6 +740,10 @@ bool itemConditions::hasSummonSpace(itemconditionargs)
 bool itemConditions::heartCrystal(itemconditionargs)
 {
 	return Player::heartcrystals < 15;
+}
+bool itemConditions::manaCrystal(itemconditionargs)
+{
+	return Player::manacrystals < 9;
 }
 bool itemConditions::heal(itemconditionargs)
 {

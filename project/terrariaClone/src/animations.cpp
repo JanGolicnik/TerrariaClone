@@ -19,13 +19,21 @@ namespace animations {
 		animations.insert(std::make_pair(animation, a));
 	}
 
-	void watchAnim(const std::string name, int* id, bool overwrite, bool flippedY, bool flippedX)
+	void watchAnim(const std::string name, int* id, int overwrite, bool flippedY, bool flippedX)
 	{
 		static int idgen = 0;
 		if (animations.count(name) >= 1) {
 			if (runningAnims.count(*id) >= 1) {
-				if (!overwrite) {
+				if (overwrite == 0) {
 					return;
+				}
+				else if(overwrite == -1) {
+					if (runningAnims[*id].anim != name) {
+						removeAnim(id);
+					}
+					else {
+						return;
+					}
 				}
 				else {
 					removeAnim(id);
@@ -34,7 +42,6 @@ namespace animations {
 			idgen++;
 			*id = idgen;
 			running_anim tmp;
-			tmp.startframe = frame;
 			tmp.anim = name;
 			tmp.ccoords = animations[name].base;
 			tmp.flippedX = flippedX;
@@ -53,9 +60,10 @@ namespace animations {
 	{
 		for (auto& anim : runningAnims) {
 			bool run = true;
-			if (animations[anim.second.anim].endframe <= frame - anim.second.startframe) {
+			auto info = &animations[anim.second.anim];
+			if (anim.second.counter > info->endframe) {
 				if (animations[anim.second.anim].loop) {
-					anim.second.startframe = frame - animations[anim.second.anim].frames[animations[anim.second.anim].loopframe].startframe;
+					anim.second.counter = info->frames[info->loopframe].startframe;
 				}
 				else {
 					anim.second.ccoords = animations[anim.second.anim].base;
@@ -64,29 +72,30 @@ namespace animations {
 			}
 			if (run) {
 				for (int i = 0; i < animations[anim.second.anim].frames.size(); i++) {
-					if (animations[anim.second.anim].frames[i].startframe <= frame - anim.second.startframe) {
-						switch (animations[anim.second.anim].frames[i].type) {
-						case ft_ABSOLUTE:
-							anim.second.ccoords = animations[anim.second.anim].frames[i].off / glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
-							break;
-						case ft_OFFSET1:
-							anim.second.ccoords = animations[anim.second.anim].base + animations[anim.second.anim].frames[i].off / glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
-							break;
-						case ft_OFFSET8:
-							anim.second.ccoords = animations[anim.second.anim].base + (animations[anim.second.anim].frames[i].off * glm::vec4(8)) / glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
-							break;
-						case ft_OFFSET16:
-							anim.second.ccoords = animations[anim.second.anim].base + (animations[anim.second.anim].frames[i].off * glm::vec4(16)) / glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
-							break;
-						}
-					}
-					else {
+					if (info->frames[i].startframe > anim.second.counter)  break;
+					switch (animations[anim.second.anim].frames[i].type) {
+					case ft_ABSOLUTE:
+						anim.second.ccoords = animations[anim.second.anim].frames[i].off / glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
+						break;
+					case ft_OFFSET1:
+						anim.second.ccoords = animations[anim.second.anim].base + animations[anim.second.anim].frames[i].off / glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
+						break;
+					case ft_OFFSET8:
+						anim.second.ccoords = animations[anim.second.anim].base + (animations[anim.second.anim].frames[i].off * glm::vec4(8)) / glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
+						break;
+					case ft_OFFSET16:
+						anim.second.ccoords = animations[anim.second.anim].base + (animations[anim.second.anim].frames[i].off * glm::vec4(16)) / glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
 						break;
 					}
 				}
+				anim.second.counter += anim.second.speed;
 			}
 		}
-		frame++;
+	}
+
+	void changeSpeed(int id, float speedmod)
+	{
+		runningAnims[id].speed = speedmod;
 	}
 
 	glm::vec4 getFrame(int id)

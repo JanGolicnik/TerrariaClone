@@ -133,11 +133,6 @@ namespace text {
         int currsize = 0;
         int maxwidth = 0;
         for (int i = 0; i < text->size(); i++) {
-            if (text->at(i) == '\n') {
-                if (currsize > maxwidth) maxwidth = currsize;
-                currsize = 0;
-                continue;
-            }
             if (text->at(i) == '\\') {
                 if (text->at(i + 1) == 's') {
                     int counter = 2;
@@ -152,6 +147,11 @@ namespace text {
                     i += 11;
                 }
                 if (i >= text->size())continue;
+            }
+            if (text->at(i) == '\n') {
+                if (currsize > maxwidth) maxwidth = currsize;
+                currsize = 0;
+                continue;
             }
             auto g = &glyphs[int(text->at(i))];
             currsize += g->xadvance;
@@ -174,18 +174,39 @@ namespace text {
         if (text->size() == 0) {
             return 0;
         }
-        int height = lineHeight;
+        bool isline1 = true;
+        int height = 0;
         for (int i = 0; i < text->size(); i++) {
             if (text->at(i) == '\n') {
+                isline1 = false;
                 height += lineHeight;
                 continue;
+            }else
+            if (isline1) {
+                if (glyphs[int(text->at(i))].height > height) {
+                    height = glyphs[int(text->at(i))].height;
+                }
             }
         }
         return height * size;
 	}
 	int heightOfLine(const std::string* text, int line, float size)
 	{
-        return base * size;
+        int height = 0;
+        for (int i = 0; i < text->size(); i++) {
+            if (text->at(i) == '\n') {
+                line--;
+                if (line == 0) {
+                    break;
+                }
+                height = 0;
+            }
+            else
+            if (glyphs[int(text->at(i))].height > height) {
+                height = glyphs[int(text->at(i))].height;
+            }
+        }
+        return height * size;
 	}
 	int numLines(const std::string* text)
 	{

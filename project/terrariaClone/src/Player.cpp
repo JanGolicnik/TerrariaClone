@@ -15,10 +15,11 @@
 #include <gameLoop.h>
 #include <liquids.h>
 #include <game.h>
+#include <sounds.h>
 
 namespace Player {
 
-    const int numsprites = 5;
+    const int numsprites = 16;
     std::string name = "";
     glm::vec2 vel = glm::vec2(0.0f);
     glm::vec2 tvel;
@@ -35,7 +36,6 @@ namespace Player {
     float width = 2.0f;
     float height = 2.9f;
     glm::vec2 center = { pos.x + width / 2, pos.y + height / 2 };
-    int anim;
     float craftingDist = 8;
 
     float ms = 0.3f;
@@ -66,7 +66,7 @@ namespace Player {
 
     float maxhp = 400;
     float maxmana = 200;
-    bool ignorebot;
+    bool wantstoskip;
     bool collidetop;
     bool collideright;
     bool collideleft;
@@ -100,9 +100,10 @@ namespace Player {
     float thorns = 0;
 
     int heartcrystals;
+    int manacrystals;
 
     float enemyChance;
-    float critterChance;
+    bool spawnCap;
 
     bool wantToAutoUse = false;
     std::string activeSetBonus = "";
@@ -115,6 +116,32 @@ namespace Player {
     int deathtimer = 0;
 
     std::string timeToRespawn;
+
+    bool jumping = false;
+    bool mining = false;
+    bool walking = false;
+
+    std::string headarmor = "empty";
+    std::string bodyarmor = "empty";
+    std::string legsarmor = "empty";
+
+    int backskinanim = -1;
+    int frontskinanim = -1;
+    int backarmanim = -1;
+    int frontarmanim = -1;
+    int legsanim = -1;
+    int shoesanim = -1;
+    float armanimspeed = 1;
+
+    int hairid = 0;
+    hsv hairclr_hsv(0.1, 0.1, 0.05);
+    hsv shirtclr_hsv(0.7, 0.7, 0.9);
+    hsv skinclr_hsv(0.7, 0.5, 0.3);
+    hsv pantsclr_hsv(0.3, 0.3, 0.5);
+    hsv eyeclr_hsv(0.2, 0.4, 0.6);
+    hsv shoeclr_hsv(0.6, 0.4, 0.1);
+
+    bool isinwater = false;
 
     void update()
     {
@@ -141,9 +168,16 @@ namespace Player {
         }
         dead = false;
 
-        hp += regeneration / 60;
-        mana += manaregeneration / 60;
+        walking = vel.x > 0.01 || vel.x < -0.01;
+        jumping = vel.y > 0.01 || vel.y < -0.01;
+        mining = itemtimer > 0;
 
+        hp += regeneration / 60;
+        bool smaller = mana < currmaxmana;
+        mana += manaregeneration / 60;
+        if (smaller && mana >= currmaxmana) {
+            sounds::manafull();
+        }
         iframes--;
         if (mana > currmaxmana) {
             mana = currmaxmana;
@@ -153,14 +187,15 @@ namespace Player {
         }
         if (hp < 0) {
             dead = true;
+            enemies::spawnEnemy("gravestone", pos);
             deathtimer = 600;
             dropCoins();
             return;
         }
-
         itemtimer--;
-        phys->ignorebot = ignorebot;
-        ignorebot = false;
+        phys->wantstoskip = wantstoskip;
+        wantstoskip = false;
+        isinwater = phys->isinliquid == 0;
         center = pos + glm::vec2(width / 2, height / 2);
         phys->weight = 1;
         vel = phys->vel;
@@ -211,6 +246,7 @@ namespace Player {
                 particles::spawnEffect(availablejumps[0].effect, Player::pos - glm::vec2(0, height / 2));
                 currJumpTime = availablejumps[0].jumpDuration;
                 availablejumps.erase(availablejumps.begin());
+                sounds::doubleJump();
             }
             wantstojump = false;
         }
@@ -246,6 +282,10 @@ namespace Player {
             }
         }
         
+        if (breathtimer == 0) {
+            sounds::drown();
+        }
+
         if (breathtimer < 0) {
             hp -= 2;
         }
@@ -286,8 +326,8 @@ namespace Player {
     }
     void doSecondary(std::string item)
     {
-        glm::vec2 vec = globals::mouseBlockCoordsZoomed();
         if (input::pressed(k_SECONDARY)) {
+            glm::vec2 vec = globals::mouseBlockCoords();
             Layers::doBlockFunction(vec);
             itemtimer = 20;
         }
@@ -298,21 +338,15 @@ namespace Player {
         if (dead) return;
         glUseProgram(globals::spriteShaderID);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, textures::spriteSheet);
+        glBindTexture(GL_TEXTURE_2D, textures::playerSheet);
         glUniform1i(2, 0);
         glUniformMatrix4fv(3, 1, GL_FALSE, glm::value_ptr(camera::trans));
         glUniformMatrix4fv(4, 1, GL_FALSE, glm::value_ptr(glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f)));
 
         glBindVertexArray(playerVA);
         glBindBuffer(GL_ARRAY_BUFFER, playerVB);
-        bool flip = dir < 0 ? true : false;
-        glm::vec3 light =  Layers::queryBlock(Layers::getLayer("blocks"), pos)->light;
-        
-        memset(vertices, 0, numsprites * 4 * sizeof(SpriteVertex));
-        memcpy(vertices, utils::CreateSpriteRect(glm::vec3(pos, 0), animations::getFrame(anim), glm::vec2(width, height), glm::vec4(utils::hsvToRgb(glm::vec3(hue, 1, 1)) * light,1), flip).data(), 4 * sizeof(SpriteVertex));
-        memcpy(vertices + 4, utils::CreateSpriteRect(glm::vec3(pos + glm::vec2(0, 1), 0), textures::nametocoords[UI::helmetItem.item]->coords, glm::vec2(1, 1), glm::vec4(light, 1), flip).data(), 4 * sizeof(SpriteVertex));
-        memcpy(vertices + 8, utils::CreateSpriteRect(glm::vec3(pos + glm::vec2(0, 0), 0), textures::nametocoords[UI::breastplateItem.item]->coords, glm::vec2(2, 2), glm::vec4(light, 1), flip).data(), 4 * sizeof(SpriteVertex));
-        memcpy(vertices + 12, utils::CreateSpriteRect(glm::vec3(pos + glm::vec2(0, -1), 0), textures::nametocoords[UI::greavesItem.item]->coords, glm::vec2(1, 1), glm::vec4(light, 1), flip).data(), 4 * sizeof(SpriteVertex));
+
+        setupBodyparts();
         
         glBufferSubData(GL_ARRAY_BUFFER, 0, numsprites * 4 * sizeof(SpriteVertex), vertices);
         glDrawElements(GL_TRIANGLES, numsprites * 6, GL_UNSIGNED_INT, 0);
@@ -340,16 +374,17 @@ namespace Player {
         jumpms = jumpmsBASE;
         editsize = editsizeBASE;
         pickupRange = pickupRangeBASE;
-        currmaxhp = currmaxhpBASE + heartcrystals*20;
-        currmaxmana = currmaxmanaBASE;
+        currmaxhp = currmaxhpBASE + heartcrystals * 20;
+        currmaxmana = currmaxmanaBASE + manacrystals * 20;
         jumpSpeed = jumpSpeedBASE;
         jumpDuration = jumpDurationBASE;
         defense = 0;
         meeleAttackSpeed = 1;
         enemyChance = 1;
-        critterChance = 1;
+        spawnCap = true;
         meeleDamage = 1;
         thorns = 0;
+        headarmor = legsarmor = bodyarmor = "empty";
         extrajump.clear();
 
         regentimer++;
@@ -381,6 +416,10 @@ namespace Player {
                 manaregeneration = (currmaxmana / 7 + 1 + currmaxmana/2) * (mana / currmaxmana * 0.8 + 0.2) * 1.15;
             }
         }
+
+        headarmor = items::getStatT(UI::helmetItem.item, "headtex", "empty");
+        bodyarmor = items::getStatT(UI::breastplateItem.item, "bodytex", "empty");
+        legsarmor = items::getStatT(UI::greavesItem.item, "legstex", "empty");
 
         addStatsFromItem(UI::breastplateItem.item);
         addStatsFromItem(UI::greavesItem.item);
@@ -451,14 +490,20 @@ namespace Player {
         file.write((char*)(&mana), sizeof(mana));
         file.write((char*)(&currmaxmana), sizeof(currmaxmana));
         file.write((char*)(&heartcrystals), sizeof(heartcrystals));
-        file.write((char*)(&hue), sizeof(hue));
-
-        UI::saveInvItemVector(&UI::PlayerHotbar, &file);
-        UI::saveInvItemVector(&UI::PlayerInventory, &file);
+        file.write((char*)(&manacrystals), sizeof(manacrystals));
+        file.write((char*)(&hairclr_hsv), sizeof(hairclr_hsv));
+        file.write((char*)(&shirtclr_hsv), sizeof(shirtclr_hsv));
+        file.write((char*)(&skinclr_hsv), sizeof(skinclr_hsv));
+        file.write((char*)(&pantsclr_hsv), sizeof(pantsclr_hsv));
+        file.write((char*)(&shoeclr_hsv), sizeof(shoeclr_hsv));
+        file.write((char*)(&hairid), sizeof(hairid));
 
         UI::saveInvItem(&UI::helmetItem, &file);
         UI::saveInvItem(&UI::breastplateItem, &file);
         UI::saveInvItem(&UI::greavesItem, &file);
+
+        UI::saveInvItemVector(&UI::PlayerHotbar, &file);
+        UI::saveInvItemVector(&UI::PlayerInventory, &file);
 
         UI::saveInvItem(&UI::accessory1Item, &file);
         UI::saveInvItem(&UI::accessory2Item, &file);
@@ -480,14 +525,20 @@ namespace Player {
         file.read((char*)(&mana), sizeof(mana));
         file.read((char*)(&currmaxmana), sizeof(currmaxmana));
         file.read((char*)(&heartcrystals), sizeof(heartcrystals));
-        file.read((char*)(&hue), sizeof(hue));
-
-        UI::loadInvItemVector(&UI::PlayerHotbar, &file);
-        UI::loadInvItemVector(&UI::PlayerInventory, &file);
+        file.read((char*)(&manacrystals), sizeof(manacrystals));
+        file.read((char*)(&hairclr_hsv), sizeof(hairclr_hsv));
+        file.read((char*)(&shirtclr_hsv), sizeof(shirtclr_hsv));
+        file.read((char*)(&skinclr_hsv), sizeof(skinclr_hsv));
+        file.read((char*)(&pantsclr_hsv), sizeof(pantsclr_hsv));
+        file.read((char*)(&shoeclr_hsv), sizeof(shoeclr_hsv));
+        file.read((char*)(&hairid), sizeof(hairid));
 
         UI::loadInvItem(&UI::helmetItem, &file);
         UI::loadInvItem(&UI::breastplateItem, &file);
         UI::loadInvItem(&UI::greavesItem, &file);
+
+        UI::loadInvItemVector(&UI::PlayerHotbar, &file);
+        UI::loadInvItemVector(&UI::PlayerInventory, &file);
 
         UI::loadInvItem(&UI::accessory1Item, &file);
         UI::loadInvItem(&UI::accessory2Item, &file);
@@ -499,10 +550,43 @@ namespace Player {
         Player::currsummons = 0;
         return true;
     }
+    playerData loadToData(std::string name)
+    {
+        std::string filename = "players/" + name + ".bak";
+        std::ifstream file(filename, std::ios::out | std::ios::binary);
+        if (!file) { std::cout << "error opening file for loading player\n"; return playerData(); }
+        
+        playerData data;
+
+        file.read((char*)(&data.hp), sizeof(hp));
+        file.read((char*)(&data.currmaxhp), sizeof(currmaxhp));
+        file.read((char*)(&data.mana), sizeof(mana));
+        file.read((char*)(&data.currmaxmana), sizeof(currmaxmana));
+        file.read((char*)(&data.heartcrystals), sizeof(heartcrystals));
+        file.read((char*)(&data.manacrystals), sizeof(manacrystals));
+        file.read((char*)(&data.hairclr_hsv), sizeof(hairclr_hsv));
+        file.read((char*)(&data.shirtclr_hsv), sizeof(shirtclr_hsv));
+        file.read((char*)(&data.skinclr_hsv), sizeof(skinclr_hsv));
+        file.read((char*)(&data.pantsclr_hsv), sizeof(pantsclr_hsv));
+        file.read((char*)(&data.shoeclr_hsv), sizeof(shoeclr_hsv));
+        file.read((char*)(&data.hairid), sizeof(hairid));
+
+        InventoryItem tmp;
+        UI::loadInvItem(&tmp, &file);
+        data.headarmor = tmp.item;
+        UI::loadInvItem(&tmp, &file);
+        data.bodyarmor = tmp.item;
+        UI::loadInvItem(&tmp, &file);
+        data.legsarmor = tmp.item;
+
+        file.close();
+
+        return data;
+    }
     void useItem(std::string item, itemInfo* iteminfo)
     {
         if (dead) return;
-        glm::vec2 vec = globals::mouseBlockCoordsZoomed();
+        glm::vec2 vec = globals::mouseBlockCoords();
 
         for (auto& cond : items::getInfo(item)->conditions) {
             if (!cond(item)) {
@@ -511,16 +595,18 @@ namespace Player {
             }
         }
         tool = -1;
-
         auto info = items::getInfo(item);
+        info->soundsfunc();
         float usetime = info->useSpeed;
+
+        armanimspeed = 20/info->useSpeed;
+
         float damagemult = 1;
         if (info->families.count(if_MEELE) >= 1) {
             usetime /= meeleAttackSpeed;
             damagemult *= meeleDamage;
         }
         itemtimer += usetime;
-
         glm::vec2 pos = Player::pos;
         vec -= pos;
         float angle = int(utils::angleOfVector(vec) - 180) % 360;
@@ -589,6 +675,8 @@ namespace Player {
                     auto child = ECS::getComponent<uiC>(container->children[i]);
                     if (UI::getTStat(child, "text") == item) {
                         UI::getStat(child, "num")->intVal += prevamount - num;
+                        child->pos = Player::center;
+                        ECS::getComponent<drawC>(container->children[i])->opacity = 1;
                         found = true;
                         break;
                     }
@@ -642,6 +730,331 @@ namespace Player {
 
         UI::setTStat(ECS::getComponent<uiC>(gameLoop::droppedCoinsText), "text", text);
     }
+    void setupBodyparts()
+    {
+        bool flip = dir < 0;
+        glm::vec3 light = glm::vec4(1);
+        glm::vec4 skinclr = glm::vec4(light * utils::hsvToRgb(skinclr_hsv),1);
+        glm::vec4 irisclr = glm::vec4(light * utils::hsvToRgb(eyeclr_hsv), 1);
+        glm::vec4 shoeclr = glm::vec4(light * utils::hsvToRgb(shoeclr_hsv), 1);
+        glm::vec4 pantsclr = glm::vec4(light * utils::hsvToRgb(pantsclr_hsv), 1);
+        glm::vec4 shirtclr = glm::vec4(light * utils::hsvToRgb(shirtclr_hsv), 1);
+        glm::vec4 hairclr = glm::vec4(light * utils::hsvToRgb(hairclr_hsv), 1);
+        float speed = abs(vel.x / 0.05f);
+        static glm::vec2 size = glm::vec2(20, 24) / glm::vec2(8);
+
+        /*Draw order:
+        back shoulderguard
+        backskin
+        back arm
+        body clothes
+        white
+        iris
+        face
+        hair -> helmet
+        leggings
+        cevli
+        front skin
+        front arm / front shoulderguard odvisn kdaj
+        */
+
+        glm::vec4 backshoulderguard_coords = items::armorsprites[bodyarmor][11];
+        glm::vec4 backarmskin_coords = items::armorsprites["skin"][7];
+        glm::vec4 backarm_coords = items::armorsprites[bodyarmor][7];
+        glm::vec4 body_coords = items::armorsprites[bodyarmor][0];
+        glm::vec4 white_coords = textures::nametocoords["plreyewhite"]->coords;
+        glm::vec4 iris_coords = textures::nametocoords["plreyecolor"]->coords;
+        glm::vec4 face_coords = items::armorsprites["skin"][8];
+        glm::vec4 helmet_coords = items::armorsprites[headarmor][8];
+        glm::vec4 leg_coords = items::armorsprites[legsarmor][9];
+        glm::vec4 shoes_coords = items::armorsprites["shoes"][9];
+        glm::vec4 frontarmskin_coords = items::armorsprites["skin"][1];
+        glm::vec4 frontarm_coords = items::armorsprites[bodyarmor][1];
+        glm::vec4 frontshoulderguard_coords = items::armorsprites[bodyarmor][12];
+
+        //handle arms
+        if (mining) {
+            animations::watchAnim("skinarmuse", &frontskinanim, -1);
+            animations::changeSpeed(frontskinanim, armanimspeed);
+            frontarmskin_coords = animations::getFrame(frontskinanim);
+
+            animations::watchAnim(bodyarmor + "armuse", &frontarmanim, -1);
+            animations::changeSpeed(frontarmanim, armanimspeed);
+            frontarm_coords = frontshoulderguard_coords;
+            frontshoulderguard_coords = animations::getFrame(frontarmanim);
+        }
+        else if (jumping) {
+            backarmskin_coords = items::armorsprites["skin"][4];
+            frontarmskin_coords = items::armorsprites["skin"][2];
+            frontarm_coords = frontshoulderguard_coords;
+            frontshoulderguard_coords = items::armorsprites[bodyarmor][2];
+            backarm_coords = items::armorsprites[bodyarmor][4];
+        }
+        else if (walking) {
+            animations::watchAnim("skinbackarmwalk", &backskinanim, -1);
+            animations::changeSpeed(backskinanim, speed);
+            backarmskin_coords = animations::getFrame(backskinanim);
+            animations::watchAnim("skinfrontarmwalk", &frontskinanim, -1);
+            animations::changeSpeed(frontskinanim, speed);
+            frontarmskin_coords = animations::getFrame(frontskinanim);
+            animations::watchAnim(bodyarmor + "frontarmwalk", &frontarmanim, -1);
+            animations::changeSpeed(frontarmanim, speed);
+            frontarm_coords = animations::getFrame(frontarmanim);
+            animations::watchAnim(bodyarmor + "backarmwalk", &backarmanim, -1);
+            animations::changeSpeed(backarmanim, speed);
+            backarm_coords = animations::getFrame(backarmanim);
+        }
+        else {
+            animations::removeAnim(&frontarmanim);
+            animations::removeAnim(&backarmanim);
+            animations::removeAnim(&frontskinanim);
+            animations::removeAnim(&backskinanim);
+        }
+        
+        //handle legs
+        if (jumping) {
+            leg_coords = items::armorsprites[legsarmor][10];
+            shoes_coords = items::armorsprites["shoes"][10];
+        }
+        else if (walking) {
+            animations::watchAnim(legsarmor + "legswalk", &legsanim, -1);
+            animations::changeSpeed(legsanim, speed);
+            leg_coords = animations::getFrame(legsanim);
+            animations::watchAnim("shoeslegswalk", &shoesanim, -1);
+            animations::changeSpeed(shoesanim, speed);
+            shoes_coords = animations::getFrame(shoesanim);
+        }
+        else {
+            animations::removeAnim(&legsanim);
+            animations::removeAnim(&shoesanim);
+        }
+
+        if (headarmor == "empty") {
+            helmet_coords = textures::playerhair[hairid % textures::playerhair.size()];
+        }
+
+        memset(vertices, 0, numsprites * 4 * sizeof(SpriteVertex));
+
+        memcpy(vertices     , utils::CreateSpriteRect(glm::vec3(pos, 0), backshoulderguard_coords, size, glm::vec4(light,1), flip, false, false).data(), 4 * sizeof(SpriteVertex));
+        memcpy(vertices  + 4, utils::CreateSpriteRect(glm::vec3(pos, 0), backarmskin_coords, size, skinclr, flip, false, false).data(), 4 * sizeof(SpriteVertex));
+        memcpy(vertices  + 8, utils::CreateSpriteRect(glm::vec3(pos, 0), backarm_coords, size, (bodyarmor == "empty") ? shirtclr : glm::vec4(light,1), flip, false, false).data(), 4 * sizeof(SpriteVertex));
+        memcpy(vertices + 12, utils::CreateSpriteRect(glm::vec3(pos, 0), white_coords, size, glm::vec4(light,1), flip, false, false).data(), 4 * sizeof(SpriteVertex));
+        memcpy(vertices + 16, utils::CreateSpriteRect(glm::vec3(pos, 0), iris_coords, size, irisclr, flip, false, false).data(), 4 * sizeof(SpriteVertex));
+        memcpy(vertices + 20, utils::CreateSpriteRect(glm::vec3(pos, 0), face_coords, size, skinclr, flip, false, false).data(), 4 * sizeof(SpriteVertex));
+        memcpy(vertices + 24, utils::CreateSpriteRect(glm::vec3(pos, 0), body_coords, size, (bodyarmor == "empty") ? shirtclr : glm::vec4(light,1), flip, false, false).data(), 4 * sizeof(SpriteVertex));
+        memcpy(vertices + 28, utils::CreateSpriteRect(glm::vec3(pos, 0), helmet_coords, size, headarmor == "empty" ? hairclr : glm::vec4(light,1), flip, false, false).data(), 4 * sizeof(SpriteVertex));
+        memcpy(vertices + 32, utils::CreateSpriteRect(glm::vec3(pos, 0), leg_coords, size, (legsarmor == "empty") ? pantsclr : glm::vec4(light,1), flip, false, false).data(), 4 * sizeof(SpriteVertex));
+        if(legsarmor == "empty") memcpy(vertices + 36, utils::CreateSpriteRect(glm::vec3(pos, 0), shoes_coords, size, shoeclr, flip, false, false).data(), 4 * sizeof(SpriteVertex));
+        memcpy(vertices + 40, utils::CreateSpriteRect(glm::vec3(pos, 0), frontarmskin_coords, size, skinclr, flip, false, false).data(), 4 * sizeof(SpriteVertex));
+        memcpy(vertices + 44, utils::CreateSpriteRect(glm::vec3(pos, 0), frontarm_coords, size, (bodyarmor == "empty") ? shirtclr : glm::vec4(light,1), flip, false, false).data(), 4 * sizeof(SpriteVertex));
+        memcpy(vertices + 48, utils::CreateSpriteRect(glm::vec3(pos, 0), frontshoulderguard_coords, size, (jumping || mining) && bodyarmor == "empty" ? shirtclr : glm::vec4(light,1), flip, false, false).data(), 4 * sizeof(SpriteVertex));
+
+    }
+    void renderAs(glm::vec2 pos, float scale, playerData* data)
+    {
+        if (dead) return;
+        glUseProgram(globals::spriteShaderID);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, textures::playerSheet);
+        glUniform1i(2, 0);
+        glUniformMatrix4fv(3, 1, GL_FALSE, glm::value_ptr(camera::trans));
+        glUniformMatrix4fv(4, 1, GL_FALSE, glm::value_ptr(glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f)));
+
+        glBindVertexArray(playerVA);
+        glBindBuffer(GL_ARRAY_BUFFER, playerVB);
+
+        glm::vec4 skinclr = glm::vec4(utils::hsvToRgb(skinclr_hsv), 1);
+        glm::vec4 irisclr = glm::vec4(utils::hsvToRgb(eyeclr_hsv), 1);
+        glm::vec4 shoeclr = glm::vec4(utils::hsvToRgb(shoeclr_hsv), 1);
+        glm::vec4 pantsclr = glm::vec4(utils::hsvToRgb(pantsclr_hsv), 1);
+        glm::vec4 shirtclr = glm::vec4(utils::hsvToRgb(shirtclr_hsv), 1);
+        glm::vec4 hairclr = glm::vec4(utils::hsvToRgb(hairclr_hsv), 1);
+
+        glm::vec2 size = glm::vec2(20, 24) / glm::vec2(8);
+        size *= scale;
+
+        std::string headtex = items::getStatT(data->headarmor, "headtex", "empty").data();
+        std::string bodytex = items::getStatT(data->bodyarmor, "headtex", "empty").data();
+        std::string legstex = items::getStatT(data->legsarmor, "headtex", "empty").data();
+
+        glm::vec4 backshoulderguard_coords = items::armorsprites[bodytex][11];
+        glm::vec4 backarmskin_coords = items::armorsprites["skin"][7];
+        glm::vec4 backarm_coords = items::armorsprites[bodytex][7];
+        glm::vec4 body_coords = items::armorsprites[bodytex][0];
+        glm::vec4 white_coords = textures::nametocoords["plreyewhite"]->coords;
+        glm::vec4 iris_coords = textures::nametocoords["plreyecolor"]->coords;
+        glm::vec4 face_coords = items::armorsprites["skin"][8];
+        glm::vec4 helmet_coords = items::armorsprites[headtex][8];
+        glm::vec4 leg_coords = items::armorsprites[legstex][9];
+        glm::vec4 shoes_coords = items::armorsprites["shoes"][9];
+        glm::vec4 frontarmskin_coords = items::armorsprites["skin"][1];
+        glm::vec4 frontarm_coords = items::armorsprites[bodytex][1];
+        glm::vec4 frontshoulderguard_coords = items::armorsprites[bodytex][12];
+
+        if (headtex == "empty") {
+            helmet_coords = textures::playerhair[data->hairid % textures::playerhair.size()];
+        }
+
+        memset(vertices, 0, numsprites * 4 * sizeof(SpriteVertex));
+
+        memcpy(vertices, utils::CreateSpriteRect(glm::vec3(pos, 0), backshoulderguard_coords, size, glm::vec4(1), false, false, false).data(), 4 * sizeof(SpriteVertex));
+        memcpy(vertices + 4, utils::CreateSpriteRect(glm::vec3(pos, 0), backarmskin_coords, size, skinclr, false, false, false).data(), 4 * sizeof(SpriteVertex));
+        memcpy(vertices + 8, utils::CreateSpriteRect(glm::vec3(pos, 0), backarm_coords, size, (bodytex == "empty") ? shirtclr : glm::vec4(1), false, false, false).data(), 4 * sizeof(SpriteVertex));
+        memcpy(vertices + 12, utils::CreateSpriteRect(glm::vec3(pos, 0), white_coords, size, glm::vec4(1), false, false, false).data(), 4 * sizeof(SpriteVertex));
+        memcpy(vertices + 16, utils::CreateSpriteRect(glm::vec3(pos, 0), iris_coords, size, irisclr, false, false, false).data(), 4 * sizeof(SpriteVertex));
+        memcpy(vertices + 20, utils::CreateSpriteRect(glm::vec3(pos, 0), face_coords, size, skinclr, false, false, false).data(), 4 * sizeof(SpriteVertex));
+        memcpy(vertices + 24, utils::CreateSpriteRect(glm::vec3(pos, 0), body_coords, size, (bodytex == "empty") ? shirtclr : glm::vec4(1), false, false, false).data(), 4 * sizeof(SpriteVertex));
+        memcpy(vertices + 28, utils::CreateSpriteRect(glm::vec3(pos, 0), helmet_coords, size, headtex == "empty" ? hairclr : glm::vec4(1), false, false, false).data(), 4 * sizeof(SpriteVertex));
+        memcpy(vertices + 32, utils::CreateSpriteRect(glm::vec3(pos, 0), leg_coords, size, (legstex == "empty") ? pantsclr : glm::vec4(1), false, false, false).data(), 4 * sizeof(SpriteVertex));
+        if (legsarmor == "empty") memcpy(vertices + 36, utils::CreateSpriteRect(glm::vec3(pos, 0), shoes_coords, size, shoeclr, false, false, false).data(), 4 * sizeof(SpriteVertex));
+        memcpy(vertices + 40, utils::CreateSpriteRect(glm::vec3(pos, 0), frontarmskin_coords, size, skinclr, false, false, false).data(), 4 * sizeof(SpriteVertex));
+        memcpy(vertices + 44, utils::CreateSpriteRect(glm::vec3(pos, 0), frontarm_coords, size, (bodytex == "empty") ? shirtclr : glm::vec4(1), false, false, false).data(), 4 * sizeof(SpriteVertex));
+        memcpy(vertices + 48, utils::CreateSpriteRect(glm::vec3(pos, 0), frontshoulderguard_coords, size, (jumping || mining) && bodytex == "empty" ? shirtclr : glm::vec4(1), false, false, false).data(), 4 * sizeof(SpriteVertex));
+
+        glBufferSubData(GL_ARRAY_BUFFER, 0, numsprites * 4 * sizeof(SpriteVertex), vertices);
+        glDrawElements(GL_TRIANGLES, numsprites * 6, GL_UNSIGNED_INT, 0);
+
+    }
+    void cycleHair(uiC* p)
+    {
+        hairid++;
+    }
+    bool hasEnoughCoins(int price)
+    {
+        for (int i = 0; i < UI::hotbar->items->size(); i++) {
+            if (price % 100 != 0) {
+                if (UI::hotbar->items->at(i)->item == "coppercoin") price -= UI::hotbar->items->at(i)->num;
+            }
+            if ((price / 100) % 100 != 0) {
+                if (UI::hotbar->items->at(i)->item == "silvercoin") price -= 100 * UI::hotbar->items->at(i)->num;
+            }
+            if ((price / 10'000) % 100 != 0) {
+                if (UI::hotbar->items->at(i)->item == "goldcoin") price -= 10'000 * UI::hotbar->items->at(i)->num;
+            }
+            if ((price / 100'000) % 100 != 0) {
+                if (UI::hotbar->items->at(i)->item == "platinumcoin") price -= 1'000'000 * UI::hotbar->items->at(i)->num;
+            }
+            if (price <= 0) return true;
+        }
+        for (int i = 0; i < UI::inventory->items->size(); i++) {
+            if (price % 100 != 0) {
+                if (UI::inventory->items->at(i)->item == "coppercoin") price -= UI::inventory->items->at(i)->num;
+            }
+            if ((price / 100) % 100 != 0) {
+                if (UI::inventory->items->at(i)->item == "silvercoin") price -= 100 * UI::inventory->items->at(i)->num;
+            }
+            if ((price / 10'000) % 100 != 0) {
+                if (UI::inventory->items->at(i)->item == "goldcoin") price -= 10'000 * UI::inventory->items->at(i)->num;
+            }
+            if ((price / 100'000) % 100 != 0) {
+                if (UI::inventory->items->at(i)->item == "platinumcoin") price -= 1'000'000 * UI::inventory->items->at(i)->num;
+            }
+            if (price <= 0) return true;
+        }
+        return false;
+    }
+    bool takeCoinsIfEnough(int price)
+    {
+        if (!hasEnoughCoins(price)) return false;
+
+        if (price >= 1'000'000) {
+            for (int i = 0; i < UI::hotbar->items->size(); i++) {
+                if (UI::hotbar->items->at(i)->item == "platinumcoin") {
+                    while (UI::hotbar->items->at(i)->num > 0 && price >= 1'000'000) {
+                        UI::hotbar->items->at(i)->num--;
+                        price -= 1'000'000;
+                    }
+                }
+                if (price <= 0) return true;
+            }
+        }
+
+        if (price >= 10'000) {
+            for (int i = 0; i < UI::hotbar->items->size(); i++) {
+                if (UI::hotbar->items->at(i)->item == "goldcoin") {
+                    while (UI::hotbar->items->at(i)->num > 0 && price >= 10'000) {
+                        UI::hotbar->items->at(i)->num--;
+                        price -= 10'000;
+                    }
+                }
+                if (price <= 0) return true;
+            }
+        }
+
+        if (price >= 100) {
+            for (int i = 0; i < UI::hotbar->items->size(); i++) {
+                if (UI::hotbar->items->at(i)->item == "silvercoin") {
+                    while (UI::hotbar->items->at(i)->num > 0 && price >= 100) {
+                        UI::hotbar->items->at(i)->num--;
+                        price -= 100;
+                    }
+                }
+                if (price <= 0) return true;
+            }
+        }
+
+        if (price >= 1) {
+            for (int i = 0; i < UI::hotbar->items->size(); i++) {
+                if (UI::hotbar->items->at(i)->item == "coppercoin") {
+                    while (UI::hotbar->items->at(i)->num > 0 && price >= 1) {
+                        UI::hotbar->items->at(i)->num--;
+                        price -= 1;
+                    }
+                }
+                if (price <= 0) return true;
+            }
+        }
+
+        if (price >= 1'000'000) {
+            for (int i = 0; i < UI::inventory->items->size(); i++) {
+                if (UI::inventory->items->at(i)->item == "platinumcoin") {
+                    while (UI::inventory->items->at(i)->num > 0 && price >= 1'000'000) {
+                        UI::inventory->items->at(i)->num--;
+                        price -= 1'000'000;
+                    }
+                }
+                if (price <= 0) return true;
+            }
+        }
+
+        if (price >= 10'000) {
+            for (int i = 0; i < UI::inventory->items->size(); i++) {
+                if (UI::inventory->items->at(i)->item == "goldcoin") {
+                    while (UI::inventory->items->at(i)->num > 0 && price >= 10'000) {
+                        UI::inventory->items->at(i)->num--;
+                        price -= 10'000;
+                    }
+                }
+                if (price <= 0) return true;
+            }
+        }
+
+        if (price >= 100) {
+            for (int i = 0; i < UI::inventory->items->size(); i++) {
+                if (UI::inventory->items->at(i)->item == "silvercoin") {
+                    while (UI::inventory->items->at(i)->num > 0 && price >= 100) {
+                        UI::inventory->items->at(i)->num--;
+                        price -= 100;
+                    }
+                }
+                if (price <= 0) return true;
+            }
+        }
+
+        if (price >= 1) {
+            for (int i = 0; i < UI::inventory->items->size(); i++) {
+                if (UI::inventory->items->at(i)->item == "coppercoin") {
+                    while (UI::inventory->items->at(i)->num > 0 && price >= 1) {
+                        UI::inventory->items->at(i)->num--;
+                        price -= 1;
+                    }
+                }
+                if (price <= 0) return true;
+            }
+        }
+
+        return true;
+    }
     void create()
     {
         glCreateVertexArrays(1, &playerVA);
@@ -677,8 +1090,6 @@ namespace Player {
         glCreateBuffers(1, &playerIB);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, playerIB);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-        animations::watchAnim("playeridle", &anim);
 
         for (int i = 0; i < buffs.size(); i++) {
             buffs[i].name = "nothing";

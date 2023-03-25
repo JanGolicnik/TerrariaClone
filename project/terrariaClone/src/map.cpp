@@ -10,6 +10,9 @@
 #include <liquids.h>
 
 namespace map {
+
+    std::unordered_map<std::string, npc> npcs;
+
     std::string name;
     std::string tmpname;
 
@@ -47,10 +50,6 @@ namespace map {
     std::mutex worldGenProgress_mutex;
     std::string worldGenProgress;
     std::thread worldgenthread;
-
-    int guideEnt = -1;
-    std::string guideName;
-    std::vector<std::string> guidenames;
 
     int shadoworbsbroken = 0;
 
@@ -136,12 +135,16 @@ namespace map {
 
 	void generategame()
 	{
+        if (seed == "") srand(time(NULL));
+        else srand(std::hash<std::string>{}(seed));
+
         surfaceH = mapY * 0.8;
         undergroundH = mapY * 0.7;
         underworldH = mapY / 8;
 
         Layer* blocks = Layers::getLayer("blocks");
         Layer* bg = Layers::getLayer("bg");
+        modifyWorldProgress("clearing");
         clear();
         
         std::vector<float> height = noise::generate(0, 1, surfaceScale, seed, mapX / 30);
@@ -153,7 +156,6 @@ namespace map {
         for (int x = 0; x < mapX; x++) {
             for (int y = underworldH; y < surfaceH - surfaceScale; y++) {
                 Layers::fastPlaceBlock({ x,y }, "stone");
-                Layers::fastPlaceBlock({ x,y }, "stonewall");
             }
         }
 
@@ -269,6 +271,8 @@ namespace map {
         modifyWorldProgress("creating hell :D");
         makeHell();
 
+        modifyWorldProgress("placing liquids");
+        placeLiquids();
 
         modifyWorldProgress("growing grass");
         for (int x = 0; x < mapX; x++) {
@@ -299,6 +303,9 @@ namespace map {
             }
         }
 
+        modifyWorldProgress("generating structures");
+        genStructures();
+
         modifyWorldProgress("growing tress");
         for (int x = 0; x < mapX; x++) {
             for (int y = surfaceH; y < surfaceH + surfaceScale; y++) {
@@ -309,10 +316,6 @@ namespace map {
                     else {
                         if (rand() % 400 == 0) {
                             Layers::placeBlock({ x,y + 1 }, "sunflower");
-                            Layers::placeBlock({ x + 2,y + 1 }, "sunflower");
-                            Layers::placeBlock({ x + 4,y + 1 }, "sunflower");
-                            Layers::placeBlock({ x + 6,y + 1 }, "sunflower");
-                            Layers::placeBlock({ x + 8,y + 1 }, "sunflower");
                         }
                     }
                 }
@@ -334,6 +337,9 @@ namespace map {
             }
         }
 
+        modifyWorldProgress("THE ONE PIECE IS REAL");
+        placeChests();
+
         modifyWorldProgress("placing shit idfk \\s2WOOOOOOOOOOOOOOOO");
         decorate();
 
@@ -345,9 +351,6 @@ namespace map {
             }
         }
 
-        modifyWorldProgress("generating structures");
-        genStructures();
-
         modifyWorldProgress("beautifying");
         for (int x = 0; x < mapX; x++) {
             for (int y = 0; y < mapY; y++) {
@@ -357,10 +360,9 @@ namespace map {
                 Layers::setLight(bg, { x,y }, glm::vec3(0));
             }
         }
-        modifyWorldProgress("THE ONE PIECE IS REAL");
-        placeChests();
-
-        guideName = guidenames[rand() % guidenames.size()];
+      
+        modifyWorldProgress("settling liquids");
+        liquids::settleAll();
 
         modifyWorldProgress("finished");
 
@@ -370,11 +372,13 @@ namespace map {
     void createWorld()
     {
         Layers::setUp();
-        globals::cdayTime = 450;
+        globals::cdayTime = globals::dayLength/4.0f;
+        globals::dayclr = globals::noonclr;
         shadoworbsbroken = 0;
         moonphase = 0;
         generategame();
         save();
+        liquids::clean();
         Layers::clean();
     }
 
@@ -385,19 +389,16 @@ namespace map {
         std::ofstream file(filename, std::ios::out | std::ios::binary);
         if (!file) { std::cout << "error opening file for saving\n"; return false; }
 
-        file.write((char*)&map::PlayerSpawn, sizeof(glm::vec2));
+        file.write((char*)&map::PlayerSpawn, sizeof(map::PlayerSpawn));
         file.write((char*)&map::moonphase, sizeof(map::moonphase));
         file.write((char*)&globals::cdayTime, sizeof(globals::cdayTime));
         file.write((char*)&shadoworbsbroken, sizeof(shadoworbsbroken));
+        file.write((char*)&globals::dayclr, sizeof(globals::dayclr));
 
         file.write((char*)&map::mapX, sizeof(int));
         file.write((char*)&map::mapY, sizeof(int));
 
-        int guideNameSize = guideName.size();
-        file.write((char*)&guideNameSize, sizeof(guideNameSize));
-        if (guideName != "") {
-            file.write(guideName.c_str(), guideNameSize);
-        }
+        saveNPCS(&file);
 
         Layers::childParent->save(&file);
 
@@ -419,27 +420,18 @@ namespace map {
         std::ifstream file(filename, std::ios::out | std::ios::binary);
         if (!file) { std::cout << "error opening file for laoding\n"; return false; }
 
-        file.read((char*)&map::PlayerSpawn, sizeof(glm::vec2));
+        file.read((char*)&map::PlayerSpawn, sizeof(map::PlayerSpawn));
         file.read((char*)&map::moonphase, sizeof(map::moonphase));
         file.read((char*)&globals::cdayTime, sizeof(globals::cdayTime));
         file.read((char*)&shadoworbsbroken, sizeof(shadoworbsbroken));
+        file.read((char*)&globals::dayclr, sizeof(globals::dayclr));
 
         file.read((char*)&map::mapX, sizeof(int));
         file.read((char*)&map::mapY, sizeof(int));
 
         Layers::setUp();
 
-        int guideNameSize;
-        file.read((char*)(&guideNameSize), sizeof(guideNameSize));
-        if (guideNameSize > 0) {
-            std::string GUIDENAME;
-            char c;
-            for (int i = 0; i < guideNameSize; i++) {
-                file.get(c);
-                GUIDENAME += c;
-            }
-            guideName = GUIDENAME;
-        }
+        loadNPCS(&file);
        
         Layers::childParent->load(&file);
 
@@ -452,6 +444,13 @@ namespace map {
             }
         }
         file.close();
+
+        surfaceH = mapY * 0.8;
+        undergroundH = mapY * 0.7;
+        underworldH = mapY / 8;
+
+
+
         return true;
     }
     void makeDesert(bool left)
@@ -686,6 +685,7 @@ namespace map {
     }
     void modifyWorldProgress(std::string progress)
     {
+        std::cout << progress << "\n";
         std::lock_guard<std::mutex> lock(worldGenProgress_mutex);
         worldGenProgress = progress;
     }
@@ -698,7 +698,19 @@ namespace map {
             for (int y = 0; y < mapY; y++) {
                 auto b = Layers::queryBlockName(bl, { x,y });
                 for (auto& d : blocks::decorations) {
-                    if (rand() % (int)ceil(1 / d.chance) == 0) {
+                    if (d.height == "surface") {
+                        if (y < map::surfaceH - map::surfaceScale || y > map::surfaceH + map::surfaceScale) continue;
+                    }else
+                    if (d.height == "underground") {
+                        if (y < map::underworldH + (map::surfaceH - map::underworldH) / 2 || y > map::surfaceH) continue;
+                    }else
+                    if (d.height == "caverns") {
+                        if (y < map::underworldH || y > map::surfaceH - (map::surfaceH - map::underworldH) / 2) continue;
+                    }else
+                    if (d.height == "underworld") {
+                        if (y > map::underworldH) continue;
+                    }
+                    if ((rand() % 10000) < (d.chance * 10000)) {
                         if (d.onbot.count(*b) >= 1) {
                             Layers::placeBlock({ x, y + 1 }, d.block, 1, &blocks::nameToInfo[d.block].conditions);
                         }else
@@ -756,6 +768,7 @@ namespace map {
         std::vector<std::function<bool(BlockConditionArgs)>> conditions = blocks::nameToInfo["chest"].conditions;
         conditions.push_back(BConditions::isntreplacablebelow);
         conditions.push_back(BConditions::haswall);
+        conditions.push_back(BConditions::isreplacable);
         for (int x = 0; x < mapX; x++) {
             for (int y = 0; y < mapY; y++) {
                 auto block = Layers::queryBlockName(bs, { x,y });
@@ -966,6 +979,121 @@ namespace map {
             itemit++;
         }
     }
+    void liquidHole(glm::vec2 pos, std::string liquid, glm::vec2 r, bool half, bool breakwall)
+    {
+
+        for (int y = pos.y + r.y; y > pos.y - r.y; y--) {
+            for (int x = pos.x - r.x; x < pos.x + r.x; x++) {
+                if (((x - pos.x) * (x - pos.x) * r.y * r.y + (y - pos.y) * (y - pos.y) * r.x * r.x) > (r.x * r.x * r.y * r.y)) continue;
+                if(breakwall) Layers::breakBlock(Layers::getLayer("bg"), { x,y });
+                Layers::breakBlock(Layers::getLayer("blocks"), {x,y});
+                if (half) if (y > pos.y) continue;
+                liquids::place(liquid, { x,y }, 0x8);
+            }
+        }
+    }
+    void placeLiquids()
+    {
+        auto bs = Layers::getLayer("blocks");
+        auto bg = Layers::getLayer("bg");
+
+        int meja = mapY / 17;
+        for (int x = 0; x < mapX; x++) {
+            for (int y = 0; y < meja * 0.3; y++) {
+                if (*Layers::queryBlockName(bs, { x,y }) == "empty") {
+                    liquids::place("lava", { x,y }, 0x8);
+                }
+            }
+        }
+
+        //underground
+        for (int x = 0; x < mapX; x++) {
+            for (int y = underworldH; y < undergroundH; y++) {
+                if (rand() % 8000 != 0) continue;
+                glm::vec2 r(rand() % 10 + 5, rand() % 5 + 4);
+                std::string liquid = "water";
+                if (y < undergroundH / 2) {
+                    if (rand() % 2) liquid = "lava";
+                }
+                liquidHole({ x,y }, liquid, r, (bool)(rand() % 2), false);
+            }
+        }
+
+
+        //surface
+        for (int x = 0; x < mapX; x++) {
+            for (int y = 0; y < surfaceH + surfaceScale; y++) {
+                if (!Layers::queryBlockInfo(bs, { x,y + 1 })->notReplacable && Layers::queryBlockInfo(bs, { x,y })->notReplacable) {
+                    if (rand() % 240 == 0) {
+                        glm::vec2 r((rand() % 10) + 5, (rand() % 8) + 4);
+                        liquidHole({ x,y }, "water", r, true, false);
+                    }
+                }
+            }
+        }
+
+    }
+    void resetNPCS()
+    {
+        for (auto& i : npcs) {
+            if (i.second.canspawn == true) {
+                i.second.living = true;
+            }
+        }
+        spawnLivingNPCS();
+    }
+    void spawnLivingNPCS()
+    {
+        for (auto& i : npcs) {
+            if (i.second.living == true) {
+                if (i.second.current == -1) {
+                    i.second.current = enemies::spawnEnemy(i.second.base, map::PlayerSpawn);
+                    ECS::commitQueues();
+                    ECS::getComponent<mobC>(i.second.current)->displayName = i.second.names[i.second.currName];
+                }
+                else {
+                    *ECS::getComponent<physicsC>(i.second.current)->position = map::PlayerSpawn;
+                }
+            }
+        }
+    }
+    void saveNPCS(std::ofstream* file)
+    {
+        int npcsize = npcs.size();
+        file->write((char*)&npcsize, sizeof(npcsize));
+        for (auto& i : npcs) {
+
+            int idlength = i.first.length();
+            file->write((char*)&idlength, sizeof(idlength));
+            
+            *file << i.first;
+
+            file->write((char*)&i.second.currName, sizeof(i.second.currName));
+            file->write((char*)&i.second.living, sizeof(i.second.living));
+            file->write((char*)&i.second.canspawn, sizeof(i.second.canspawn));
+        }
+    }
+    void loadNPCS(std::ifstream* file)
+    {
+        int npcsize = 0;
+        file->read((char*)&npcsize, sizeof(npcsize));
+        for (int i = 0; i < npcsize; i++) {
+            int idlength = 0;
+            file->read((char*)&idlength, sizeof(idlength));
+            char tmp;
+            std::string id = "";
+            for (int j = 0; j < idlength; j++) {
+                file->read((char*)&tmp, sizeof(tmp));
+                id += tmp;
+            }
+
+            npc* n = &npcs[id];
+            n->current = -1;
+            file->read((char*)&n->currName, sizeof(n->currName));
+            file->read((char*)&n->living, sizeof(n->living));
+            file->read((char*)&n->canspawn, sizeof(n->canspawn));
+        }
+    }
     void makeHell()
     {
         auto bs = Layers::getLayer("blocks");
@@ -1027,15 +1155,5 @@ namespace map {
                 }
             }
         }
-
-        //damo hellstone
-        for (int x = 0; x < mapX; x++) {
-            for (int y = 0; y < meja * 0.3; y++) {
-                if (*Layers::queryBlockName(bs, { x,y }) == "empty") {
-                    liquids::place("lava", { x,y }, 15);
-                }
-            }
-        }
-    
     }
 }

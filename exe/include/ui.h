@@ -17,7 +17,6 @@ public:
     glm::vec2 rows;
 
     static void setupInventory(std::vector<std::shared_ptr<InventoryItem>>* vec, glm::vec2 size);
-
     void markAsSelected(int pos);
     Inventory(glm::vec2 pos, glm::vec2 rows, std::vector<std::shared_ptr<InventoryItem>>* items, bool hidden, int container = -1, float scale = 1);
     void setTo(std::vector<std::shared_ptr<InventoryItem>>* items);
@@ -42,6 +41,7 @@ namespace UI
     extern std::vector<int> craftingSlot;
 
     extern InventoryItem cursorItem;
+    extern InventoryItem guideItem;
     extern InventoryItem helmetItem;
     extern InventoryItem breastplateItem;
     extern InventoryItem greavesItem;
@@ -91,6 +91,7 @@ namespace UI
     void itemslotONRENDER(uiCfunctionArguments);
     void itemslotONHOVER(uiCfunctionArguments);
     void itemslotONNOTHOVER(uiCfunctionArguments);
+    void guideslotONRENDER(uiCfunctionArguments);
     void craftableitemONCLICK(uiCfunctionArguments);
     void craftableitemONRENDER(uiCfunctionArguments);
     void craftableitemONHOVER(uiCfunctionArguments);
@@ -103,13 +104,13 @@ namespace UI
     void displayONRENDER(uiCfunctionArguments);
     void resourcebarONRENDER(uiCfunctionArguments);
     void resourcebarONHOVER(uiCfunctionArguments);
-    void dragfloatONCLICK(uiCfunctionArguments);
     void dragfloatONRENDER(uiCfunctionArguments);
+    void dragfloatONHOLD(uiCfunctionArguments);
     void toggleONRENDER(uiCfunctionArguments);
     void toggleONCLICK(uiCfunctionArguments);
     void buttonONCLICK(uiCfunctionArguments);
     void buttonONRENDER(uiCfunctionArguments);
-    void dragintONCLICK(uiCfunctionArguments);
+    void dragintONHOLD(uiCfunctionArguments);
     void dragintONRENDER(uiCfunctionArguments);
     void containerONRENDER(uiCfunctionArguments);
     void fakeslotONRENDER(uiCfunctionArguments);
@@ -119,11 +120,19 @@ namespace UI
     void pickuptextONRENDER(uiCfunctionArguments);
     void textboxONRENDER(uiCfunctionArguments);
     void backONRENDER(uiCfunctionArguments);
+    void backONHOVER(uiCfunctionArguments);
     void buffONRENDER(uiCfunctionArguments);
     void buffONRIGHTCLICK(uiCfunctionArguments);
     void buffONHOVER(uiCfunctionArguments);
     void bossbarONRENDER(uiCfunctionArguments);
     void radialONRENDER(uiCfunctionArguments);
+    void logoONRENDER(uiCfunctionArguments);
+    void keybindONRENDER(uiCfunctionArguments);
+    void keybindONCLICK(uiCfunctionArguments);
+    void cursoritemONLEFTCLICK(uiCfunctionArguments);
+    void cursoritemONHOLD(uiCfunctionArguments);
+    void cursoritemONRIGHTCLICK(uiCfunctionArguments);
+    void soundONENTER(uiCfunctionArguments);
 
     void uiCfunc_captureInput(uiC* p);
     void uiCfunc_startGame(uiC* p);
@@ -140,12 +149,15 @@ namespace UI
     void uiCfunc_loadSpecificPlayer(uiC* p);
     void uiCfunc_toggleFullscreen(uiC* p);
     void uiCfunc_nextResolution(uiC* p);
+    void uiCfunc_resetKeybinds(uiC* p);
+    void uiCfunc_openGuideslot(uiC* p);
+    void uiCfunc_guideHelp(uiC* p);
 
     void applyAnchor(glm::vec2* pos, uiAnchor anchor);
     void hideChildren(uiC* p, int state, bool self = false);
     void setChildrenInteractable(uiC* p, bool state);
     bool addLetter(int key);
-    void captureInput(std::string* string, bool yes = true);
+    void captureInput(std::string* string, bool yes = true, int amount = -1, int maxlength = -1);
 
     float childMostToTheLeft(uiC* p, float currMax, bool anchored = false, int ignore = 0);
     float childMostToTheRight(uiC* p, float currMax, bool anchored = false, int ignore = 0);
@@ -158,5 +170,39 @@ namespace UI
     void loadInvItem(InventoryItem* vec, std::ifstream* file);
 
     void createTooltip(std::string item, std::string* text);
+
+    namespace Elements {
+
+        void setnextdrawparent(int parent);
+        int test(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor);
+        int empty(int parent, glm::vec2 pos = glm::vec2(0), uiAnchor anchor = anchorNONE, float textSize = 0);
+        int itemslot(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor, InventoryItem* itemp, float textsize, itemFamily limitfamily = if_ANY);
+        int guideslot(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor, InventoryItem* itemp, float textsize, itemFamily limitfamily = if_ANY);
+        int text(int parent, glm::vec2 pos, bool hidden, uiAnchor anchor, std::string text = "", float textSize = globals::fontSize, bool centered = false, bool colorOnHover = false, float hoveredScale = 1, float opacity = 1);
+        int text(int parent, glm::vec2 pos, bool hidden, uiAnchor anchor, std::string *text = nullptr, float textSize = globals::fontSize, bool centered = false, bool colorOnHover = false, float hoveredScale = 1, float opacity = 1);
+        int cursoritem(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor, InventoryItem* itemp);
+        int cursortext(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor);
+        int craftingslot(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor);
+        int display(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor, std::string tex = "empty", bool autocorrect = true, bool flipX = false, bool flipY = false, glm::vec3* color = nullptr, bool autolight = false, float* huep = nullptr);
+        int tooltip(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor);
+        int resourcebar(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor);
+        int dragfloat(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor);
+        int toggle(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor);
+        int button(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor);
+        int dragint(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor);
+        int container(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor);
+        int fakeslot(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor);
+        int cursor(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor);
+        int hpbar(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor);
+        int pickuptext(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor);
+        int textbox(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor);
+        int back(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor);
+        int buff(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor);
+        int bossbar(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor);
+        int radial(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor);
+        int logo(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor);
+        int keybind(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor);
+    }
+
 };
 

@@ -12,7 +12,6 @@ namespace noise {
 
 	std::vector<float> generate(int lo, int hi, int precision, std::string seed, int length)
 	{
-		srand(std::hash<std::string>{}(seed));
 		mini = lo;
 		maxi = hi;
 		lo *= precision;

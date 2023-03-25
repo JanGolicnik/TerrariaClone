@@ -10,9 +10,8 @@ namespace noise {
 	int mini;
 	int maxi;
 
-	std::vector<float> generate(int lo, int hi, int precision, int seed, int length)
+	std::vector<float> generate(int lo, int hi, int precision, std::string seed, int length)
 	{
-		srand(seed);
 		mini = lo;
 		maxi = hi;
 		lo *= precision;
@@ -22,7 +21,6 @@ namespace noise {
 			float val1 = ((rand() % (hi - lo) + lo) / (float)precision);
 			values.push_back(val1);
 		}
-		srand(time(NULL));
 		return values;
 	}
 

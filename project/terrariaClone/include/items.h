@@ -103,6 +103,9 @@ struct itemInfo {
     Rarity rarity = r_WHITE;
     std::string set = "none";
     std::string description = "";
+    void(*soundsfunc)() = &sounds::swing;
+    float buyprice = 10;
+    float sellprice = 0;
 };
 
 struct itemChance {
@@ -146,6 +149,7 @@ namespace itemFuncs {
     void increaseMaxHealth(args);
     void heal(args);
     void bladeOfGrass(args);
+    void manaCrystal(args);
 
     void nonearmorbonus();
     void ironarmorbonus();
@@ -164,6 +168,7 @@ namespace itemConditions {
     bool lightdisc(itemconditionargs);
     bool hasSummonSpace(itemconditionargs);
     bool heartCrystal(itemconditionargs);
+    bool manaCrystal(itemconditionargs);
     bool heal(itemconditionargs);
 }
 
@@ -175,6 +180,9 @@ namespace items
     extern std::unordered_map<std::string, naturalChest> naturalChests;
     extern std::unordered_map<std::string, itemChance> potItems;
     extern std::unordered_map<std::string, setBonus> setBonuses;
+    
+    extern std::unordered_map<std::string, std::array<glm::vec4, 13>> armorsprites;
+    
     void addItem(std::string itemName, std::string displayName,  std::string tex,
         std::vector<std::function<void(args)>> onleftclick = {}, float useSpeed = 60, std::set<itemFamily> families = {},
         std::unordered_map<std::string, itemStat> stats = {}, std::vector<std::function<bool(itemconditionargs)>> conditions = {itemConditions::nothing}, itemAnim animType = ia_DEFAULT, float sizeMod = 1.0f);
@@ -189,6 +197,7 @@ namespace items
     void addStatV3(const char* item, const char* statname, glm::vec3 value);
     void addFamily(const char* item, itemFamily fam);
     void addLight(const char* item, glm::vec3 light);
+    void addSound(const char* item, void(*func)());
     void addSizeMod(const char* item, float sizemod);
     void disableAutouse(const char* item);
     void addEmmiter(const char* item, particleEmmiterC pec);
@@ -205,6 +214,7 @@ namespace items
     void addItemToNaturalChest(std::string chestName, std::string item, float chance, int num, int random);
     void addItemToPot(std::string item, float chance, int num, int random);
     void clean();
+    void addArmorSprites(std::string name, glm::vec4 coords, glm::vec4 legcoords);
 
 };
 #undef args

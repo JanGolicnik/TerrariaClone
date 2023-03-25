@@ -17,6 +17,8 @@
 #include <particles.h>
 #include <player.h>
 #include <buffs.h>
+#include <liquids.h>
+#include <sounds.h>
 
 namespace resources {
     void registerAssets()
@@ -113,9 +115,9 @@ namespace resources {
         blocks::addBlock("borealtrunkbase3", "borealtrunkbase3", false, true, "borealwood", "blocks", false, st_SINGLE, { 1, 1 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, true, false);
         blocks::addBlock("borealleaves", "borealleaves", false, true, "acorn", "blocks", false, st_SINGLE, glm::vec2(1), 0, { BConditions::isreplacable }, false, false, false, false);
         blocks::addBlock("borealsapling", "borealsapling", false, true, "acorn", "blocks", false, st_SINGLE, { 1, 2 }, 0, { BConditions::nowall, BConditions::isntreplacablebelow, BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("normalgrassdecor", "normalgrassdecor", false, false, "empty", "blocks", false, st_GRASS, { 1, 2 }, 0, { BConditions::nowall, BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("corruptgrassdecor", "corruptgrassdecor", false, false, "empty", "blocks", false, st_GRASS, { 1, 2 }, 0, { BConditions::nowall, BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("junglegrassdecor", "junglegrassdecor", false, false, "empty", "blocks", false, st_GRASS, { 1, 2 }, 0, { BConditions::nowall, BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("normalgrassdecor", "normalgrassdecor", false, false, "empty", "blocks", false, st_GRASS, { 1, 2 }, 0, { BConditions::isempty, BConditions::nowall, BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("corruptgrassdecor", "corruptgrassdecor", false, false, "empty", "blocks", false, st_GRASS, { 1, 2 }, 0, {BConditions::isempty, BConditions::nowall, BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("junglegrassdecor", "junglegrassdecor", false, false, "empty", "blocks", false, st_GRASS, { 1, 2 }, 0, { BConditions::isempty, BConditions::nowall, BConditions::isreplacable }, false, false, false, false);
         blocks::addBlock("normalbranchr", "normalbranchr", false, false, "wood", "blocks", false, st_SINGLE, { 2, 2 }, 0, {  }, false, false, false, false);
         blocks::addBlock("normalbranchl", "normalbranchl", false, false, "wood", "blocks", false, st_SINGLE, { 2, 2 }, 0, {  }, false, false, false, false);
         blocks::addBlock("corruptbranchr", "corruptbranchr", false, false, "ebonwood", "blocks", false, st_SINGLE, { 2, 2 }, 0, {  }, false, false, false, false);
@@ -131,9 +133,10 @@ namespace resources {
         blocks::addBlock("stalagmit", "stalagmit", false, false, "empty", "blocks", false, st_STALAGMIT, { 1, 2 }, 0, { BConditions::haswall, BConditions::isreplacable }, false, false, false, false);
         blocks::addBlock("sandstalagmit", "sandstalagmit", false, false, "empty", "blocks", false, st_STALAGMIT, { 1, 2 }, 0, { BConditions::haswall, BConditions::isreplacable }, false, false, false, false);
         blocks::addBlock("corruptstalagmit", "corruptstalagmit", false, false, "empty", "blocks", false, st_STALAGMIT, { 1, 2 }, 0, { BConditions::haswall, BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("smallrock", "smallrock", false, false, "empty", "blocks", false, st_SMALLROCK, { 1, 1 }, 0, { BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("mediumrock", "mediumrock", false, false, "empty", "blocks", false, st_MEDIUMROCK, { 2, 1 }, 0, { BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("pot", "pot", false, true, "empty", "blocks", false, st_SINGLE, { 2, 2 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::setNextNumSprites(6);
+        blocks::addBlock("smallrock", "smallrock", false, false, "empty", "blocks", false, st_MULTISPRITE, { 1, 1 }, 0, { BConditions::isempty,BConditions::isreplacable }, false, false, false, false);
+        blocks::setNextNumSprites(3);
+        blocks::addBlock("mediumrock", "mediumrock", false, false, "empty", "blocks", false, st_MULTISPRITE, { 2, 1 }, 0, { BConditions::isempty, BConditions::isreplacable }, false, false, false, false);
         blocks::addBlock("woodenplatform", "woodenplatform", false, false, "woodenplatform", "blocks", false, st_PLATFORM, { 1 ,1 }, 1, { BConditions::isreplacable }, false, false, false, false);
         blocks::addBlock("campfire", "campfire", false, true, "campfire", "blocks", false, st_SINGLE, { 3,2 }, 1, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
         blocks::addBlock("goldore", "goldore", true, true, "goldore", "blocks", true, st_BLOCK);
@@ -157,16 +160,63 @@ namespace resources {
         blocks::addBlock("heartcrystal", "heartcrystal", false, true, "heartcrystal", "blocks", false, st_SINGLE, { 2,2 }, 1, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
         blocks::addBlock("bottle", "placedbottle", false, true, "bottle", "blocks", false, st_SINGLE, { 1,1 }, 1, { BConditions::isreplacable, BConditions::bottle }, false, false, false, false);
         blocks::addBlock("mushroom", "mushroom", false, false, "mushroom", "blocks", false, st_SINGLE, { 1,1 }, 1, {}, false, false, false, false);
+        blocks::addBlock("daybloom", "daybloom", false, false, "daybloom", "blocks", false, st_SINGLE, { 1,1 }, 1, {}, false, false, false, false);
         blocks::addBlock("demonaltar", "demonaltar", false, true, "empty", "blocks", false, st_SINGLE, { 3,3 }, 1, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("shadoworb", "shadoworb", false, true, "empty", "blocks", false, st_SINGLE, { 2,2 }, 1, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("water", "water", false, false, "empty", "blocks", false, st_WATER, { 1,1 }, 1, {}, true, true, true, true);
+        blocks::addBlock("lava", "lava", false, false, "empty", "blocks", false, st_WATER, { 1,1 }, 1, {}, true, true, true, true);
+        blocks::addBlock("junglespores", "junglespores", false, false, "junglespores", "blocks", false, st_SINGLE, { 1,1 }, 1, {}, false, false, false, false);
+        blocks::addBlock("normalvines", "normalvines", false, false, "empty", "blocks", false, st_VINES, { 1,1 }, 1, {}, false, false, false, false);
+        blocks::addBlock("junglevines", "junglevines", false, false, "empty", "blocks", false, st_VINES, { 1,1 }, 1, {}, false, false, false, false);
+        blocks::addBlock("pot", "pot", false, true, "empty", "blocks", false, st_POT, { 2, 2 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow, BConditions::haswall }, false, false, false, false);
+        blocks::addBlock("icepot", "icepot", false, true, "empty", "blocks", false, st_POT, { 2, 2 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow, BConditions::haswall }, false, false, false, false);
+        blocks::addBlock("junglepot", "junglepot", false, true, "empty", "blocks", false, st_POT, { 2, 2 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow, BConditions::haswall }, false, false, false, false);
+        blocks::addBlock("hellpot", "hellpot", false, true, "empty", "blocks", false, st_POT, { 2, 2 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow, BConditions::haswall }, false, false, false, false);
+        blocks::addBlock("frozenchest", "frozenchest", false, true, "frozenchest", "blocks", false, st_SINGLE, glm::vec2(2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("mahoganychest", "mahoganychest", false, true, "mahoganychest", "blocks", false, st_SINGLE, glm::vec2(2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("goldchest", "goldchest", false, true, "goldchest", "blocks", false, st_SINGLE, glm::vec2(2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("shadowchest", "shadowchest", false, true, "shadowchest", "blocks", false, st_SINGLE, glm::vec2(2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("waterchest", "waterchest", false, true, "waterchest", "blocks", false, st_SINGLE, glm::vec2(2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::setNextNumSprites(3);
+        blocks::addBlock("bigrock", "bigrock", false, false, "empty", "blocks", false, st_MULTISPRITE, { 3, 2 }, 0, { BConditions::isempty,BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::setNextNumSprites(18);
+        blocks::addBlock("normalflowers", "normalflowers", false, false, "empty", "blocks", false, st_MULTISPRITE, { 1, 2 }, 0, { BConditions::isempty,BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::setNextNumSprites(19);
+        blocks::addBlock("jungleflowers", "jungleflowers", false, false, "empty", "blocks", false, st_MULTISPRITE, { 1, 2 }, 0, { BConditions::isempty,BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::setNextNumSprites(13);
+        blocks::addBlock("corruptflowers", "corruptflowers", false, false, "empty", "blocks", false, st_MULTISPRITE, { 1, 2 }, 0, { BConditions::isempty, BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::setNextNumSprites(9);
+        blocks::addBlock("undergroundskeletondecor", "undergroundskeletondecor", false, false, "empty", "blocks", false, st_MULTISPRITE, { 1, 1 }, 0, { BConditions::isempty, BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::setNextNumSprites(8);
+        blocks::addBlock("undergroundtooldecor", "undergroundtooldecor", false, false, "empty", "blocks", false, st_MULTISPRITE, { 1, 1 }, 0, { BConditions::isempty,BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::setNextNumSprites(6);
+        blocks::addBlock("smallice", "smallice", false, false, "empty", "blocks", false, st_MULTISPRITE, { 1, 1 }, 0, { BConditions::isempty, BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::setNextNumSprites(3);
+        blocks::addBlock("mediumice", "mediumice", false, false, "empty", "blocks", false, st_MULTISPRITE, { 2, 1 }, 0, { BConditions::isempty, BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::setNextNumSprites(3);
+        blocks::addBlock("bigice", "bigice", false, false, "empty", "blocks", false, st_MULTISPRITE, { 3, 2 }, 0, { BConditions::isempty, BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::setNextNumSprites(6);
+        blocks::addBlock("smalldesert", "smalldesert", false, false, "empty", "blocks", false, st_MULTISPRITE, { 1, 1 }, 0, { BConditions::isempty,BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::setNextNumSprites(3);
+        blocks::addBlock("mediumdesert", "mediumdesert", false, false, "empty", "blocks", false, st_MULTISPRITE, { 2, 1 }, 0, { BConditions::isempty,BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::setNextNumSprites(3);
+        blocks::addBlock("bigdesert", "bigdesert", false, false, "empty", "blocks", false, st_MULTISPRITE, { 3, 2 }, 0, { BConditions::isempty, BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::setNextNumSprites(2);
+        blocks::addBlock("bigjungle", "bigjungle", false, false, "empty", "blocks", false, st_MULTISPRITE, { 3, 2 }, 0, { BConditions::isempty,BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::setNextNumSprites(5);
+        blocks::addBlock("mediumjungle", "mediumjungle", false, false, "empty", "blocks", false, st_MULTISPRITE, { 2, 2 }, 0, {BConditions::isempty, BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+
+        globals::waterid = blocks::nameToID["water"];
 
         blocks::addFunction("door", BFuncs::toggleDoor);
         blocks::addFunction("doorright", BFuncs::toggleDoor);
         blocks::addFunction("doorleft", BFuncs::toggleDoor);
         blocks::addFunction("chest", BFuncs::chestFunction);
-        blocks::addOnPlace("chest", BFuncs::chestOnPlace);
-        blocks::addOnBreak("chest", BFuncs::chestOnBreak);
-        blocks::addOnBreak("pot", BFuncs::potOnBreak);
-        blocks::addOnBreak("demonaltar", BFuncs::demonAltarOnBreak);
+        blocks::addFunction("frozenchest", BFuncs::chestFunction);
+        blocks::addFunction("shadowchest", BFuncs::chestFunction);
+        blocks::addFunction("goldchest", BFuncs::chestFunction);
+        blocks::addFunction("mahoganychest", BFuncs::chestFunction);
+        blocks::addFunction("waterchest", BFuncs::chestFunction);
         blocks::addFunction("borealdoor", BFuncs::toggleDoor);
         blocks::addFunction("borealdoorright", BFuncs::toggleDoor);
         blocks::addFunction("borealdoorleft", BFuncs::toggleDoor);
@@ -176,9 +226,27 @@ namespace resources {
         blocks::addFunction("ebonwooddoor", BFuncs::toggleDoor);
         blocks::addFunction("ebonwooddoorright", BFuncs::toggleDoor);
         blocks::addFunction("ebonwooddoorleft", BFuncs::toggleDoor);
-        
-        blocks::animate("campfire", { 0, -17, 0, -17 }, 1, 8);
-        blocks::animate("heartcrystal", { 0, -16, 0, -16 }, 1, 10);
+
+        blocks::addOnPlace("chest", BFuncs::chestOnPlace);
+        blocks::addOnPlace("frozenchest", BFuncs::chestOnPlace);
+        blocks::addOnPlace("shadowchest", BFuncs::chestOnPlace);
+        blocks::addOnPlace("goldchest", BFuncs::chestOnPlace);
+        blocks::addOnPlace("mahoganychest", BFuncs::chestOnPlace);
+        blocks::addOnPlace("waterchest", BFuncs::chestOnPlace);
+
+        blocks::addOnBreak("chest", BFuncs::chestOnBreak);
+        blocks::addOnBreak("frozenchest", BFuncs::chestOnBreak);
+        blocks::addOnBreak("shadowchest", BFuncs::chestOnBreak);
+        blocks::addOnBreak("goldchest", BFuncs::chestOnBreak);
+        blocks::addOnBreak("mahoganychest", BFuncs::chestOnBreak);
+        blocks::addOnBreak("waterchest", BFuncs::chestOnBreak);
+        blocks::addOnBreak("pot", BFuncs::potOnBreak);
+        blocks::addOnBreak("hellstone", BFuncs::hellstoneOnBreak);
+        blocks::addOnBreak("shadoworb", BFuncs::shadoworbOnBreak);
+        blocks::addOnBreak("grass", BFuncs::grasssoundOnBreak);
+        blocks::addOnBreak("junglegrass", BFuncs::grasssoundOnBreak);
+        blocks::addOnBreak("corruptgrass", BFuncs::grasssoundOnBreak);
+        blocks::addOnBreak("vines", BFuncs::grasssoundOnBreak);
 
         blocks::addOnUpdate("craftingbench", BFuncs::craftingStationOnUpdate);
         blocks::addOnUpdate("borealworkbench", BFuncs::craftingStationOnUpdate);
@@ -197,6 +265,11 @@ namespace resources {
         blocks::addOnPlace("ebonwoodchairright", BFuncs::chairOnPlace);
         blocks::addOnPlace("mahoganychairright", BFuncs::chairOnPlace);
 
+        blocks::animate("campfire", { 0, -17, 0, -17 }, 1, 8);
+        blocks::animate("heartcrystal", { 0, -16, 0, -16 }, 1, 10);
+        blocks::animate("water", { 0, -24, 0, -24 }, 1, 4);
+        blocks::animate("lava", { 0, -24, 0, -24 }, 1, 4);
+
         blocks::addCraftingStation("craftingbench", "craftingbench");
         blocks::addCraftingStation("borealworkbench", "craftingbench");
         blocks::addCraftingStation("mahoganyworkbench", "craftingbench");
@@ -208,15 +281,11 @@ namespace resources {
         blocks::addCraftingStation("bottle", "bottle");
         blocks::addCraftingStation("demonaltar", "demonaltar");
 
-        Layers::biomes.insert(std::make_pair<std::string, Biome>("forest", { 100, "forest" }));
-        Layers::biomes.insert(std::make_pair<std::string, Biome>("none", { 0, "forest" }));
-        Layers::biomes.insert(std::make_pair<std::string, Biome>("snow", { 100, "forest" }));
-        Layers::biomes.insert(std::make_pair<std::string, Biome>("desert", { 100, "desert" }));
-        Layers::biomes.insert(std::make_pair<std::string, Biome>("corruption", { 100, "corruption" }));
-        Layers::biomes.insert(std::make_pair<std::string, Biome>("jungle", { 100, "forest" }));
-        Layers::biomes.insert(std::make_pair<std::string, Biome>("underworld", { 100, "underworld" }));
-        Layers::biomes.insert(std::make_pair<std::string, Biome>("underground", { 100, "underground" }));
-        Layers::biomes.insert(std::make_pair<std::string, Biome>("space", { 100, "space" }));
+        Layers::biomes.insert(std::make_pair<std::string, Biome>("forest", { 100, "forest", {600, 5}, {600, 5}, {600, 5}, {600, 5}, {600, 5} }));
+        Layers::biomes.insert(std::make_pair<std::string, Biome>("snow", { 100, "forest", {600, 5}, {600, 5}, {600, 5}, {600, 5}, {600, 5} }));
+        Layers::biomes.insert(std::make_pair<std::string, Biome>("desert", { 100, "desert", {600, 5}, {600, 5}, {600, 5}, {600, 5}, {600, 5} }));
+        Layers::biomes.insert(std::make_pair<std::string, Biome>("corruption", { 100, "corruption", {390, 6}, {234, 9}, {195, 10}, {156, 11}, {0, 0} }));
+        Layers::biomes.insert(std::make_pair<std::string, Biome>("jungle", { 100, "forest", {240, 7}, {144, 9}, {120, 12}, {96, 13}, {0, 0} }));
 
         //campfire particles
         {
@@ -270,6 +339,32 @@ namespace resources {
             blocks::addParticle("hellstone", pec);
         }
 
+        //hellstone particles
+        {
+            particleEmmiterC pec;
+            pec.amount = 1;
+            pec.dir = glm::vec2(0, 1);
+            pec.disappearAsDie = true;
+            pec.killentity = true;
+            pec.lifespan = 1;
+            pec.ms = 0.07;
+            pec.particleLifespan = 30;
+            pec.randangle = 15;
+            pec.randomizelifespan = 10;
+            pec.randomizems = 0.009;
+            pec.rate = 30;
+            pec.tex = "particle:torchpart";
+            pec.size = glm::vec2(0.6, 0.6);
+            pec.randomizescale = 0.1;
+            pec.weight = -0.1;
+            pec.light = glm::vec3(1, 0, 0);
+            pec.stoponcollision = false;
+            pec.smallerAsDie = true;
+            pec.rotation = 0;
+            pec.randrotation = 20;
+            blocks::addParticle("torch", pec);
+        }
+
         blocks::addBiome("grass", "forest");
         blocks::addBiome("snow", "snow");
         blocks::addBiome("sand", "desert");
@@ -278,25 +373,46 @@ namespace resources {
         blocks::addBiome("junglegrass", "jungle");
         blocks::addBiome("ash", "underworld");
 
-        blocks::addDecor("normalgrassdecor", 0.5, {}, { "grass" });
-        blocks::addDecor("corruptgrassdecor", 0.5, {}, { "corruptgrass" });
-        blocks::addDecor("junglegrassdecor", 0.5, {}, { "junglegrass" });
-        blocks::addDecor("icicle", 0.3, { "snow" });
-        blocks::addDecor("stalaktit", 0.2, { "stone" });
-        blocks::addDecor("corruptstalaktit", 0.25, { "ebonstone" });
-        blocks::addDecor("sandstalaktit", 0.25, { "sandstone" });
-        blocks::addDecor("stalagmit", 0.2, {}, { "stone" });
-        blocks::addDecor("corruptstalagmit", 0.2, {}, { "ebonstone" });
-        blocks::addDecor("sandstalagmit", 0.2, {}, { "sandstone" });
-        blocks::addDecor("smallrock", 0.2, {}, { "grass", "stone" });
-        blocks::addDecor("mushroom", 0.05, {}, { "grass" });
-        blocks::addDecor("heartcrystal", 0.001, {}, { "stone" });
-        blocks::addDecor("demonaltar", 0.5, {}, { "ebonstone" });
+        blocks::addDecor("normalgrassdecor", 0.5, "surface", {}, {"grass"});
+        blocks::addDecor("corruptgrassdecor", 0.5, "surface", {}, { "corruptgrass" });
+        blocks::addDecor("junglegrassdecor", 0.5, "surface", {}, { "junglegrass" });
+        blocks::addDecor("icicle", 0.3, "any", { "snow" });
+        blocks::addDecor("stalaktit", 0.2, "underground", { "stone" });
+        blocks::addDecor("corruptstalaktit", 0.25, "underground", { "ebonstone" });
+        blocks::addDecor("sandstalaktit", 0.25, "underground", { "sandstone" });
+        blocks::addDecor("stalagmit", 0.2, "underground", {}, { "stone" });
+        blocks::addDecor("corruptstalagmit", 0.2, "underground", {}, { "ebonstone" });
+        blocks::addDecor("sandstalagmit", 0.2, "underground", {}, { "sandstone" });
+        blocks::addDecor("smallrock", 0.2, "any", {}, { "grass", "stone" });
+        blocks::addDecor("mushroom", 0.05, "surface", {}, { "grass" });
+        blocks::addDecor("daybloom", 0.05, "surface", {}, { "grass" });
+        blocks::addDecor("junglespores", 0.007, "any", {}, { "junglegrass" });
+        blocks::addDecor("heartcrystal", 0.001, "underground", {}, { "stone" });
+        blocks::addDecor("demonaltar", 0.5, "underground", {}, { "ebonstone" });
+        blocks::addDecor("pot", 0.02, "any", {}, { "grass", "stone", "dirt"});
+        blocks::addDecor("icepot", 0.02, "any", {}, { "snow" });
+        blocks::addDecor("junglepot", 0.01, "any", {}, { "junglegrass" });
+        blocks::addDecor("hellpot", 0.05, "any", {}, { "ash", "hellstone"});
+        blocks::addDecor("normalflowers", 0.1, "surface", {}, { "grass" });
+        blocks::addDecor("jungleflowers", 0.2, "surface", {}, { "junglegrass" });
+        blocks::addDecor("corruptflowers", 0.04, "surface", {}, { "corruptgrass" });
+        blocks::addDecor("undergroundskeletondecor", 0.04, "underground", {}, { "stone" });
+        blocks::addDecor("undergroundtooldecor", 0.04, "underground", {}, { "stone" });
+        blocks::addDecor("smallice", 0.15, "any", {}, { "snow" });
+        blocks::addDecor("mediumice", 0.1, "any", {}, { "snow" });
+        blocks::addDecor("bigice", 0.06, "any", {}, { "snow" });
+        blocks::addDecor("smalldesert", 0.15, "underground", {}, { "hardenedsand", "sandstone" });
+        blocks::addDecor("mediumdesert", 0.1, "underground", {}, { "hardenedsand", "sandstone" });
+        blocks::addDecor("bigdesert", 0.07, "underground", {}, { "hardenedsand", "sandstone" });
+        blocks::addDecor("mediumjungle", 0.2, "any", {}, { "junglegrass" });
+        blocks::addDecor("bigjungle", 0.1, "any", {}, { "junglegrass"});
 
         blocks::addDamageParticle("dirt", "particle:dirtpart");
         blocks::addDamageParticle("pot", "particle:dirtpart");
         blocks::addDamageParticle("stone", "particle:stonepart");
         blocks::addDamageParticle("grass", "particle:grasspart");
+        blocks::addDamageParticle("normalvines", "particle:grasspart");
+        blocks::addDamageParticle("junglevines", "particle:grasspart");
         blocks::addDamageParticle("normalgrassdecor", "particle:leafpart");
         blocks::addDamageParticle("wood", "particle:woodpart");
         blocks::addDamageParticle("ironore", "particle:ironpart");
@@ -334,9 +450,13 @@ namespace resources {
         blocks::addLife("ebonstone", 200);
         blocks::addLife("gravestone", 300);
         blocks::addLife("mushroom", 1);
+        blocks::addLife("daybloom", 1);
+        blocks::addLife("junglespores", 1);
         blocks::addLife("normalgrassdecor", 1);
         blocks::addLife("junglegrassdecor", 1);
         blocks::addLife("corruptgrassdecor", 1);
+        blocks::addLife("normalvines", 1);
+        blocks::addLife("junglevines", 1);
         blocks::addLife("pot", 1);
 
         blocks::emitSkyLight("empty");
@@ -344,11 +464,17 @@ namespace resources {
         blocks::addMinPickaxe("empty", 65123);
         blocks::addMinPickaxe("ebonstone", 65);
         blocks::addMinPickaxe("demonaltar", 80);
+        blocks::addMinPickaxe("ebonstonewall", 80);
         blocks::addMinPickaxe("mushroom", 0);
+        blocks::addMinPickaxe("daybloom", 0);
+        blocks::addMinPickaxe("junglespores", 0);
         blocks::addMinPickaxe("normalgrassdecor", 0);
         blocks::addMinPickaxe("junglegrassdecor", 0);
         blocks::addMinPickaxe("corruptgrassdecor", 0);
+        blocks::addMinPickaxe("normalvines", 0);
+        blocks::addMinPickaxe("junglevines", 0);
         blocks::addMinPickaxe("pot", 0);
+        blocks::addMinPickaxe("hellstone", 65);
 
         blocks::modifyCollidable("woodenplatform", true, false, false, false);
 
@@ -360,9 +486,39 @@ namespace resources {
         blocks::addDamagableWith("trunkbase3", if_AXE);
         blocks::addDamagableWith("normalbranchl", if_AXE);
         blocks::addDamagableWith("normalbranchr", if_AXE);
+        blocks::addDamagableWith("corrupttrunk", if_AXE);
+        blocks::addDamagableWith("corrupttrunkbase1", if_AXE);
+        blocks::addDamagableWith("corrupttrunkbase2", if_AXE);
+        blocks::addDamagableWith("corrupttrunkbase3", if_AXE);
+        blocks::addDamagableWith("corruptbranchl", if_AXE);
+        blocks::addDamagableWith("corruptbranchr", if_AXE);
+        blocks::addDamagableWith("borealtrunk", if_AXE);
+        blocks::addDamagableWith("borealtrunkbase1", if_AXE);
+        blocks::addDamagableWith("borealtrunkbase2", if_AXE);
+        blocks::addDamagableWith("borealtrunkbase3", if_AXE);
+        blocks::addDamagableWith("borealbranchl", if_AXE);
+        blocks::addDamagableWith("borealbranchr", if_AXE);
+        blocks::addDamagableWith("mahoganytrunk", if_AXE);
+        blocks::addDamagableWith("mahoganytrunkbase1", if_AXE);
+        blocks::addDamagableWith("mahoganytrunkbase2", if_AXE);
+        blocks::addDamagableWith("mahoganytrunkbase3", if_AXE);
+        blocks::addDamagableWith("mahoganybranchl", if_AXE);
+        blocks::addDamagableWith("mahoganybranchr", if_AXE);
         blocks::addDamagableWith("demonaltar", if_HAMMER);
+        blocks::addDamagableWith("dirtwall", if_HAMMER);
+        blocks::addDamagableWith("hardenedsandwall", if_HAMMER);
+        blocks::addDamagableWith("sandstonewall", if_HAMMER);
+        blocks::addDamagableWith("ebonstonewall", if_HAMMER);
+        blocks::addDamagableWith("glasswall", if_HAMMER);
+        blocks::addDamagableWith("woodwall", if_HAMMER);
+        blocks::addDamagableWith("shadoworb", if_HAMMER);
 
         blocks::makeUnbreakableBelow("chest");
+        blocks::makeUnbreakableBelow("frozenchest");
+        blocks::makeUnbreakableBelow("shadowchest");
+        blocks::makeUnbreakableBelow("goldchest");
+        blocks::makeUnbreakableBelow("mahoganychest");
+        blocks::makeUnbreakableBelow("waterchest");
         blocks::makeUnbreakableBelow("trunkbase1");
         blocks::makeUnbreakableBelow("trunkbase2");
         blocks::makeUnbreakableBelow("trunkbase3");
@@ -379,186 +535,202 @@ namespace resources {
 
         blocks::addBuff("campfire", "cozyfire");
         blocks::addBuff("sunflower", "happy");
+            
+        liquids::add("water", 0x00000000, blocks::nameToID["water"]);
+        liquids::add("lava", 0x30000000, blocks::nameToID["lava"], glm::vec3(0.25, 0.1,0));
 
         items::info.clear();
-        items::addItem("empty", "empty", {}, 0, { if_ANY });
-        items::addItem("dirt", "dirtitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("glass", "glassitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("stone", "stoneitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("wood", "wooditem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("sand", "sanditem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("dirtwall", "dirtwallitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("glasswall", "glasswallitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("stonewall", "stonewallitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("woodwall", "woodwallitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("grass", "grass", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("torch", "torchitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("purpletorch", "purpletorch", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("acorn", "acorn", { itemFuncs::placeSapling }, globals::blockPlaceSpeed, { if_MISC }, {}, { itemConditions::hasAmmo });
-        items::addItem("woodenbow", "woodenbow", { itemFuncs::shootArrow, itemFuncs::removeAmmo }, 20, { if_BOW, if_RANGED }, {}, { itemConditions::hasAmmo }, ia_USE, 2);
-        items::addItem("arrow", "arrow", {}, 0, { if_ARROW, if_PROJECTILE }, {});
-        items::addItem("bomb", "bomb", { itemFuncs::throwSelf }, 20, { if_THROWABLE }, {}, { itemConditions::hasAmmo });
-        items::addItem("minishark", "minishark", { itemFuncs::shootArrow, itemFuncs::removeAmmo }, 4, { if_GUN, if_RANGED }, {}, { itemConditions::hasAmmo }, ia_USE, 2);
-        items::addItem("waterspell", "waterspell", { itemFuncs::shootArrow }, 1, { if_SPELL, if_RANGED }, {}, { itemConditions::nothing }, ia_USE);
-        items::addItem("gel", "gel", {}, globals::blockPlaceSpeed, { if_MISC }, {});
-        items::addItem("bullet", "bullet", {}, globals::blockPlaceSpeed, { if_BULLET, if_PROJECTILE });
-        items::addItem("waterbolt", "waterbolt", {}, globals::blockPlaceSpeed, { if_BULLET, if_PROJECTILE });
-        items::addItem("aquabolt", "aquabolt", {}, globals::blockPlaceSpeed, { if_BULLET, if_PROJECTILE });
-        items::addItem("chest", "chestitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("door", "dooritem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("table", "tableitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("anvil", "anvilitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("furnace", "furnaceitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("craftingbench", "craftingbenchitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("gravestone", "gravestoneitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("slimestatue", "slimestatue", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("chair", "chairitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("ironbar", "ironbar", {}, globals::blockPlaceSpeed, { if_BAR }, {}, {});
-        items::addItem("ironore", "ironoreitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE, if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("copperore", "ironoreitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("stonebrick", "stonebrickitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("mud", "muditem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("snow", "snowitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("borealwood", "borealwooditem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("ebonwood", "ebonwooditem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("mahoganywood", "mahoganywoooditem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("mahoganywoodwall", "mahoganywoodwallitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("ebonwoodwall", "ebonwoodwallitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("borealwoodwall", "borealwoodwallitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("borealdoor", "borealdooritem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("borealtable", "borealtableitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("borealworkbench", "borealworkbenchitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("mahoganydoor", "mahoganydooritem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("mahoganytable", "mahoganytableitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("mahoganyworkbench", "mahoganyworkbenchitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("ebonwooddoor", "ebonwooddooritem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("ebonwoodtable", "ebonwoodtableitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("ebonwoodworkbench", "ebonwoodworkbenchitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("ebonwoodchair", "ebonwoodchairitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("mahoganychair", "mahoganychairitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("borealchair", "borealchairitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("ash", "ashitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("sandstone", "sandstoneitem", { itemFuncs::place },  globals::blockPlaceSpeed, {if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("sandstonewall", "sandstonewallitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("hardenedsand", "hardenedsanditem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("hardenedsandwall", "hardenedsandwallitem", { itemFuncs::place },  globals::blockPlaceSpeed, {if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("ebonstone", "ebonstoneitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("woodenbreastplate", "woodenbreastplate", {}, globals::blockPlaceSpeed, { if_BREASTPLATE}, {}, { itemConditions::hasAmmo });
-        items::addItem("woodenhelmet", "woodenhelmet", {}, globals::blockPlaceSpeed, { if_HELMET }, {}, { });
-        items::addItem("woodengreaves", "woodengreaves", {}, globals::blockPlaceSpeed, { if_GREAVES }, {}, {});
-        items::addItem("fallenstar", "fallenstar", {}, globals::blockPlaceSpeed, { if_MISC }, {}, {});
-        items::addItem("coppercoin", "coppercoin", {}, globals::blockPlaceSpeed, { if_MISC }, {}, {});
-        items::addItem("silvercoin", "silvercoin", {}, globals::blockPlaceSpeed, { if_MISC }, {}, {});
-        items::addItem("goldcoin", "goldcoin", {}, globals::blockPlaceSpeed, { if_MISC }, {}, {});
-        items::addItem("platinumcoin", "platinumcoin", {}, globals::blockPlaceSpeed, { if_MISC }, {}, {});
-        items::addItem("woodenplatform", "woodenplatform", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("campfire", "campfireitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("bandofregeneration", "regenband", {}, globals::blockPlaceSpeed, { if_ACCESORY }, {}, {});
-        items::addItem("suseye", "suseye", {itemFuncs::summonEye, itemFuncs::removeAmmo }, globals::blockPlaceSpeed, {if_MISC }, {}, {});
-        items::addItem("magicmirror", "magicmirror", {itemFuncs::teleportToSpawn}, globals::blockPlaceSpeed, { if_MISC }, {}, {});
-        items::addItem("cloudinabottle", "bottlecloud", {}, globals::blockPlaceSpeed, { if_ACCESORY }, {}, {});
-        items::addItem("hermesboots", "hermesboots", {}, globals::blockPlaceSpeed, { if_ACCESORY }, {}, {});
-        items::addItem("bandofstarpower", "manaband", {}, globals::blockPlaceSpeed, { if_ACCESORY }, {}, {});
-        items::addItem("lens", "lens", {}, globals::blockPlaceSpeed, { if_MISC }, {}, {});
-        items::addItem("shackle", "shackle", {}, globals::blockPlaceSpeed, { if_ACCESORY }, {}, { });
-        items::addItem("enchantedboomerang", "magicboomerang", {itemFuncs::shootBoomerang}, 30, { if_WEAPON, if_MEELE }, {}, { itemConditions::boomerang }, ia_NONE);
-        items::addItem("vilethorn", "vilethorn", { itemFuncs::vilethorn ,itemFuncs::takeMana }, 30, { if_WEAPON, if_MAGIC }, {}, { itemConditions::hasMana });
-        items::addItem("terrablade", "terrablade", { itemFuncs::terraBlade }, 30, { if_WEAPON, if_MEELE }, {});
-        items::addItem("starfury", "starfury", {itemFuncs::starfuryStar}, 30, { if_WEAPON, if_MEELE }, {});
-        items::addItem("magicmissile", "magicmissile", { itemFuncs::shootArrow, itemFuncs::takeMana }, 30, { if_WEAPON, if_MAGIC }, {}, { itemConditions::hasMana });
-        items::addItem("aquascepter", "aquascepter", { itemFuncs::shootArrow, itemFuncs::takeMana }, 30, { if_WEAPON, if_MAGIC }, {}, { itemConditions::hasMana }, ia_USE);
-        items::addItem("opticstaff", "opticstaff", { itemFuncs::opticStaff, itemFuncs::takeMana }, 30, { if_WEAPON, if_SUMMON }, {}, {itemConditions::hasSummonSpace, itemConditions::hasMana});
-        items::addItem("frozenboomerang", "frozenboomerang", { itemFuncs::shootBoomerang }, 30, { if_WEAPON, if_MEELE }, {}, { itemConditions::boomerang }, ia_NONE);
-        items::addItem("woodenboomerang", "woodenboomerang", { itemFuncs::shootBoomerang }, 30, { if_WEAPON, if_MEELE }, {}, { itemConditions::boomerang }, ia_NONE);
-        items::addItem("lightdisc", "lightdisc", { itemFuncs::shootBoomerang }, 30, { if_WEAPON, if_MEELE }, {}, { itemConditions::lightdisc }, ia_NONE);
-        items::addItem("iceblade", "iceblade", { itemFuncs::shootArrow }, 30, { if_WEAPON, if_MEELE });
-        items::addItem("icebladeprojectile", "icebladeprojectile", {}, 30, { if_PROJECTILE });
-        items::addItem("lightsbane", "lightsbane", {}, 30, { if_WEAPON, if_MEELE });
-        items::addItem("waraxeofthenight", "waraxeofthenight", { itemFuncs::dig }, 40, { if_WEAPON, if_AXE, if_MEELE }, {});
-        items::addItem("demonbow", "demonbow", { itemFuncs::shootArrow, itemFuncs::removeAmmo }, 20, { if_BOW, if_RANGED }, {}, { itemConditions::hasAmmo }, ia_USE, 2);
-        items::addItem("nightmarepickaxe", "nightmarepickaxe", { itemFuncs::dig }, 15, { if_WEAPON, if_PICKAXE, if_MEELE });
-        items::addItem("cactuspickaxe", "cactuspickaxe", { itemFuncs::dig }, 15, { if_WEAPON, if_PICKAXE, if_MEELE });
-        items::addItem("cactussword", "cactussword", {}, 30, { if_WEAPON, if_MEELE });
-        items::addItem("spacegun", "spacegun", { itemFuncs::shootArrow }, 30, { if_WEAPON, if_MAGIC }, {}, { itemConditions::hasMana }, ia_USE);
-        items::addItem("spacegunprojectile", "spacegunprojectile", {}, globals::blockPlaceSpeed, { if_BULLET, if_PROJECTILE });
-        items::addItem("enchantedsword", "enchantedsword", {itemFuncs::shootArrow}, globals::blockPlaceSpeed, { if_WEAPON, if_MEELE });
-        items::addItem("enchantedswordprojectile", "enchantedswordprojectile", {}, globals::blockPlaceSpeed, { if_BULLET, if_PROJECTILE });
-        items::addItem("snowballcannon", "snowballcannon", { itemFuncs::shootArrow, itemFuncs::removeAmmo }, globals::blockPlaceSpeed, { if_WEAPON, if_MEELE }, {}, { itemConditions::hasAmmo }, ia_USE);
-        items::addItem("snowball", "snowball", { itemFuncs::shootArrow, itemFuncs::removeAmmo }, globals::blockPlaceSpeed, { if_BULLET, if_PROJECTILE }, {}, { itemConditions::hasAmmo }, ia_NONE);
-        items::addItem("beegun", "beegun", { itemFuncs::beegun, itemFuncs::takeMana }, globals::blockPlaceSpeed, { if_WEAPON, if_MAGIC }, {}, { itemConditions::hasMana }, ia_USE);
-        items::addItem("bee", "bee", {}, globals::blockPlaceSpeed, { if_BULLET, if_PROJECTILE });
-        items::addItem("hellstone", "hellstoneitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("demoniteore", "demoniteoreitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("silverore", "silveroreitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("goldore", "goldoreitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("obsidianbrick", "obsidianbrickitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("silverbar", "silverbar", {}, globals::blockPlaceSpeed, { if_BAR }, {}, {});
-        items::addItem("goldbar", "goldbar", {}, globals::blockPlaceSpeed, { if_BAR }, {}, {});
-        items::addItem("demonitebar", "demonitebar", {}, globals::blockPlaceSpeed, { if_BAR }, {}, {});
-        items::addItem("hellstonebar", "hellstonebar", {}, globals::blockPlaceSpeed, { if_BAR }, {}, {});
-        items::addItem("ankletofthewind", "ankletofthewind", {}, globals::blockPlaceSpeed, { if_ACCESORY }, {}, { });
-        items::addItem("feralclaws", "feralclaws", {}, globals::blockPlaceSpeed, { if_ACCESORY }, {}, {  });
-        items::addItem("aglet", "aglet", {}, globals::blockPlaceSpeed, { if_ACCESORY }, {}, {  });
-        items::addItem("obsidian", "obsidian", {}, globals::blockPlaceSpeed, { if_ACCESORY }, {}, {  });
-        items::addItem("hellforge", "hellforge", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("coppersword", "coppersword", {}, 30, { if_WEAPON, if_MEELE }, {});
-        items::addItem("ironsword", "ironsword", {}, 30, { if_WEAPON, if_MEELE }, {});
-        items::addItem("silversword", "silversword", {}, 30, { if_WEAPON, if_MEELE }, {});
-        items::addItem("goldsword", "goldsword", {}, 30, { if_WEAPON, if_MEELE }, {});
-        items::addItem("copperaxe", "copperaxe", { itemFuncs::dig }, 40, { if_WEAPON, if_AXE, if_MEELE }, {});
-        items::addItem("ironaxe", "ironaxe", { itemFuncs::dig }, 40, { if_WEAPON, if_AXE, if_MEELE }, {});
-        items::addItem("silveraxe", "silveraxe", { itemFuncs::dig }, 40, { if_WEAPON, if_AXE, if_MEELE }, {});
-        items::addItem("goldaxe", "goldaxe", { itemFuncs::dig }, 40, { if_WEAPON, if_AXE, if_MEELE }, {});
-        items::addItem("copperhammer", "copperhammer", { itemFuncs::dig }, 40, { if_WEAPON, if_HAMMER, if_MEELE }, {});
-        items::addItem("ironhammer", "ironhammer", { itemFuncs::dig }, 40, { if_WEAPON, if_HAMMER, if_MEELE }, {});
-        items::addItem("silverhammer", "silverhammer", { itemFuncs::dig }, 40, { if_WEAPON, if_HAMMER, if_MEELE }, {});
-        items::addItem("goldhammer", "goldhammer", { itemFuncs::dig }, 40, { if_WEAPON, if_HAMMER, if_MEELE }, {});
-        items::addItem("copperpickaxe", "copperpickaxe", { itemFuncs::dig }, 15, { if_WEAPON, if_PICKAXE, if_MEELE });
-        items::addItem("ironpickaxe", "ironpickaxe", { itemFuncs::dig }, 15, { if_WEAPON, if_PICKAXE, if_MEELE });
-        items::addItem("silverpickaxe", "silverpickaxe", { itemFuncs::dig }, 15, { if_WEAPON, if_PICKAXE, if_MEELE });
-        items::addItem("goldpickaxe", "goldpickaxe", { itemFuncs::dig }, 15, { if_WEAPON, if_PICKAXE, if_MEELE });
-        items::addItem("copperbow", "copperbow", { itemFuncs::shootArrow, itemFuncs::removeAmmo }, 20, { if_BOW, if_RANGED }, {}, { itemConditions::hasAmmo }, ia_USE, 2);
-        items::addItem("ironbow", "ironbow", { itemFuncs::shootArrow, itemFuncs::removeAmmo }, 20, { if_BOW, if_RANGED }, {}, { itemConditions::hasAmmo }, ia_USE, 2);
-        items::addItem("silverbow", "silverbow", { itemFuncs::shootArrow, itemFuncs::removeAmmo }, 20, { if_BOW, if_RANGED }, {}, { itemConditions::hasAmmo }, ia_USE, 2);
-        items::addItem("goldbow", "goldbow", { itemFuncs::shootArrow, itemFuncs::removeAmmo }, 20, { if_BOW, if_RANGED }, {}, { itemConditions::hasAmmo }, ia_USE, 2);
-        items::addItem("moltenfury", "moltenfury", { itemFuncs::shootArrow, itemFuncs::removeAmmo }, 20, { if_BOW, if_RANGED }, {}, { itemConditions::hasAmmo }, ia_USE, 2);
-        items::addItem("moltenhamaxe", "moltenhamaxe", { itemFuncs::dig }, 15, { if_WEAPON, if_HAMMER, if_MEELE });
-        items::addItem("moltenpickaxe", "moltenpickaxe", { itemFuncs::dig }, 15, { if_WEAPON, if_PICKAXE, if_MEELE });
-        items::addItem("volcano", "volcano", {}, 30, { if_WEAPON, if_MEELE }, {});
-        items::addItem("impstaff", "impstaff", { itemFuncs::impStaff, itemFuncs::takeMana }, 30, { if_WEAPON, if_SUMMON }, {}, { itemConditions::hasSummonSpace, itemConditions::hasMana });
-        items::addItem("cactus", "cactus", { }, 30, { if_BLOCK });
-        items::addItem("sunflower", "sunfloweritem", { itemFuncs::place, itemFuncs::removeAmmo }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
-        items::addItem("heartcrystal", "heartcrystal", { itemFuncs::increaseMaxHealth, itemFuncs::removeAmmo }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::heartCrystal });
-        items::addItem("bottle", "bottle", { itemFuncs::place, itemFuncs::removeAmmo }, globals::blockPlaceSpeed, { if_BLOCK }, {}, {});
-        items::addItem("healthpotion", "healthpot", { itemFuncs::heal, itemFuncs::removeAmmo }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::heal });
-        items::addItem("mushroom", "mushroomitem", { itemFuncs::heal, itemFuncs::removeAmmo }, globals::blockPlaceSpeed, { if_BLOCK }, {}, {itemConditions::heal});
-        items::addItem("ironbreastplate", "ironbreastplate", {}, globals::blockPlaceSpeed, { if_BREASTPLATE }, {}, { itemConditions::hasAmmo });
-        items::addItem("ironhelmet", "ironhelmet", {}, globals::blockPlaceSpeed, { if_HELMET }, {}, { });
-        items::addItem("irongreaves", "irongreaves", {}, globals::blockPlaceSpeed, { if_GREAVES }, {}, {});
-        items::addItem("silverbreastplate", "silverbreastplate", {}, globals::blockPlaceSpeed, { if_BREASTPLATE }, {}, { itemConditions::hasAmmo });
-        items::addItem("silverhelmet", "silverhelmet", {}, globals::blockPlaceSpeed, { if_HELMET }, {}, { });
-        items::addItem("silvergreaves", "silvergreaves", {}, globals::blockPlaceSpeed, { if_GREAVES }, {}, {});
-        items::addItem("goldbreastplate", "goldbreastplate", {}, globals::blockPlaceSpeed, { if_BREASTPLATE }, {}, { itemConditions::hasAmmo });
-        items::addItem("goldhelmet", "goldhelmet", {}, globals::blockPlaceSpeed, { if_HELMET }, {}, { });
-        items::addItem("goldgreaves", "goldgreaves", {}, globals::blockPlaceSpeed, { if_GREAVES }, {}, {});
-        items::addItem("copperbreastplate", "copperbreastplate", {}, globals::blockPlaceSpeed, { if_BREASTPLATE }, {}, { itemConditions::hasAmmo });
-        items::addItem("copperhelmet", "copperhelmet", {}, globals::blockPlaceSpeed, { if_HELMET }, {}, { });
-        items::addItem("coppergreaves", "coppergreaves", {}, globals::blockPlaceSpeed, { if_GREAVES }, {}, {});
-        items::addItem("mininghelmet", "mininghelmet", {}, globals::blockPlaceSpeed, { if_HELMET }, {}, { });
-        items::addItem("moltenbreastplate", "moltenbreastplate", {}, globals::blockPlaceSpeed, { if_BREASTPLATE }, {}, { itemConditions::hasAmmo });
-        items::addItem("moltenhelmet", "moltenhelmet", {}, globals::blockPlaceSpeed, { if_HELMET }, {}, { });
-        items::addItem("moltengreaves", "moltengreaves", {}, globals::blockPlaceSpeed, { if_GREAVES }, {}, {});
-        items::addItem("cactusbreastplate", "cactusbreastplate", {}, globals::blockPlaceSpeed, { if_BREASTPLATE }, {}, { itemConditions::hasAmmo });
-        items::addItem("cactushelmet", "cactushelmet", {}, globals::blockPlaceSpeed, { if_HELMET }, {}, { });
-        items::addItem("cactusgreaves", "cactusgreaves", {}, globals::blockPlaceSpeed, { if_GREAVES }, {}, {});
+        items::addItem("empty", "", "empty", {}, 0, { if_ANY });
+        items::addItem("dirt", "Dirt Block", "dirtitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("glass", "Glass Block", "glassitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("stone", "Stone Block", "stoneitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("wood", "Wood", "wooditem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("sand", "Sand Block", "sanditem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("dirtwall", "Dirt Wall", "dirtwallitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("glasswall", "Glass Wall", "glasswallitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("stonewall", "Stone Wall", "stonewallitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("woodwall", "Wood Wall", "woodwallitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("grass", "Grass Block", "grass", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("torch", "Torch", "torchitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("purpletorch", "Purple Torch", "purpletorch", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("acorn", "Acorn", "acorn", { itemFuncs::placeSapling }, globals::blockPlaceSpeed, { if_MISC }, {}, { itemConditions::hasAmmo });
+        items::addItem("woodenbow", "Wooden Bow", "woodenbow", { itemFuncs::shootArrow, itemFuncs::removeAmmo }, 20, { if_BOW, if_RANGED }, {}, { itemConditions::hasAmmo }, ia_USE, 2);
+        items::addItem("arrow", "Arrow", "arrow", {}, 0, { if_ARROW, if_PROJECTILE }, {});
+        items::addItem("bomb", "Bomb", "bomb", { itemFuncs::throwSelf }, 20, { if_THROWABLE }, {}, { itemConditions::hasAmmo });
+        items::addItem("minishark", "Minishark", "minishark", { itemFuncs::shootArrow, itemFuncs::removeAmmo }, 4, { if_GUN, if_RANGED }, {}, { itemConditions::hasAmmo }, ia_USE, 2);
+        items::addItem("waterspell", "Water Bolt", "waterspell", { itemFuncs::shootArrow }, 1, { if_SPELL, if_RANGED }, {}, { itemConditions::nothing }, ia_USE);
+        items::addItem("gel", "Gel", "gel", {}, globals::blockPlaceSpeed, { if_MISC }, {});
+        items::addItem("bullet", "Bullet", "bullet", {}, globals::blockPlaceSpeed, { if_BULLET, if_PROJECTILE });
+        items::addItem("waterbolt", "waterbolt", "waterbolt", {}, globals::blockPlaceSpeed, { if_BULLET, if_PROJECTILE });
+        items::addItem("aquabolt", "aquabolt", "aquabolt", {}, globals::blockPlaceSpeed, { if_BULLET, if_PROJECTILE });
+        items::addItem("chest", "Chest", "chestitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("door", "Wood Door", "dooritem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("table", "Wood Table", "tableitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("anvil", "Iron Anvil", "anvilitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("furnace", "Furnace", "furnaceitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("craftingbench", "Work Bench", "craftingbenchitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("gravestone", "Gravestone", "gravestoneitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("slimestatue", "Slime Statue", "slimestatue", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("chair", "Wood Chair", "chairitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("ironbar", "Iron Bar", "ironbar", {}, globals::blockPlaceSpeed, { if_BAR }, {}, {});
+        items::addItem("ironore", "Iron Ore", "ironoreitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE, if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("copperore", "Copper Ore", "ironoreitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("stonebrick", "Stone Brick", "stonebrickitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("mud", "Mud", "muditem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("snow", "Snow", "snowitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("borealwood", "Boreal Wood", "borealwooditem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("ebonwood", "Ebonwood", "ebonwooditem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("mahoganywood", "Mahogany Wood", "mahoganywoooditem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("mahoganywoodwall", "Mahogany Wood Wall", "mahoganywoodwallitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("ebonwoodwall", "Ebonwood Wall", "ebonwoodwallitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("borealwoodwall", "Boreal Wood Wall", "borealwoodwallitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("borealdoor", "Boreal Door", "borealdooritem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("borealtable", "Boreal Table", "borealtableitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("borealworkbench", "Boreal Work Bench", "borealworkbenchitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("mahoganydoor", "Mahogany Door", "mahoganydooritem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("mahoganytable", "Mahogany Table", "mahoganytableitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("mahoganyworkbench", "Mahogany Work Bench", "mahoganyworkbenchitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("ebonwooddoor", "Ebonwood Door", "ebonwooddooritem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("ebonwoodtable", "Ebonwood Table", "ebonwoodtableitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("ebonwoodworkbench", "Ebonwood Work Bench", "ebonwoodworkbenchitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("ebonwoodchair", "Ebonwood Chair", "ebonwoodchairitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("mahoganychair", "Mahogany Chair", "mahoganychairitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("borealchair", "Boreal Chair", "borealchairitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("ash", "Ash", "ashitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("sandstone", "Sandstone Block", "sandstoneitem", { itemFuncs::place },  globals::blockPlaceSpeed, {if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("sandstonewall", "Sandstone Wall", "sandstonewallitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("hardenedsand", "Hardened Sand", "hardenedsanditem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("hardenedsandwall", "Hardened Sand Wall", "hardenedsandwallitem", { itemFuncs::place },  globals::blockPlaceSpeed, {if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("ebonstone", "Ebonstone", "ebonstoneitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("woodenbreastplate", "Wood Breatplate", "woodenbreastplate", {}, globals::blockPlaceSpeed, { if_BREASTPLATE}, {}, { itemConditions::hasAmmo });
+        items::addItem("woodenhelmet", "Wood Helmet", "woodenhelmet", {}, globals::blockPlaceSpeed, { if_HELMET }, {}, { });
+        items::addItem("woodengreaves", "Wood greaves", "woodengreaves", {}, globals::blockPlaceSpeed, { if_GREAVES }, {}, {});
+        items::addItem("fallenstar", "Fallen Star", "fallenstar", {}, globals::blockPlaceSpeed, { if_MISC }, {}, {});
+        items::addItem("coppercoin", "Copper Coin", "coppercoin", {}, globals::blockPlaceSpeed, { if_MISC }, {}, {});
+        items::addItem("silvercoin", "Silver Coin", "silvercoin", {}, globals::blockPlaceSpeed, { if_MISC }, {}, {});
+        items::addItem("goldcoin", "Gold Coin", "goldcoin", {}, globals::blockPlaceSpeed, { if_MISC }, {}, {});
+        items::addItem("platinumcoin", "Platinum Coin", "platinumcoin", {}, globals::blockPlaceSpeed, { if_MISC }, {}, {});
+        items::addItem("woodenplatform", "Wooden Platform", "woodenplatform", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("campfire", "Campfire", "campfireitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("bandofregeneration", "Band of Regeneration", "regenband", {}, globals::blockPlaceSpeed, { if_ACCESORY }, {}, {});
+        items::addItem("suseye", "Sus eye", "suseye", {itemFuncs::summonEye, itemFuncs::removeAmmo }, globals::blockPlaceSpeed, {if_MISC }, {}, {});
+        items::addItem("magicmirror", "Magic Mirror", "magicmirror", {itemFuncs::teleportToSpawn}, globals::blockPlaceSpeed, { if_MISC }, {}, {});
+        items::addItem("cloudinabottle", "Cloud in a Bottle", "bottlecloud", {}, globals::blockPlaceSpeed, { if_ACCESORY }, {}, {});
+        items::addItem("hermesboots", "Hermes Boots", "hermesboots", {}, globals::blockPlaceSpeed, { if_ACCESORY }, {}, {});
+        items::addItem("bandofstarpower", "Band of Starpower", "manaband", {}, globals::blockPlaceSpeed, { if_ACCESORY }, {}, {});
+        items::addItem("lens", "Lens", "lens", {}, globals::blockPlaceSpeed, { if_MISC }, {}, {});
+        items::addItem("shackle", "Shackle", "shackle", {}, globals::blockPlaceSpeed, { if_ACCESORY }, {}, { });
+        items::addItem("enchantedboomerang", "Enchanted Boomerang", "magicboomerang", {itemFuncs::shootBoomerang}, 30, { if_WEAPON, if_MEELE }, {}, { itemConditions::boomerang }, ia_NONE);
+        items::addItem("vilethorn", "Vilethorn", "vilethorn", { itemFuncs::vilethorn ,itemFuncs::takeMana }, 30, { if_WEAPON, if_MAGIC }, {}, { itemConditions::hasMana });
+        items::addItem("terrablade", "Terra Blade", "terrablade", { itemFuncs::terraBlade }, 30, { if_WEAPON, if_MEELE }, {});
+        items::addItem("starfury", "Starfury", "starfury", {itemFuncs::starfuryStar}, 30, { if_WEAPON, if_MEELE }, {});
+        items::addItem("magicmissile", "Magic missile", "magicmissile", { itemFuncs::shootArrow, itemFuncs::takeMana }, 30, { if_WEAPON, if_MAGIC }, {}, { itemConditions::hasMana });
+        items::addItem("aquascepter", "Aqua Scepter", "aquascepter", { itemFuncs::shootArrow, itemFuncs::takeMana }, 30, { if_WEAPON, if_MAGIC }, {}, { itemConditions::hasMana }, ia_USE);
+        items::addItem("opticstaff", "Optic staff", "opticstaff", { itemFuncs::opticStaff, itemFuncs::takeMana }, 30, { if_WEAPON, if_SUMMON }, {}, {itemConditions::hasSummonSpace, itemConditions::hasMana});
+        items::addItem("frozenboomerang", "Frozen Boomerang", "frozenboomerang", { itemFuncs::shootBoomerang }, 30, { if_WEAPON, if_MEELE }, {}, { itemConditions::boomerang }, ia_NONE);
+        items::addItem("woodenboomerang", "Wooden Boomerang", "woodenboomerang", { itemFuncs::shootBoomerang }, 30, { if_WEAPON, if_MEELE }, {}, { itemConditions::boomerang }, ia_NONE);
+        items::addItem("lightdisc", "Light Disc", "lightdisc", { itemFuncs::shootBoomerang }, 30, { if_WEAPON, if_MEELE }, {}, { itemConditions::lightdisc }, ia_NONE);
+        items::addItem("iceblade", "Ice Blade", "iceblade", { itemFuncs::shootArrow }, 30, { if_WEAPON, if_MEELE });
+        items::addItem("icebladeprojectile", "icebladeprojectile", "icebladeprojectile", {}, 30, { if_PROJECTILE });
+        items::addItem("lightsbane", "Lights Bane", "lightsbane", {}, 30, { if_WEAPON, if_MEELE });
+        items::addItem("waraxeofthenight", "War Axe of the Night", "waraxeofthenight", { itemFuncs::dig }, 40, { if_WEAPON, if_AXE, if_MEELE }, {});
+        items::addItem("demonbow", "Demon Bow", "demonbow", { itemFuncs::shootArrow, itemFuncs::removeAmmo }, 20, { if_BOW, if_RANGED }, {}, { itemConditions::hasAmmo }, ia_USE, 2);
+        items::addItem("nightmarepickaxe", "Nightmare Pickaxe", "nightmarepickaxe", { itemFuncs::dig }, 15, { if_WEAPON, if_PICKAXE, if_MEELE });
+        items::addItem("cactuspickaxe", "Cactus Pickaxe", "cactuspickaxe", { itemFuncs::dig }, 15, { if_WEAPON, if_PICKAXE, if_MEELE });
+        items::addItem("cactussword", "Cactus Sword", "cactussword", {}, 30, { if_WEAPON, if_MEELE });
+        items::addItem("spacegun", "Space Gun", "spacegun", { itemFuncs::shootArrow }, 30, { if_WEAPON, if_MAGIC }, {}, { itemConditions::hasMana }, ia_USE);
+        items::addItem("spacegunprojectile", "spacegunprojectile", "spacegunprojectile", {}, globals::blockPlaceSpeed, { if_BULLET, if_PROJECTILE });
+        items::addItem("enchantedsword", "Enchanted Sword", "enchantedsword", {itemFuncs::shootArrow}, globals::blockPlaceSpeed, { if_WEAPON, if_MEELE });
+        items::addItem("enchantedswordprojectile", "enchantedswordprojectile", "enchantedswordprojectile", {}, globals::blockPlaceSpeed, { if_BULLET, if_PROJECTILE });
+        items::addItem("snowballcannon", "Snowball Cannon", "snowballcannon", { itemFuncs::shootArrow, itemFuncs::removeAmmo }, globals::blockPlaceSpeed, { if_WEAPON, if_MEELE }, {}, { itemConditions::hasAmmo }, ia_USE);
+        items::addItem("snowball", "Snowball", "snowball", { itemFuncs::shootArrow, itemFuncs::removeAmmo }, globals::blockPlaceSpeed, { if_BULLET, if_PROJECTILE }, {}, { itemConditions::hasAmmo }, ia_NONE);
+        items::addItem("beegun", "Bee gun", "beegun", { itemFuncs::beegun, itemFuncs::takeMana }, globals::blockPlaceSpeed, { if_WEAPON, if_MAGIC }, {}, { itemConditions::hasMana }, ia_USE);
+        items::addItem("bee", "bee", "bee", {}, globals::blockPlaceSpeed, { if_BULLET, if_PROJECTILE });
+        items::addItem("hellstone", "Hellstone", "hellstoneitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("demoniteore", "Demonite Ore", "demoniteoreitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("silverore", "Silver Ore", "silveroreitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("goldore", "Gold Ore", "goldoreitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("obsidianbrick", "Obsidian Brick", "obsidianbrickitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("silverbar", "Silver Bar", "silverbar", {}, globals::blockPlaceSpeed, { if_BAR }, {}, {});
+        items::addItem("goldbar", "Gold Bar", "goldbar", {}, globals::blockPlaceSpeed, { if_BAR }, {}, {});
+        items::addItem("demonitebar", "Demonite Bar", "demonitebar", {}, globals::blockPlaceSpeed, { if_BAR }, {}, {});
+        items::addItem("hellstonebar", "Hellstone Bar", "hellstonebar", {}, globals::blockPlaceSpeed, { if_BAR }, {}, {});
+        items::addItem("ankletofthewind", "Anklet of the Wind", "ankletofthewind", {}, globals::blockPlaceSpeed, { if_ACCESORY }, {}, { });
+        items::addItem("feralclaws", "Feral Claws", "feralclaws", {}, globals::blockPlaceSpeed, { if_ACCESORY }, {}, {  });
+        items::addItem("aglet", "Aglet", "aglet", {}, globals::blockPlaceSpeed, { if_ACCESORY }, {}, {  });
+        items::addItem("obsidian", "Obsidian", "obsidian", {}, globals::blockPlaceSpeed, { if_ACCESORY }, {}, {  });
+        items::addItem("hellforge", "Hellforge", "hellforge", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("coppersword", "Copper Sword", "coppersword", {}, 30, { if_WEAPON, if_MEELE }, {});
+        items::addItem("ironsword", "Iron Sword", "ironsword", {}, 30, { if_WEAPON, if_MEELE }, {});
+        items::addItem("silversword", "Silver Sword", "silversword", {}, 30, { if_WEAPON, if_MEELE }, {});
+        items::addItem("goldsword", "Gold Sword", "goldsword", {}, 30, { if_WEAPON, if_MEELE }, {});
+        items::addItem("copperaxe", "Copper Axe", "copperaxe", { itemFuncs::dig }, 40, { if_WEAPON, if_AXE, if_MEELE }, {});
+        items::addItem("ironaxe", "Iron Axe", "ironaxe", { itemFuncs::dig }, 40, { if_WEAPON, if_AXE, if_MEELE }, {});
+        items::addItem("silveraxe", "Silver Axe", "silveraxe", { itemFuncs::dig }, 40, { if_WEAPON, if_AXE, if_MEELE }, {});
+        items::addItem("goldaxe", "Gold Axe", "goldaxe", { itemFuncs::dig }, 40, { if_WEAPON, if_AXE, if_MEELE }, {});
+        items::addItem("copperhammer", "Copper Hammer", "copperhammer", { itemFuncs::dig }, 40, { if_WEAPON, if_HAMMER, if_MEELE }, {});
+        items::addItem("ironhammer", "Iron Hammer", "ironhammer", { itemFuncs::dig }, 40, { if_WEAPON, if_HAMMER, if_MEELE }, {});
+        items::addItem("silverhammer", "Silver Hammer", "silverhammer", { itemFuncs::dig }, 40, { if_WEAPON, if_HAMMER, if_MEELE }, {});
+        items::addItem("goldhammer", "Gold Hammer", "goldhammer", { itemFuncs::dig }, 40, { if_WEAPON, if_HAMMER, if_MEELE }, {});
+        items::addItem("copperpickaxe", "Copper Pickaxe", "copperpickaxe", { itemFuncs::dig }, 15, { if_WEAPON, if_PICKAXE, if_MEELE });
+        items::addItem("ironpickaxe", "Iron Pickaxe", "ironpickaxe", { itemFuncs::dig }, 15, { if_WEAPON, if_PICKAXE, if_MEELE });
+        items::addItem("silverpickaxe", "Silver Pickaxe", "silverpickaxe", { itemFuncs::dig }, 15, { if_WEAPON, if_PICKAXE, if_MEELE });
+        items::addItem("goldpickaxe", "Gold Pickaxe", "goldpickaxe", { itemFuncs::dig }, 15, { if_WEAPON, if_PICKAXE, if_MEELE });
+        items::addItem("copperbow", "Copper Bow", "copperbow", { itemFuncs::shootArrow, itemFuncs::removeAmmo }, 20, { if_BOW, if_RANGED }, {}, { itemConditions::hasAmmo }, ia_USE, 2);
+        items::addItem("ironbow", "Iron Bow", "ironbow", { itemFuncs::shootArrow, itemFuncs::removeAmmo }, 20, { if_BOW, if_RANGED }, {}, { itemConditions::hasAmmo }, ia_USE, 2);
+        items::addItem("silverbow", "Silver Bow", "silverbow", { itemFuncs::shootArrow, itemFuncs::removeAmmo }, 20, { if_BOW, if_RANGED }, {}, { itemConditions::hasAmmo }, ia_USE, 2);
+        items::addItem("goldbow", "Gold Bow", "goldbow", { itemFuncs::shootArrow, itemFuncs::removeAmmo }, 20, { if_BOW, if_RANGED }, {}, { itemConditions::hasAmmo }, ia_USE, 2);
+        items::addItem("moltenfury", "Molten Fury", "moltenfury", { itemFuncs::shootArrow, itemFuncs::removeAmmo }, 20, { if_BOW, if_RANGED }, {}, { itemConditions::hasAmmo }, ia_USE, 2);
+        items::addItem("moltenhamaxe", "Molten Hamaxe", "moltenhamaxe", { itemFuncs::dig }, 15, { if_WEAPON, if_HAMMER, if_AXE, if_MEELE });
+        items::addItem("moltenpickaxe", "Molten Pickaxe", "moltenpickaxe", { itemFuncs::dig }, 15, { if_WEAPON, if_PICKAXE, if_MEELE });
+        items::addItem("volcano", "Volcano", "volcano", {}, 30, { if_WEAPON, if_MEELE }, {});
+        items::addItem("impstaff", "Imp Staff", "impstaff", { itemFuncs::impStaff, itemFuncs::takeMana }, 30, { if_WEAPON, if_SUMMON }, {}, { itemConditions::hasSummonSpace, itemConditions::hasMana });
+        items::addItem("cactus", "Cactus", "cactus", { }, 30, { if_BLOCK });
+        items::addItem("sunflower", "Sunflower", "sunfloweritem", { itemFuncs::place, itemFuncs::removeAmmo }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("heartcrystal", "Heart Crystal", "heartcrystal", { itemFuncs::increaseMaxHealth, itemFuncs::removeAmmo }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::heartCrystal });
+        items::addItem("bottle", "Bottle", "bottle", { itemFuncs::place, itemFuncs::removeAmmo }, globals::blockPlaceSpeed, { if_BLOCK }, {}, {});
+        items::addItem("healthpotion", "Health Potion", "healthpot", { itemFuncs::heal, itemFuncs::removeAmmo }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::heal });
+        items::addItem("mushroom", "Mushroom", "mushroomitem", { itemFuncs::heal, itemFuncs::removeAmmo }, globals::blockPlaceSpeed, { if_BLOCK }, {}, {itemConditions::heal});
+        items::addItem("ironbreastplate", "Iron Breastplate", "ironbreastplate", {}, globals::blockPlaceSpeed, { if_BREASTPLATE }, {}, { itemConditions::hasAmmo });
+        items::addItem("ironhelmet", "Iron Helmet", "ironhelmet", {}, globals::blockPlaceSpeed, { if_HELMET }, {}, { });
+        items::addItem("irongreaves", "Iron Greaves", "irongreaves", {}, globals::blockPlaceSpeed, { if_GREAVES }, {}, {});
+        items::addItem("silverbreastplate", "Silver Breastplate", "silverbreastplate", {}, globals::blockPlaceSpeed, { if_BREASTPLATE }, {}, { itemConditions::hasAmmo });
+        items::addItem("silverhelmet", "Silver Helmet", "silverhelmet", {}, globals::blockPlaceSpeed, { if_HELMET }, {}, { });
+        items::addItem("silvergreaves", "Silver Greaves", "silvergreaves", {}, globals::blockPlaceSpeed, { if_GREAVES }, {}, {});
+        items::addItem("goldbreastplate", "Gold Breastplate", "goldbreastplate", {}, globals::blockPlaceSpeed, { if_BREASTPLATE }, {}, { itemConditions::hasAmmo });
+        items::addItem("goldhelmet", "Gold Helmet", "goldhelmet", {}, globals::blockPlaceSpeed, { if_HELMET }, {}, { });
+        items::addItem("goldgreaves", "Gold Greaves", "goldgreaves", {}, globals::blockPlaceSpeed, { if_GREAVES }, {}, {});
+        items::addItem("copperbreastplate", "Copper Breastplate", "copperbreastplate", {}, globals::blockPlaceSpeed, { if_BREASTPLATE }, {}, { itemConditions::hasAmmo });
+        items::addItem("copperhelmet", "Copper Helmet", "copperhelmet", {}, globals::blockPlaceSpeed, { if_HELMET }, {}, { });
+        items::addItem("coppergreaves", "Copper Greaves", "coppergreaves", {}, globals::blockPlaceSpeed, { if_GREAVES }, {}, {});
+        items::addItem("mininghelmet", "Mining Helmet", "mininghelmet", {}, globals::blockPlaceSpeed, { if_HELMET }, {}, { });
+        items::addItem("moltenbreastplate", "Molten Breastplate", "moltenbreastplate", {}, globals::blockPlaceSpeed, { if_BREASTPLATE }, {}, { itemConditions::hasAmmo });
+        items::addItem("moltenhelmet", "Molten Helmet", "moltenhelmet", {}, globals::blockPlaceSpeed, { if_HELMET }, {}, { });
+        items::addItem("moltengreaves", "Molten Greaves", "moltengreaves", {}, globals::blockPlaceSpeed, { if_GREAVES }, {}, {});
+        items::addItem("cactusbreastplate", "Cactus Breastplate", "cactusbreastplate", {}, globals::blockPlaceSpeed, { if_BREASTPLATE }, {}, { itemConditions::hasAmmo });
+        items::addItem("cactushelmet", "Cactus Helmet", "cactushelmet", {}, globals::blockPlaceSpeed, { if_HELMET }, {}, { });
+        items::addItem("cactusgreaves", "Cactus Greaves", "cactusgreaves", {}, globals::blockPlaceSpeed, { if_GREAVES }, {}, {});
+        items::addItem("shadowscales", "Shadow Scales", "shadowscales", {}, globals::blockPlaceSpeed, { if_MISC }, {}, {});
+        items::addItem("bladeofgrass", "Blade of Grass", "bladeofgrass", { itemFuncs::bladeOfGrass }, 30, { if_WEAPON, if_MEELE }, {});
+        items::addItem("stinger", "Stinger", "stinger", { }, 30, { if_MISC });
+        items::addItem("junglespores", "Jungle Spores", "junglesporesitem", { }, 30, { if_MISC });
+        items::addItem("vines", "Vines", "vinesitem", { }, 30, { if_MISC });
+        items::addItem("daybloom", "Daybloom", "daybloom", { }, 30, { if_MISC });
+        items::addItem("voodoodoll", "Voodo Doll", "voodoodollitem", { }, 30, { if_MISC });
+        items::addItem("frozenchest", "Frozen Chest", "frozenchestitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("goldchest", "Gold Chest", "goldchestitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("shadowchest", "Shadow Chest", "shadowchestitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("mahoganychest", "Mahogany Chest", "mahoganychestitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("waterchest", "Water Chest", "waterchestitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("manacrystal", "Mana Crystal", "manacrystal", { itemFuncs::removeAmmo, itemFuncs::manaCrystal}, globals::blockPlaceSpeed, {if_BLOCK}, {}, {itemConditions::manaCrystal});
 
-        items::addSet("none", itemFuncs::nonearmorbonus);
-        items::addSet("ironarmor", itemFuncs::ironarmorbonus);
-        items::addSet("silverarmor", itemFuncs::silverarmorbonus);
-        items::addSet("goldarmor", itemFuncs::goldarmorbonus);
-        items::addSet("copperarmor", itemFuncs::copperarmorbonus);
-        items::addSet("moltenarmor", itemFuncs::moltenarmorbonus);
-        items::addSet("cactusarmor", itemFuncs::cactusarmorbonus);
+        items::addSet("none", itemFuncs::nonearmorbonus, "");
+        items::addSet("ironarmor", itemFuncs::ironarmorbonus, "Set bonus: 2 defense");
+        items::addSet("silverarmor", itemFuncs::silverarmorbonus, "Set bonus: 3 defense");
+        items::addSet("goldarmor", itemFuncs::goldarmorbonus, "Set bonus: 3 defense");
+        items::addSet("copperarmor", itemFuncs::copperarmorbonus, "Set bonus: 2 defense");
+        items::addSet("moltenarmor", itemFuncs::moltenarmorbonus, "Set bonus: 10% meele damage");
+        items::addSet("cactusarmor", itemFuncs::cactusarmorbonus, "Set bonus: Attackers take damage from the cactus spikes");
 
         items::addToSet("ironbreastplate", "ironarmor");
         items::addToSet("ironhelmet", "ironarmor");
@@ -585,17 +757,142 @@ namespace resources {
         items::addDroppedAnim("silvercoin", "silvercoin");
 
         items::addItemToNaturalChest("surface", "dirt", 0.5, 10, 5);
-        items::addItemToNaturalChest("surface", "ironsword", 0.3, 1, 0);
-        items::addItemToNaturalChest("surface", "ash", 1, 2, 1);
-        items::addItemToNaturalChest("surface", "woodenhelmet", 0.4, 1, 0);
-        items::addItemToNaturalChest("surface", "bullet", 0.2, 80, 50);
-        items::addItemToNaturalChest("underground", "stone", 1, 998, 1);
-        items::addItemToNaturalChest("underground", "stone", 1, 998, 1);
-        items::addItemToNaturalChest("underground", "sandstone", 1, 998, 1);
-        items::addItemToNaturalChest("underground", "snow", 1, 998, 1);
-        items::addItemToNaturalChest("underground", "door", 1, 998, 1);
-        items::addItemToNaturalChest("undergroundhouse", "waterspell", 0.4, 1, 0);
-        items::addItemToNaturalChest("undergroundhouse", "anvil", 0.8, 5, 4);
+        items::addItemToNaturalChest("surface", "torch", 0.2, 15, 5);
+        items::addItemToNaturalChest("surface", "healthpotion", 0.2, 1, 0);
+        items::addItemToNaturalChest("surface", "aglet", 0.05, 1, 0);
+        items::addItemToNaturalChest("surface", "coppercoin", 0.2, 70, 10);
+        items::addItemToNaturalChest("surface", "magicmirror", 0.05, 1, 0);
+        items::addItemToNaturalChest("surface", "bandofregeneration", 0.05, 1, 0);
+        items::addItemToNaturalChest("surface", "shackle", 0.15, 1, 0);
+        items::addItemToNaturalChest("surface", "mushroom", 0.3, 4, 1);
+        items::addItemToNaturalChest("surface", "bottle", 0.3, 2, 1);
+        items::addItemToNaturalChest("surface", "sunflower", 0.1, 1, 0);
+        items::addItemToNaturalChest("surface", "daybloom", 0.1, 4, 2);
+        items::addItemToNaturalChest("surface", "bomb", 0.14, 3, 2);
+        items::addItemToNaturalChest("surface", "arrow", 0.14, 10, 3);
+        items::addItemToNaturalChest("underground", "torch", 0.4, 15, 5);
+        items::addItemToNaturalChest("underground", "healthpotion", 0.1, 3, 2);
+        items::addItemToNaturalChest("underground", "aglet", 0.15, 1, 0);
+        items::addItemToNaturalChest("underground", "coppercoin", 0.2, 70, 10);
+        items::addItemToNaturalChest("underground", "magicmirror", 0.1, 1, 0);
+        items::addItemToNaturalChest("underground", "bandofregeneration", 0.1, 1, 0);
+        items::addItemToNaturalChest("underground", "bandofstarpower", 0.1, 1, 0);
+        items::addItemToNaturalChest("underground", "shackle", 0.15, 1, 0);
+        items::addItemToNaturalChest("underground", "bottle", 0.2, 3, 2);
+        items::addItemToNaturalChest("underground", "copperore", 0.1, 10, 4);
+        items::addItemToNaturalChest("underground", "ironore", 0.1, 6, 4);
+        items::addItemToNaturalChest("underground", "ironbar", 0.1, 3, 1);
+        items::addItemToNaturalChest("underground", "copperbar", 0.1, 3, 2);
+        items::addItemToNaturalChest("underground", "enchantedsword", 0.01, 1, 0);
+        items::addItemToNaturalChest("underground", "minishark", 0.01, 1, 0);
+        items::addItemToNaturalChest("underground", "magicmissile", 0.01, 1, 0);
+        items::addItemToNaturalChest("underground", "boomerang", 0.1, 1, 0);
+        items::addItemToNaturalChest("underground", "bomb", 0.14, 5, 2);
+        items::addItemToNaturalChest("underground", "arrow", 0.2, 40, 15);
+        items::addItemToNaturalChest("underground", "bullet", 0.1, 40, 15);
+        items::addItemToNaturalChest("underground", "hermesboots", 0.1, 1, 0);
+        items::addItemToNaturalChest("underground", "cloudinabottle", 0.1, 1, 0);
+        items::addItemToNaturalChest("underground", "slimestatue", 0.1, 1, 0);
+        items::addItemToNaturalChest("underground", "mininghelmet", 0.05, 1, 0);
+        items::addItemToNaturalChest("underground", "suseye", 0.05, 1, 0);
+        items::addItemToNaturalChest("underground", "enchantedboomerang", 0.03, 1, 0);
+        items::addItemToNaturalChest("underground", "starfury", 0.01, 1, 0);
+        items::addItemToNaturalChest("hell", "torch", 0.4, 15, 5);
+        items::addItemToNaturalChest("hell", "healthpotion", 0.1, 3, 2);
+        items::addItemToNaturalChest("hell", "aglet", 0.15, 1, 0);
+        items::addItemToNaturalChest("hell", "coppercoin", 0.2, 70, 10);
+        items::addItemToNaturalChest("hell", "magicmirror", 0.1, 1, 0);
+        items::addItemToNaturalChest("hell", "bandofregeneration", 0.1, 1, 0);
+        items::addItemToNaturalChest("hell", "shackle", 0.15, 1, 0);
+        items::addItemToNaturalChest("hell", "bottle", 0.2, 3, 2);
+        items::addItemToNaturalChest("hell", "goldore", 0.1, 10, 4);
+        items::addItemToNaturalChest("hell", "silverore", 0.1, 6, 4);
+        items::addItemToNaturalChest("hell", "goldbar", 0.1, 3, 1);
+        items::addItemToNaturalChest("hell", "silverbar", 0.1, 3, 2);
+        items::addItemToNaturalChest("hell", "enchantedsword", 0.01, 1, 0);
+        items::addItemToNaturalChest("hell", "minishark", 0.01, 1, 0);
+        items::addItemToNaturalChest("hell", "magicmissile", 0.01, 1, 0);
+        items::addItemToNaturalChest("hell", "bomb", 0.14, 5, 2);
+        items::addItemToNaturalChest("hell", "flamingarrow", 0.2, 40, 15);
+        items::addItemToNaturalChest("hell", "demonicarrow", 0.2, 20, 5);
+        items::addItemToNaturalChest("hell", "lightdisc", 0.2, 40, 15);
+        items::addItemToNaturalChest("hell", "bullet", 0.1, 40, 15);
+        items::addItemToNaturalChest("hell", "hellforge", 0.1, 1, 0);
+        items::addItemToNaturalChest("hell", "hermesboots", 0.1, 1, 0);
+        items::addItemToNaturalChest("hell", "bandofstarpower", 0.1, 1, 0);
+        items::addItemToNaturalChest("frozen", "torch", 0.4, 15, 5);
+        items::addItemToNaturalChest("frozen", "healthpotion", 0.1, 3, 2);
+        items::addItemToNaturalChest("frozen", "aglet", 0.15, 1, 0);
+        items::addItemToNaturalChest("frozen", "coppercoin", 0.2, 70, 10);
+        items::addItemToNaturalChest("frozen", "magicmirror", 0.1, 1, 0);
+        items::addItemToNaturalChest("frozen", "bandofregeneration", 0.1, 1, 0);
+        items::addItemToNaturalChest("frozen", "bandofstarpower", 0.1, 1, 0);
+        items::addItemToNaturalChest("frozen", "shackle", 0.15, 1, 0);
+        items::addItemToNaturalChest("frozen", "bottle", 0.2, 3, 2);
+        items::addItemToNaturalChest("frozen", "copperore", 0.1, 10, 4);
+        items::addItemToNaturalChest("frozen", "ironore", 0.1, 6, 4);
+        items::addItemToNaturalChest("frozen", "ironbar", 0.1, 3, 1);
+        items::addItemToNaturalChest("frozen", "copperbar", 0.1, 3, 2);
+        items::addItemToNaturalChest("frozen", "iceblade", 0.03, 1, 0);
+        items::addItemToNaturalChest("frozen", "snowballcannon", 0.01, 1, 0);
+        items::addItemToNaturalChest("frozen", "bomb", 0.14, 5, 2);
+        items::addItemToNaturalChest("frozen", "arrow", 0.2, 40, 15);
+        items::addItemToNaturalChest("frozen", "snowball", 0.2, 20, 5);
+        items::addItemToNaturalChest("frozen", "bullet", 0.1, 40, 15);
+        items::addItemToNaturalChest("frozen", "hermesboots", 0.1, 1, 0);
+        items::addItemToNaturalChest("frozen", "cloudinabottle", 0.1, 1, 0);
+        items::addItemToNaturalChest("frozen", "slimestatue", 0.1, 1, 0);
+        items::addItemToNaturalChest("frozen", "mininghelmet", 0.05, 1, 0);
+        items::addItemToNaturalChest("frozen", "frozenboomerang", 0.03, 1, 0);
+        items::addItemToNaturalChest("jungle", "torch", 0.4, 15, 5);
+        items::addItemToNaturalChest("jungle", "healthpotion", 0.1, 3, 2);
+        items::addItemToNaturalChest("jungle", "aglet", 0.15, 1, 0);
+        items::addItemToNaturalChest("jungle", "coppercoin", 0.2, 70, 10);
+        items::addItemToNaturalChest("jungle", "magicmirror", 0.1, 1, 0);
+        items::addItemToNaturalChest("jungle", "bandofregeneration", 0.1, 1, 0);
+        items::addItemToNaturalChest("jungle", "bandofstarpower", 0.1, 1, 0);
+        items::addItemToNaturalChest("jungle", "ankletofthewind", 0.15, 1, 0);
+        items::addItemToNaturalChest("jungle", "bottle", 0.2, 3, 2);
+        items::addItemToNaturalChest("jungle", "copperore", 0.1, 10, 4);
+        items::addItemToNaturalChest("jungle", "ironore", 0.1, 6, 4);
+        items::addItemToNaturalChest("jungle", "ironbar", 0.1, 3, 1);
+        items::addItemToNaturalChest("jungle", "junglespores", 0.1, 3, 2);
+        items::addItemToNaturalChest("jungle", "feralclaws", 0.1, 1, 0);
+        items::addItemToNaturalChest("jungle", "stinger", 0.1, 1, 0);
+        items::addItemToNaturalChest("jungle", "bomb", 0.14, 5, 2);
+        items::addItemToNaturalChest("jungle", "arrow", 0.2, 40, 15);
+        items::addItemToNaturalChest("jungle", "vines", 0.1, 5, 2);
+        items::addItemToNaturalChest("jungle", "bullet", 0.1, 40, 15);
+        items::addItemToNaturalChest("jungle", "hermesboots", 0.1, 1, 0);
+        items::addItemToNaturalChest("jungle", "cloudinabottle", 0.1, 1, 0);
+        items::addItemToNaturalChest("jungle", "slimestatue", 0.1, 1, 0);
+        items::addItemToNaturalChest("jungle", "mininghelmet", 0.05, 1, 0);
+        items::addItemToNaturalChest("jungle", "beegun", 0.05, 1, 0);
+        items::addItemToNaturalChest("water", "torch", 0.4, 15, 5);
+        items::addItemToNaturalChest("water", "healthpotion", 0.1, 3, 2);
+        items::addItemToNaturalChest("water", "aglet", 0.15, 1, 0);
+        items::addItemToNaturalChest("water", "coppercoin", 0.2, 70, 10);
+        items::addItemToNaturalChest("water", "magicmirror", 0.1, 1, 0);
+        items::addItemToNaturalChest("water", "bandofregeneration", 0.1, 1, 0);
+        items::addItemToNaturalChest("water", "bandofstarpower", 0.1, 1, 0);
+        items::addItemToNaturalChest("water", "shackle", 0.15, 1, 0);
+        items::addItemToNaturalChest("water", "bottle", 0.2, 3, 2);
+        items::addItemToNaturalChest("water", "copperore", 0.1, 10, 4);
+        items::addItemToNaturalChest("water", "ironore", 0.1, 6, 4);
+        items::addItemToNaturalChest("water", "ironbar", 0.1, 3, 1);
+        items::addItemToNaturalChest("water", "copperbar", 0.1, 3, 2);
+        items::addItemToNaturalChest("water", "enchantedsword", 0.01, 1, 0);
+        items::addItemToNaturalChest("water", "aquastaff", 0.2, 1, 0);
+        items::addItemToNaturalChest("water", "boomerang", 0.1, 1, 0);
+        items::addItemToNaturalChest("water", "bomb", 0.14, 5, 2);
+        items::addItemToNaturalChest("water", "arrow", 0.2, 40, 15);
+        items::addItemToNaturalChest("water", "bullet", 0.1, 40, 15);
+        items::addItemToNaturalChest("water", "hermesboots", 0.1, 1, 0);
+        items::addItemToNaturalChest("water", "cloudinabottle", 0.1, 1, 0);
+        items::addItemToNaturalChest("water", "slimestatue", 0.1, 1, 0);
+        items::addItemToNaturalChest("water", "mininghelmet", 0.05, 1, 0);
+        items::addItemToNaturalChest("water", "suseye", 0.05, 1, 0);
+        items::addItemToNaturalChest("water", "enchantedboomerang", 0.03, 1, 0);
 
         items::addOnPickup("coppercoin", itemFuncs::coppercoinonpickup);
         items::addOnPickup("silvercoin", itemFuncs::silvercoinonpickup);
@@ -643,6 +940,7 @@ namespace resources {
         items::addSizeMod("moltenhamaxe", 1.8);
         items::addSizeMod("moltenpickaxe", 1.8);
         items::addSizeMod("volcano", 2.2);
+        items::addSizeMod("bladeofgrass", 2.2);
 
         items::disableAutouse("magicmissile");
         items::disableAutouse("starfury");
@@ -652,6 +950,29 @@ namespace resources {
         items::disableAutouse("demonbow");
         items::disableAutouse("woodenboomerang");
         items::disableAutouse("enchantedboomerang");
+        items::disableAutouse("volcano");
+        items::disableAutouse("bladeofgrass");
+        items::disableAutouse("ironsword");
+        items::disableAutouse("coppersword");
+        items::disableAutouse("goldsword");
+        items::disableAutouse("platinumsword");
+
+        items::addSound("minishark", &sounds::gun);
+        items::addSound("aquastaff", &sounds::aquastaff);
+        items::addSound("woodenbow", &sounds::bow);
+        items::addSound("ironbow", &sounds::bow);
+        items::addSound("goldbow", &sounds::bow);
+        items::addSound("copperbow", &sounds::bow);
+        items::addSound("silverbow", &sounds::bow);
+        items::addSound("demonbow", &sounds::bow);
+        items::addSound("moltenfury", &sounds::bow);
+        items::addSound("mushroom", &sounds::eat);
+        items::addSound("healthpotion", &sounds::drink);
+        items::addSound("magicmirror", &sounds::magicmirror);
+        items::addSound("spacegun", &sounds::spacegun);
+        items::addSound("star", &sounds::star);
+        items::addSound("manastar", &sounds::star);
+        items::addSound("heartcrystal", &sounds::star);
 
         //volcanoeffect
         {
@@ -681,6 +1002,7 @@ namespace resources {
         }
 
         items::addOnhit("volcano", collisionFs::volcanoDamage);
+        items::addOnhit("bladeofgrass", collisionFs::bladeofgrassDamage);
         items::addOnhit("moltenpickaxe", collisionFs::moltenPickaxeDamage);
         items::addOnhit("moltenhamaxe", collisionFs::moltenHamaxeDamage);
 
@@ -735,6 +1057,7 @@ namespace resources {
             utils::createShader("src/shaders/lightFrag.frag", "src/shaders/overlayVert.vert", &globals::lightShaderID);
             utils::createShader("src/shaders/zoomFrag.frag", "src/shaders/overlayVert.vert", &globals::zoomShaderID);
             utils::createShader("src/shaders/bloomFrag.frag", "src/shaders/overlayVert.vert", &globals::bloomShaderID);
+            utils::createShader("src/shaders/waterFrag.frag", "src/shaders/waterVert.vert", &globals::waterShaderID);
         }
 
         if (textures) {
@@ -749,6 +1072,8 @@ namespace resources {
             globals::broken1Tex = utils::LoadTexture("assets/broken1.png");
             globals::broken2Tex = utils::LoadTexture("assets/broken2.png");
             globals::broken3Tex = utils::LoadTexture("assets/broken3.png");
+            
+            globals::liquidTex = utils::LoadTexture("assets/liquid.png", 4, true);
         }
 
         if (items) {
@@ -906,149 +1231,240 @@ namespace resources {
             }
             animations::createAnim("eyeofcthulu2", textures::nametocoords["eyeofcthulu2"]->coords, { tmpframes }, 3 * 9);
 
+            tmpframes.clear();
+            pixels = 10;
+            for (int i = 0; i < 7; i++) {
+                tmpframes.push_back({ i * 2, {0, -i * pixels, 0, -i * pixels}, ft_OFFSET1 });
+            }
+            animations::createAnim("bladeofgrassprojectile", textures::nametocoords["bladeofgrassprojectile"]->coords, { tmpframes }, 2 * 8);
+
+            tmpframes.clear();
+            pixels = 19;
+            for (int i = 0; i < 3; i++) {
+                tmpframes.push_back({ i * 3, {0, -i * pixels, 0, -i * pixels }, ft_OFFSET1 });
+            }
+            animations::createAnim("penguin1walk", textures::nametocoords["pengu1"]->coords, { tmpframes }, 3 * 4);
+            animations::createAnim("penguin1", textures::nametocoords["pengu1"]->coords, { {0, {0, 0, 0, 0}, ft_OFFSET1} }, 1);
+
+            tmpframes.clear();
+            pixels = 19;
+            for (int i = 0; i < 3; i++) {
+                tmpframes.push_back({ i * 3, {0, -i * pixels, 0, -i * pixels}, ft_OFFSET1 });
+            }
+            animations::createAnim("penguin2walk", textures::nametocoords["pengu2"]->coords, { tmpframes }, 3 * 4);
+            animations::createAnim("penguin2", textures::nametocoords["pengu2"]->coords, { {0, {0, 0, 0, 0}, ft_OFFSET1} }, 1);
+
+            tmpframes.clear();
+            pixels = 20;
+            for (int i = 0; i < 3; i++) {
+                tmpframes.push_back({ i * 3, {0, -i * pixels, 0, -i * pixels}, ft_OFFSET1 });
+            }
+            animations::createAnim("penguin3walk", textures::nametocoords["pengu3"]->coords, { tmpframes }, 3 * 4);
+            animations::createAnim("penguin3", textures::nametocoords["pengu3"]->coords, { {0, {0, 0, 0, 0}, ft_OFFSET1} }, 1);
+
+            tmpframes.clear();
+            pixels = 19;
+            for (int i = 0; i < 3; i++) {
+                tmpframes.push_back({ i * 3, {0, -i * pixels, 0, -i * pixels}, ft_OFFSET1 });
+            }
+            animations::createAnim("penguin4walk", textures::nametocoords["pengu4"]->coords, { tmpframes }, 3 * 4);
+            animations::createAnim("penguin4", textures::nametocoords["pengu4"]->coords, { {0, {0, 0, 0, 0}, ft_OFFSET1} }, 1);
+
+            animations::createAnim("grasshopperjump", textures::nametocoords["grasshopper"]->coords, { {0, {0, -5, 0, -5} , ft_OFFSET1 }, {4, {0, 0, 0, 0} , ft_OFFSET1 } }, 8);
+
+            animations::createAnim("fireflylit", textures::nametocoords["fireflylit"]->coords, { {0, {0, 0, 0, 0} , ft_OFFSET1 }, {2, {0, -4, 0, -4} , ft_OFFSET1 } }, 4);
+            animations::createAnim("firefly", textures::nametocoords["firefly"]->coords, { {0, {0, 0, 0, 0} , ft_OFFSET1 }, {2, {0, -4, 0, -4} , ft_OFFSET1 } }, 4);
+
+            tmpframes.clear();
+            pixels = 24;
+            for (int i = 0; i < 11; i++) {
+                tmpframes.push_back({ i * 3, {0, -i * pixels, 0, -i * pixels}, ft_OFFSET1 });
+            }
+            animations::createAnim("guidewalk", textures::nametocoords["guidewalk"]->coords, { tmpframes }, 3 * 11);
+
         }
 
         //rules
         {
-            blocks::addRule("grass", { {br_IS, bs_STAT, glm::vec2(1,0), "updates", "blocks"},
-                                        {br_IS, bs_STAT, glm::vec2(-1,0), "updates", "blocks"},
-                                        {br_IS, bs_STAT, glm::vec2(0,1), "updates", "blocks"},
-                                        {br_IS, bs_STAT, glm::vec2(0,-1), "updates", "blocks"}
-                }, BRules::replaceWith, "dirt", "blocks");
+        blocks::addRule("grass", { {br_IS, bs_STAT, glm::vec2(1,0), "updates", "blocks"},
+                                    {br_IS, bs_STAT, glm::vec2(-1,0), "updates", "blocks"},
+                                    {br_IS, bs_STAT, glm::vec2(0,1), "updates", "blocks"},
+                                    {br_IS, bs_STAT, glm::vec2(0,-1), "updates", "blocks"}
+            }, BRules::replaceWith, "dirt", "blocks");
 
-            blocks::addRule("trunk", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "trunk", "blocks"},
-                                        {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "trunkbase1", "blocks"},
-                }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("trunkbase1", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "dirt", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("trunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "dirt", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("trunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(1,0), "trunkbase1", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("trunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "dirt", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("trunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(-1,0), "trunkbase1", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("leaves", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "trunk", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("normalbranchr", { { br_ISNT, bs_BLOCK, glm::vec2(2, 0), "trunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("normalbranchl", { { br_ISNT, bs_BLOCK, glm::vec2(-1, 0), "trunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("trunk", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "trunk", "blocks"},
+                                    {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "trunkbase1", "blocks"},
+            }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("trunkbase1", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "dirt", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("trunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "dirt", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("trunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(1,0), "trunkbase1", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("trunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "dirt", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("trunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(-1,0), "trunkbase1", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("leaves", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "trunk", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("normalbranchr", { { br_ISNT, bs_BLOCK, glm::vec2(2, 0), "trunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("normalbranchl", { { br_ISNT, bs_BLOCK, glm::vec2(-1, 0), "trunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
 
 
-            blocks::addRule("normalgrassdecor",  { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "normalgrassdecor", "blocks"},
-                                             {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "grass", "blocks"}
-                                            }, BRules::breakSelf, "empty", "blocks", false);
-            blocks::addRule("junglegrassdecor", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "junglegrassdecor", "blocks"},
-                                 {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "junglegrass", "blocks"}
-                }, BRules::breakSelf, "empty", "blocks", false);
-            blocks::addRule("corruptgrassdecor", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corruptgrassdecor", "blocks"},
-                                 {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corruptgrass", "blocks"}
-                }, BRules::breakSelf, "empty", "blocks", false);
-            blocks::addRule("torch", { {br_ISNT, bs_STAT, glm::vec2(1,0), "updates", "blocks"},
-                                        {br_ISNT, bs_STAT, glm::vec2(-1,0), "updates", "blocks"},
-                                        {br_ISNT, bs_STAT, glm::vec2(0,1), "updates", "blocks"},
-                                        {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", "blocks"},
-                                        {br_ISNT, bs_STAT, glm::vec2(0,0), "updates", "bg"}
-                                      }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("normalgrassdecor",  { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "normalgrassdecor", "blocks"},
+                                            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "grass", "blocks"}
+                                        }, BRules::breakSelf, "empty", "blocks", false);
+        blocks::addRule("junglegrassdecor", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "junglegrassdecor", "blocks"},
+                                {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "junglegrass", "blocks"}
+            }, BRules::breakSelf, "empty", "blocks", false);
+        blocks::addRule("corruptgrassdecor", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corruptgrassdecor", "blocks"},
+                                {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corruptgrass", "blocks"}
+            }, BRules::breakSelf, "empty", "blocks", false);
 
-            blocks::addRule("purpletorch", { {br_ISNT, bs_STAT, glm::vec2(1,0), "updates", "blocks"},
-                                               {br_ISNT, bs_STAT, glm::vec2(-1,0), "updates", "blocks"},
-                                               {br_ISNT, bs_STAT, glm::vec2(0,1), "updates", "blocks"},
-                                               {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", "blocks"},
-                                               {br_ISNT, bs_STAT, glm::vec2(0,0), "updates", "bg"}
-                                             }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("normalflowers", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "normalgrassdecor", "blocks"},
+                                            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "grass", "blocks"}
+            }, BRules::breakSelf, "empty", "blocks", false);
+        blocks::addRule("jungleflowers", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "jungleflowers", "blocks"},
+                                    {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "junglegrass", "blocks"}
+            }, BRules::breakSelf, "empty", "blocks", false);
+        blocks::addRule("corruptflowers", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corruptflowers", "blocks"},
+                                    {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corruptgrass", "blocks"}
+            }, BRules::breakSelf, "empty", "blocks", false);
 
-            blocks::addRule("sand", { {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", "blocks"} }, BRules::breakSelf, "empty", "blocks", false);
-            blocks::addRule("sand", { {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", "blocks"} }, BRules::spawnSand);
+        blocks::addRule("torch", { {br_ISNT, bs_STAT, glm::vec2(1,0), "updates", "blocks"},
+                                    {br_ISNT, bs_STAT, glm::vec2(-1,0), "updates", "blocks"},
+                                    {br_ISNT, bs_STAT, glm::vec2(0,1), "updates", "blocks"},
+                                    {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", "blocks"},
+                                    {br_ISNT, bs_STAT, glm::vec2(0,0), "updates", "bg"}
+                                    }, BRules::breakSelf, "empty", "blocks", true);
 
-            blocks::addRule("corrupttrunk", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corrupttrunk", "blocks"},
-                            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corrupttrunkbase1", "blocks"},
-                }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("corrupttrunkbase1", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "dirt", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("corrupttrunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "dirt", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("corrupttrunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(1,0), "corrupttrunkbase1", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("corrupttrunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "dirt", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("corrupttrunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(-1,0), "corrupttrunkbase1", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("corruptleaves", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corrupttrunk", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("corruptbranchr", { { br_ISNT, bs_BLOCK, glm::vec2(2, 0), "corrupttrunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("corruptbranchl", { { br_ISNT, bs_BLOCK, glm::vec2(-1, 0), "corrupttrunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("purpletorch", { {br_ISNT, bs_STAT, glm::vec2(1,0), "updates", "blocks"},
+                                            {br_ISNT, bs_STAT, glm::vec2(-1,0), "updates", "blocks"},
+                                            {br_ISNT, bs_STAT, glm::vec2(0,1), "updates", "blocks"},
+                                            {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", "blocks"},
+                                            {br_ISNT, bs_STAT, glm::vec2(0,0), "updates", "bg"}
+                                            }, BRules::breakSelf, "empty", "blocks", true);
 
-            blocks::addRule("borealtrunk", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "borealtrunk", "blocks"},
-                {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "borealtrunkbase1", "blocks"},
-                }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("borealtrunkbase1", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "snow", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("borealtrunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "snow", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("borealtrunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(1,0), "borealtrunkbase1", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("borealtrunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "snow", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("borealtrunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(-1,0), "borealtrunkbase1", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("borealleaves", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "borealtrunk", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("borealbranchr", { { br_ISNT, bs_BLOCK, glm::vec2(3, 0), "borealtrunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("borealbranchl", { { br_ISNT, bs_BLOCK, glm::vec2(-1, 0), "borealtrunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("sand", { {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", "blocks"} }, BRules::breakSelf, "empty", "blocks", false);
+        blocks::addRule("sand", { {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", "blocks"} }, BRules::spawnSand);
 
-            blocks::addRule("mahoganytrunk", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "mahoganytrunk", "blocks"},
-                {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "mahoganytrunkbase1", "blocks"},
-                }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("mahoganytrunkbase1", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "mud", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("mahoganytrunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "mud", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("mahoganytrunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(1,0), "mahoganytrunkbase1", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("mahoganytrunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "mud", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("mahoganytrunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(-1,0), "mahoganytrunkbase1", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("mahoganyleaves", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "mahoganytrunk", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("junglebranchr", { { br_ISNT, bs_BLOCK, glm::vec2(3, 0), "mahoganytrunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("junglebranchl", { { br_ISNT, bs_BLOCK, glm::vec2(-1, 0), "mahoganytrunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("corrupttrunk", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corrupttrunk", "blocks"},
+                        {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corrupttrunkbase1", "blocks"},
+            }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("corrupttrunkbase1", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "dirt", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("corrupttrunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "dirt", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("corrupttrunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(1,0), "corrupttrunkbase1", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("corrupttrunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "dirt", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("corrupttrunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(-1,0), "corrupttrunkbase1", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("corruptleaves", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corrupttrunk", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("corruptbranchr", { { br_ISNT, bs_BLOCK, glm::vec2(2, 0), "corrupttrunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("corruptbranchl", { { br_ISNT, bs_BLOCK, glm::vec2(-1, 0), "corrupttrunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+
+        blocks::addRule("borealtrunk", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "borealtrunk", "blocks"},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "borealtrunkbase1", "blocks"},
+            }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("borealtrunkbase1", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "snow", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("borealtrunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "snow", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("borealtrunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(1,0), "borealtrunkbase1", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("borealtrunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "snow", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("borealtrunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(-1,0), "borealtrunkbase1", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("borealleaves", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "borealtrunk", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("borealbranchr", { { br_ISNT, bs_BLOCK, glm::vec2(3, 0), "borealtrunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("borealbranchl", { { br_ISNT, bs_BLOCK, glm::vec2(-1, 0), "borealtrunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+
+        blocks::addRule("mahoganytrunk", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "mahoganytrunk", "blocks"},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "mahoganytrunkbase1", "blocks"},
+            }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("mahoganytrunkbase1", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "mud", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("mahoganytrunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "mud", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("mahoganytrunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(1,0), "mahoganytrunkbase1", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("mahoganytrunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "mud", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("mahoganytrunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(-1,0), "mahoganytrunkbase1", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("mahoganyleaves", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "mahoganytrunk", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("junglebranchr", { { br_ISNT, bs_BLOCK, glm::vec2(3, 0), "mahoganytrunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("junglebranchl", { { br_ISNT, bs_BLOCK, glm::vec2(-1, 0), "mahoganytrunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
             
-            blocks::addRule("icicle", { { br_ISNT, bs_BLOCK, glm::vec2(0, 2), "snow", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("stalaktit", { { br_ISNT, bs_BLOCK, glm::vec2(0, 2), "stone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("corruptstalaktit", { { br_ISNT, bs_BLOCK, glm::vec2(0, 2), "ebonstone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("sandstalaktit", { { br_ISNT, bs_BLOCK, glm::vec2(0, 2), "sandstone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("stalagmit", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "stone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("corruptstalagmit", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "ebonstone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("sandstalagmit", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "sandstone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("icicle", { { br_ISNT, bs_BLOCK, glm::vec2(0, 2), "snow", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("stalaktit", { { br_ISNT, bs_BLOCK, glm::vec2(0, 2), "stone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("corruptstalaktit", { { br_ISNT, bs_BLOCK, glm::vec2(0, 2), "ebonstone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("sandstalaktit", { { br_ISNT, bs_BLOCK, glm::vec2(0, 2), "sandstone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("stalagmit", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "stone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("corruptstalagmit", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "ebonstone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("sandstalagmit", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "sandstone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
 
-            blocks::addRule("smallrock", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "stone", "blocks" }, { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "grass", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("mediumrock", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "grass", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(0, -1), "stone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-            
-            blocks::addRule("pot", { { br_ISNT, bs_STAT, glm::vec2(0, -1), "updates", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("pot", { { br_ISNT, bs_STAT, glm::vec2(1, -1), "updates", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("smallrock", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "stone", "blocks" }, { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "grass", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("mediumrock", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "grass", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(0, -1), "stone", "blocks" },
+    { br_ISNT, bs_BLOCK, glm::vec2(2, -1), "grass", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(2, -1), "stone", "blocks" }, }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("bigrock", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "grass", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(0, -1), "stone", "blocks" },
+            { br_ISNT, bs_BLOCK, glm::vec2(1, -1), "grass", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(1, -1), "stone", "blocks" }, 
+            { br_ISNT, bs_BLOCK, glm::vec2(2, -1), "grass", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(2, -1), "stone", "blocks" },}, BRules::breakSelf, "empty", "blocks", true);
 
-            blocks::addRule("sapling", {  {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "grass", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("mahoganysapling", {    {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "junglegrass", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("corruptsapling", {  {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corruptgrass", "blocks"}   }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("borealsapling", {  {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "snow", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("smallice", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "snow", "blocks" }}, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("mediumice", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "snow", "blocks" }, { br_ISNT, bs_BLOCK, glm::vec2(1, -1), "snow", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("bigice", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "snow", "blocks" }, { br_ISNT, bs_BLOCK, glm::vec2(1, -1), "snow", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(2, -1), "snow", "blocks" }, }, BRules::breakSelf, "empty", "blocks", true);
+
+        blocks::addRule("mediumjungle", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "sjunglegrassnow", "blocks" }, { br_ISNT, bs_BLOCK, glm::vec2(1, -1), "snow", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("bigjungle", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "junglegrass", "blocks" }, { br_ISNT, bs_BLOCK, glm::vec2(1, -1), "snow", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(2, -1), "snow", "blocks" }, }, BRules::breakSelf, "empty", "blocks", true);
+
+        blocks::addRule("smalldesert", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "sandstone", "blocks" }, { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "hardenedsand", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("mediumdesert", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "sandstone", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(0, -1), "hardenedsand", "blocks" },
+    { br_ISNT, bs_BLOCK, glm::vec2(2, -1), "sandstone", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(2, -1), "hardenedsand", "blocks" }, }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("bigdesert", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "sandstone", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(0, -1), "hardenedsand", "blocks" },
+            { br_ISNT, bs_BLOCK, glm::vec2(1, -1), "sandstone", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(1, -1), "hardenedsand", "blocks" },
+            { br_ISNT, bs_BLOCK, glm::vec2(2, -1), "sandstone", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(2, -1), "hardenedsand", "blocks" }, }, BRules::breakSelf, "empty", "blocks", true);
+
+        blocks::addRule("pot", { { br_ISNT, bs_STAT, glm::vec2(0, -1), "updates", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("pot", { { br_ISNT, bs_STAT, glm::vec2(1, -1), "updates", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+
+        blocks::addRule("sapling", {  {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "grass", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("mahoganysapling", {    {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "junglegrass", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("corruptsapling", {  {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corruptgrass", "blocks"}   }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("borealsapling", {  {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "snow", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
             
-            blocks::addRule("cactusmid", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "sand", "blocks"},
-                {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusmid", "blocks"},
-                {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusleft", "blocks"}, 
-                {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusright", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("cactusleft", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "sand", "blocks"},
-               {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusmid", "blocks"},
-               {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusleft", "blocks"},
-               {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusright", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("cactusright", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "sand", "blocks"},
-               {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusmid", "blocks"},
-               {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusleft", "blocks"},
-               {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusright", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("cactusmid", { {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusmid", "blocks"},
-                {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactustop", "blocks"},
-                {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusleft", "blocks"}, 
-                {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusright", "blocks"} }, BRules::replaceWith, "cactustop", "blocks", true);
-            blocks::addRule("cactustop", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusmid", "blocks"},
-                {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusleft", "blocks"},
-                {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusright", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("cactusleftarm", { {br_ISNT, bs_BLOCK, glm::vec2(1,0), "cactusleft", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("cactusrightarm", { {br_ISNT, bs_BLOCK, glm::vec2(-1,0), "cactusright", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("cactusarmleftmid", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusarmleftmid", "blocks"},
-                                             {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusleftarm", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("cactusarmrightmid", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusarmrightmid", "blocks"},
-                                                 {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusrightarm", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("cactusarmleftmid", { {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusarmleftmid", "blocks"},
-                {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusarmlefttop", "blocks"} }, BRules::replaceWith, "cactusarmlefttop", "blocks", true);
-            blocks::addRule("cactusarmrightmid", { {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusarmrightmid", "blocks"},
-                {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusarmrighttop", "blocks"} }, BRules::replaceWith, "cactusarmrightop", "blocks", true);
-            blocks::addRule("cactusarmlefttop", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusarmleftmid", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("cactusarmrighttop", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusarmrightmid", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("undergroundskeletondecor", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "stone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("undergroundtooldecor", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "stone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+
+        blocks::addRule("cactusmid", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "sand", "blocks"},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusmid", "blocks"},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusleft", "blocks"}, 
+            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusright", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("cactusleft", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "sand", "blocks"},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusmid", "blocks"},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusleft", "blocks"},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusright", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("cactusright", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "sand", "blocks"},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusmid", "blocks"},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusleft", "blocks"},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusright", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("cactusmid", { {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusmid", "blocks"},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactustop", "blocks"},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusleft", "blocks"}, 
+            {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusright", "blocks"} }, BRules::replaceWith, "cactustop", "blocks", true);
+        blocks::addRule("cactustop", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusmid", "blocks"},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusleft", "blocks"},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusright", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("cactusleftarm", { {br_ISNT, bs_BLOCK, glm::vec2(1,0), "cactusleft", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("cactusrightarm", { {br_ISNT, bs_BLOCK, glm::vec2(-1,0), "cactusright", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("cactusarmleftmid", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusarmleftmid", "blocks"},
+                                            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusleftarm", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("cactusarmrightmid", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusarmrightmid", "blocks"},
+                                                {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusrightarm", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("cactusarmleftmid", { {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusarmleftmid", "blocks"},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusarmlefttop", "blocks"} }, BRules::replaceWith, "cactusarmlefttop", "blocks", true);
+        blocks::addRule("cactusarmrightmid", { {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusarmrightmid", "blocks"},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusarmrighttop", "blocks"} }, BRules::replaceWith, "cactusarmrightop", "blocks", true);
+        blocks::addRule("cactusarmlefttop", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusarmleftmid", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("cactusarmrighttop", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusarmrightmid", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
             
-            blocks::addRule("sunflower", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "grass", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("sunflower", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "grass", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("sunflower", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "grass", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("sunflower", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "grass", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
             
-            blocks::addRule("heartcrystal", { {br_ISNT, bs_STAT, glm::vec2(1,-1), "updates", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("heartcrystal", { {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            blocks::addRule("bottle", { {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            }
+        blocks::addRule("heartcrystal", { {br_ISNT, bs_STAT, glm::vec2(1,-1), "updates", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("heartcrystal", { {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("bottle", { {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
+
+        blocks::addRule("normalvines", { {br_ISNT, bs_BLOCK, glm::vec2(0,1), "normalvines", "blocks"},
+                                    {br_ISNT, bs_BLOCK, glm::vec2(0,1), "grass", "blocks"},
+            }, BRules::breakSelfAndUpdateBelow, "empty", "blocks", true);
+
+        blocks::addRule("junglevines", { {br_ISNT, bs_BLOCK, glm::vec2(0,1), "junglevines", "blocks"},
+                                    {br_ISNT, bs_BLOCK, glm::vec2(0,1), "junglegrass", "blocks"},
+            }, BRules::breakSelfAndUpdateBelow, "empty", "blocks", true);
+        }
 
         //recipes
         {
@@ -1131,6 +1547,9 @@ namespace resources {
             items::addRecipe({ {{"hellstonebar", 10}}, 1, "moltenhelmet", {"anvil"} });
             items::addRecipe({ {{"hellstonebar", 20}}, 1, "moltenbreastplate", {"anvil"} });
             items::addRecipe({ {{"hellstonebar", 15}}, 1, "moltengreaves", {"anvil"} });
+            items::addRecipe({ {{"junglespores", 15},{"vines", 3},{"stinger", 12}}, 1, "bladeofgrass", {"anvil"} });
+            items::addRecipe({ {{"iceblade", 1},{"lightsbane", 1},{"bladeofgrass", 1},{"volcano", 1}}, 1, "terrablade", {"anvil"} });
+            items::addRecipe({ {{"star", 5}}, 1, "manacrystal", {"none"} });
         }
     }
 
@@ -1954,6 +2373,27 @@ namespace resources {
             base.mc.onPlayerCollision = collisionFs::damagePlayer;
             items::projectiles.insert(std::make_pair("darkcasterprojectile", base));
         }
+        //blade of grass
+        {
+            base = tmp;
+            base.dc.tex = "bladeofgrassprojectile";
+            base.dc.size = { 2,2 };
+            base.dc.hidden = false;
+            base.dc.hasmat = true;
+            base.pc.stoponcollision = false;
+            base.pc.size = { 2, 2 };
+            base.pc.weight = 0;
+            base.mc.damage = 26;
+            base.mc.hitboxradius = 2;
+            base.mc.hp = 1;
+            base.mc.knockback = 0;
+            base.mc.killin = 180;
+            base.ac.ai = ai_ARROW;
+            base.mc.onDeath = mobFunctions::ondie_bladeofgrassprojectile;
+            base.ac.onupdate = mobFunctions::bladeOfGrassOnUpdate;
+            base.mc.onCollision.insert(std::make_pair(mf_ENEMY, collisionFs::bladeofgrassDamage));
+            items::projectiles.insert(std::make_pair("bladeofgrassprojectile", base));
+        }
     }
 
     void createEnemies()
@@ -2004,6 +2444,7 @@ namespace resources {
             slime.drops = { {"gel", {2, 1, 1}}, {"coppercoin", {3, 1, 1}} };
             slime.mC.families = { mf_ENEMY };
             slime.hpbar = true;
+            slime.mC.damageSound = &sounds::slimehit;
             enemies::enemies.insert(std::make_pair("greenslime", slime));
         }
         //ice slime
@@ -2031,6 +2472,7 @@ namespace resources {
             slime.drops = { {"gel", {2, 1, 1}}, {"coppercoin", {3, 1, 1}} };
             slime.mC.families = { mf_ENEMY };
             slime.hpbar = true;
+            slime.mC.damageSound = &sounds::slimehit;
             enemies::enemies.insert(std::make_pair("iceslime", slime));
         }
         //lava slime
@@ -2058,6 +2500,7 @@ namespace resources {
             slime.drops = { {"gel", {2, 1, 1}}, {"coppercoin", {3, 1, 1}} };
             slime.mC.families = { mf_ENEMY };
             slime.hpbar = true;
+            slime.mC.damageSound = &sounds::slimehit;
             enemies::enemies.insert(std::make_pair("lavaslime", slime));
         }
         //random slime
@@ -2088,6 +2531,7 @@ namespace resources {
             slime.hpbar = true;
             slime.randomsize = 0.6;
             slime.randomcolor = 0.6;
+            slime.mC.damageSound = &sounds::slimehit;
             enemies::enemies.insert(std::make_pair("colorableslime", slime));
         }
         //spiked ice slime
@@ -2103,7 +2547,7 @@ namespace resources {
             slime.mC.hitboxradius = 1.2;
             slime.dC.mat = glm::mat4(1.0f);
             slime.dC.mat = glm::mat4(1.0f);
-            slime.aC.actions = {{ 140, mobFunctions::slimeWindup, -1 }, { 90, mobFunctions::slimeFireProjectile, -1 }};
+            slime.aC.actions = { { 140, mobFunctions::slimeWindup, -1 }, { 90, mobFunctions::slimeFireProjectile, -1 } };
             slime.aC.onupdate = mobFunctions::slimeOnUpdate;
             slime.aC.stats["jumpanim"].charp = "spikediceslime";
             slime.aC.stats["projectile"].charp = "spikediceslimeprojectile";
@@ -2117,6 +2561,7 @@ namespace resources {
             slime.mC.defense = 2;
             slime.mC.families = { mf_ENEMY };
             slime.hpbar = true;
+            slime.mC.damageSound = &sounds::slimehit;
             enemies::enemies.insert(std::make_pair("spikediceslime", slime));
         }
         //spiked jungle slime
@@ -2146,6 +2591,7 @@ namespace resources {
             slime.mC.defense = 2;
             slime.mC.families = { mf_ENEMY };
             slime.hpbar = true;
+            slime.mC.damageSound = &sounds::slimehit;
             enemies::enemies.insert(std::make_pair("spikedjungleslime", slime));
         }
         //sand
@@ -2156,6 +2602,7 @@ namespace resources {
             sand.dC.tex = "sand";
             sand.aC.onupdate = mobFunctions::sandOnUpdate;
             sand.mC.hp = sand.mC.maxhp = 1931;
+            sand.slots = 0;
             enemies::enemies.insert(std::make_pair("sand", sand));
         }
         //demoneye
@@ -2178,10 +2625,33 @@ namespace resources {
             demoneye.mC.knockback = 0.5;
             demoneye.mC.damage = 18;
             demoneye.mC.displayName = "Demon eye";
-            demoneye.spawntime = globals::dayLength * 0.75;
-            demoneye.spawnrange = globals::dayLength * 0.25 / 2.0f;
             demoneye.hpbar = true;
             demoneye.spawnFunc = enemies::flyingSpawnFunc;
+            demoneye.drops = { {"coppercoin", {60, 10, 1}} };
+            demoneye.mC.gore = "demoneye";
+            enemies::enemies.insert(std::make_pair("demoneye", demoneye));
+        }
+        //servantofcthulu
+        {
+            enemyBase demoneye = base;
+            demoneye.aC.ai = ai_DEMONEYE;
+            demoneye.dC.size = glm::vec2(1.5);
+            demoneye.pC.size = glm::vec2(1);
+            demoneye.pC.friction = false;
+            demoneye.dC.tex = "servantofcthulu";
+            demoneye.aC.onupdate = mobFunctions::demoneyeOnUpdate;
+            demoneye.pC.stoponcollision = false;
+            demoneye.pC.weight = 0;
+            demoneye.mC.hitboxradius = 0.9;
+            demoneye.mC.hp = demoneye.mC.maxhp = 8;
+            demoneye.mC.families = { mf_ENEMY };
+            demoneye.mC.kbResist = 0;
+            demoneye.mC.knockback = 0.5;
+            demoneye.mC.damage = 12;
+            demoneye.mC.displayName = "Servant of Cthulu";
+            demoneye.hpbar = true;
+            demoneye.mC.gore = "servantofcthulu";
+            demoneye.slots = 0;
             enemies::enemies.insert(std::make_pair("demoneye", demoneye));
         }
         //zombie
@@ -2204,10 +2674,10 @@ namespace resources {
             zombie.mC.kbResist= .2;
             zombie.mC.displayName = "Zombie";
             zombie.hpbar = true;
-            zombie.spawntime = globals::dayLength * 0.75;
-            zombie.spawnrange = globals::dayLength * 0.25 / 2.0f;
             zombie.mC.onPlayerCollision = collisionFs::damagePlayer;
             zombie.drops = { {"shackle", {1, 0, 0.02}}, {"coppercoin", {60, 10, 1}} };
+            zombie.mC.deathSound = &sounds::zombiedie;
+            zombie.mC.gore = "zombie";
             enemies::enemies.insert(std::make_pair("zombie", zombie));
         }
         //bunny
@@ -2227,9 +2697,8 @@ namespace resources {
             bunny.mC.families = { mf_CRITTER };
             bunny.mC.displayName = "Bunyy omg uwuwuwu";
             bunny.hpbar = true;
-            bunny.spawntime = globals::dayLength * 0.25;
-            bunny.spawnrange = globals::dayLength * 0.25 / 2.0f;
-            bunny.drops.insert(std::make_pair<std::string, mobDrop>("dirt", { 10, 5, 0.5 }));
+            bunny.mC.gore = "bunny";
+            bunny.slots = 0;
             enemies::enemies.insert(std::make_pair("bunny", bunny));
         }
         //star
@@ -2260,8 +2729,7 @@ namespace resources {
             star.pec.ms = 0.04;
             star.pec.rate = 6;
             star.spawnFunc = enemies::fallenStarSpawnFunc;
-            star.spawntime = globals::dayLength * 0.75;
-            star.spawnrange= globals::dayLength * 0.25 / 2.0f;
+            star.slots = 0;
             enemies::enemies.insert(std::make_pair("star", star));
         }
         //bomb
@@ -2310,8 +2778,7 @@ namespace resources {
             guide.aC.ai = ai_GUIDE;
             guide.pC.size = glm::vec2(1.5,3);
             guide.dC.size = glm::vec2(2.8);
-            guide.dC.tex = "player";
-            guide.dC.color = glm::vec3(0.3, 0.5, 1);
+            guide.dC.tex = "guide";
             guide.mC.hp = guide.mC.maxhp = 250;
             guide.hpbar = true;
             guide.aC.onupdate = mobFunctions::guideOnUpdate;
@@ -2322,10 +2789,13 @@ namespace resources {
             guide.mC.displayName = "Jackson";
             guide.mC.despawntimer = -1;
             guide.mC.candespawn = false;
+            guide.drops = { {"arrow",{10, 10, 1}} };
             enemies::enemies.insert(std::make_pair("guide", guide));
-            enemies::addNPCDialogue("guide", "testtestest");
-            enemies::addNPCDialogue("guide", "MIKEY JAKSON MIKEY JAKSON MIKEY JAKSON MIKEY JAKSON MIKEY JAKSON MIKEY JAKSON MIKEY JAKSON MIKEY JAKSON MIKEY JAKSON ");
-            enemies::addNPCButton("guide", "sonh", UI::uiCfunc_toggleFullscreen);
+            enemies::addNPCDialogue("guide", "Hello \\n");
+            enemies::addNPCDialogue("guide", "Hi \\n");
+            enemies::addNPCDialogue("guide", "Its quite nice here");
+            enemies::addNPCButton("guide", "Help", UI::uiCfunc_guideHelp);
+            enemies::addNPCButton("guide", "Crafting", UI::uiCfunc_openGuideslot);
         }
         //twinssummon1
         {
@@ -2418,6 +2888,7 @@ namespace resources {
             damagetext.pC.stoponcollision = false;
             damagetext.pC.weight = 0;
             damagetext.mC.hp = damagetext.mC.maxhp = 1;
+            damagetext.slots = 0;
             enemies::enemies.insert(std::make_pair("damagetext", damagetext));
         }
         //mouse
@@ -2438,9 +2909,7 @@ namespace resources {
             mouse.mC.families = { mf_CRITTER };
             mouse.mC.displayName = "mouserrrrrrrr";
             mouse.hpbar = true;
-            mouse.spawntime = globals::dayLength * 0.25;
-            mouse.spawnrange = globals::dayLength * 0.25 / 2.0f;
-            mouse.drops.insert(std::make_pair<std::string, mobDrop>("dirt", { 10, 5, 0.5 }));
+            mouse.slots = 0;
             enemies::enemies.insert(std::make_pair("mouse", mouse));
         }
         //eaterofsouls
@@ -2466,6 +2935,8 @@ namespace resources {
             eaterofsouls.hpbar = true;
             eaterofsouls.randomsize = 0.8;
             eaterofsouls.spawnFunc = enemies::flyingSpawnFunc;
+            eaterofsouls.drops = { {"silvercoin",{2, 1, 0.75}}, {"coppercoin",{60, 20, 1}} };
+            eaterofsouls.mC.gore = "eaterofsouls";
             enemies::enemies.insert(std::make_pair("eaterofsouls", eaterofsouls));
         }
         //cave bat
@@ -2496,6 +2967,8 @@ namespace resources {
             cavebat.mC.onPlayerCollision = collisionFs::damagePlayer;
             cavebat.hpbar = true;
             cavebat.spawnFunc = enemies::flyingSpawnFunc;
+            cavebat.drops = { {"silvercoin",{2, 1, 0.75}}, {"coppercoin",{60, 20, 1}} };
+            cavebat.mC.deathSound = &sounds::batdie;
             enemies::enemies.insert(std::make_pair("cavebat", cavebat));
         }
         //jungle bat
@@ -2526,6 +2999,8 @@ namespace resources {
             cavebat.mC.onPlayerCollision = collisionFs::damagePlayer;
             cavebat.hpbar = true;
             cavebat.spawnFunc = enemies::flyingSpawnFunc;
+            cavebat.drops = { {"silvercoin",{2, 1, 0.75}}, {"coppercoin",{60, 20, 1}} };
+            cavebat.mC.deathSound = &sounds::batdie;
             enemies::enemies.insert(std::make_pair("junglebat", cavebat));
         }
         //hell bat
@@ -2556,6 +3031,8 @@ namespace resources {
             cavebat.mC.onPlayerCollision = collisionFs::damagePlayer;
             cavebat.hpbar = true;
             cavebat.spawnFunc = enemies::flyingSpawnFunc;
+            cavebat.drops = {{"silvercoin",{2, 1, 0.75}}, {"coppercoin",{60, 20, 1}} };
+            cavebat.mC.deathSound = &sounds::batdie;
             enemies::enemies.insert(std::make_pair("hellbat", cavebat));
         }
         //demon
@@ -2586,6 +3063,8 @@ namespace resources {
             demon.mC.onPlayerCollision = collisionFs::damagePlayer;
             demon.hpbar = true;
             demon.spawnFunc = enemies::flyingSpawnFunc;
+            demon.drops = { {"voodoodoll",{1, 0, 0.1}},{"silvercoin",{2, 1, 0.75}}, {"coppercoin",{60, 20, 1}} };
+            demon.mC.gore = "demon";
             enemies::enemies.insert(std::make_pair("demon", demon));
         }
         //vulture
@@ -2614,6 +3093,8 @@ namespace resources {
             vulture.mC.onPlayerCollision = collisionFs::damagePlayer;
             vulture.hpbar = true;
             vulture.spawnFunc = enemies::vultureSpawnFunc;
+            vulture.drops = {{"silvercoin",{2, 1, 0.75}}, {"coppercoin",{60, 20, 1}} };
+            vulture.mC.gore = "vulture";
             enemies::enemies.insert(std::make_pair("vulture", vulture));
         }
         //hornet
@@ -2644,6 +3125,7 @@ namespace resources {
             hornet.drops = { {"silvercoin", {2, 1, 1}} };
             hornet.mC.onPlayerCollision = collisionFs::damagePlayerPoison;
             hornet.hpbar = true;
+            hornet.drops = { {"stinger", {1, 0, 0.3}}, {"vines", {2, 1, 0.2}}, {"silvercoin",{2, 1, 0.75}}, {"coppercoin",{60, 20, 1}} };
             enemies::enemies.insert(std::make_pair("hornet", hornet));
         }
         //antlioncharger
@@ -2669,6 +3151,8 @@ namespace resources {
             antlioncharger.mC.displayName = "Antlion Charger";
             antlioncharger.hpbar = true;
             antlioncharger.mC.onPlayerCollision = collisionFs::damagePlayer;
+            antlioncharger.drops = { {"silvercoin",{2, 1, 0.75}}, {"coppercoin",{60, 20, 1}} };
+            antlioncharger.mC.gore = "antlion";
             enemies::enemies.insert(std::make_pair("antlioncharger", antlioncharger));
         }
         //darkcaster
@@ -2693,9 +3177,10 @@ namespace resources {
             darkcaster.mC.displayName = "Dark Caster";
             darkcaster.aC.stats["projectile"].charp = "darkcasterprojectile";
             darkcaster.hpbar = true;
-            darkcaster.spawntime = globals::dayLength * 0.75;
-            darkcaster.spawnrange = globals::dayLength * 0.25 / 2.0f;
             darkcaster.mC.onPlayerCollision = collisionFs::damagePlayer;
+            darkcaster.drops = { {"silvercoin",{2, 1, 0.75}}, {"coppercoin",{60, 20, 1}}, {"waterspell", {1, 0, 0.5}} };
+            darkcaster.mC.damageSound = &sounds::skeletonhit;
+            darkcaster.mC.gore = "skeleton";
             enemies::enemies.insert(std::make_pair("darkcaster", darkcaster));
         }
         //devourerhead
@@ -2720,10 +3205,10 @@ namespace resources {
             devourer.mC.kbResist = 1;
             devourer.mC.displayName = "Devourer";
             devourer.hpbar = true;
-            devourer.spawntime = globals::dayLength * 0.75;
-            devourer.spawnrange = globals::dayLength * 0.25 / 2.0f;
             devourer.mC.onPlayerCollision = collisionFs::damagePlayer;
             devourer.spawnFunc = enemies::wormSpawnFunc;
+            devourer.drops = { {"silvercoin",{2, 1, 0.75}}, {"coppercoin",{60, 20, 1}} };
+            devourer.mC.gore = "devourerhead";
             enemies::enemies.insert(std::make_pair("devourerhead", devourer));
         }
         //devourerbody
@@ -2737,6 +3222,9 @@ namespace resources {
             devourer.dC.size = glm::vec2(1.3);
             devourer.dC.tex = "devourerbody";
             devourer.aC.onupdate = mobFunctions::wormBodyOnUpdate;
+            devourer.aC.stats["length"].intVal = 8;
+            devourer.aC.stats["body"].charp = "devourerbody";
+            devourer.aC.stats["tail"].charp = "devourertail";
             devourer.mC.hitboxradius = 1.3;
             devourer.mC.hp = devourer.mC.maxhp = 50;
             devourer.mC.onCollision = { {mf_CRITTER, collisionFs::damage} };
@@ -2747,9 +3235,9 @@ namespace resources {
             devourer.mC.knockback = .7;
             devourer.mC.displayName = "Devourer";
             devourer.hpbar = true;
-            devourer.spawntime = globals::dayLength * 0.75;
-            devourer.spawnrange = globals::dayLength * 0.25 / 2.0f;
             devourer.mC.onPlayerCollision = collisionFs::damagePlayer;
+            devourer.mC.gore = "devourerbody";
+            devourer.slots = 0;
             enemies::enemies.insert(std::make_pair("devourerbody", devourer));
         }
         //devourertail
@@ -2773,9 +3261,9 @@ namespace resources {
             devourer.mC.knockback = .7;
             devourer.mC.displayName = "Devourer";
             devourer.hpbar = true;
-            devourer.spawntime = globals::dayLength * 0.75;
-            devourer.spawnrange = globals::dayLength * 0.25 / 2.0f;
             devourer.mC.onPlayerCollision = collisionFs::damagePlayer;
+            devourer.mC.gore = "devourertail";
+            devourer.slots = 0;
             enemies::enemies.insert(std::make_pair("devourertail", devourer));
         }
         //eyeofcthulu
@@ -2799,8 +3287,6 @@ namespace resources {
             eyeofcthulu.mC.knockback = .7;
             eyeofcthulu.mC.displayName = "eyeofcthulu";
             eyeofcthulu.hpbar = true;
-            eyeofcthulu.spawntime = globals::dayLength * 0.75;
-            eyeofcthulu.spawnrange = globals::dayLength * 0.25 / 2.0f;
             eyeofcthulu.mC.onPlayerCollision = collisionFs::damagePlayer;
             eyeofcthulu.pec.tex = "particle:bloodpart";
             eyeofcthulu.pec.amount = 1;
@@ -2822,28 +3308,306 @@ namespace resources {
             eyeofcthulu.pec.disappearAsDie = true;
             eyeofcthulu.pec.radius = 11/7.0f;
             eyeofcthulu.pec.randradius = 11/4.0f;
-            eyeofcthulu.drops = { {"demoniteore",{60, 30, 1}}, {"healthpotion", {10, 5, 1}}, {"opticstaff",{1, 0, 0.5}}};
+            eyeofcthulu.drops = { {"demoniteore",{60, 30, 1}}, {"healthpotion", {10, 5, 1}}, {"opticstaff",{1, 0, 0.5}}, {"goldcoin",{1, 0, 0.5}}, {"silvercoin",{60, 20, 1}} };
             eyeofcthulu.bossbar = "bosshead0";
+            eyeofcthulu.hpbar = false;
+            eyeofcthulu.mC.gore = "eyeofcthulu";
+            eyeofcthulu.prespawntext = "You feel an evil presence watching you..";
+            eyeofcthulu.spawntext = "The Eye of Cthulu has awoken!";
+            eyeofcthulu.prespawntimer = 60 * 30;
+            eyeofcthulu.slots = 10;
             enemies::enemies.insert(std::make_pair("eyeofcthulu", eyeofcthulu));
         }
-        enemies::addEnemyToBiome("bunny", "forest", 0.003f);
-        enemies::addEnemyToBiome("greenslime", "forest", 0.0003f);
-        enemies::addEnemyToBiome("iceslime", "snow", 0.0003f);
-        enemies::addEnemyToBiome("lavaslime", "underworld", 0.0003f);
-        enemies::addEnemyToBiome("spikedjungleslime", "jungle", 0.0003f);
-        enemies::addEnemyToBiome("spikediceslime", "snow", 0.0003f);
-        enemies::addEnemyToBiome("colorableslime", "underground", 0.0002f);
-        enemies::addEnemyToBiome("zombie", "forest", 0.007f);
-        enemies::addEnemyToBiome("demoneye", "forest", 0.002f);
-        enemies::addEnemyToBiome("eaterofsouls", "corruption", 0.002f);
-        enemies::addEnemyToBiome("star", "surface", 0.02f);
-        enemies::addEnemyToBiome("mouse", "underground", 0.0003f);
-        enemies::addEnemyToBiome("cavebat", "underground", 0.001f);
-        enemies::addEnemyToBiome("demon", "underworld", 0.001f);
-        enemies::addEnemyToBiome("hellbat", "underworld", 0.002f);
-        enemies::addEnemyToBiome("hornet", "jungle", 0.001f);
-        enemies::addEnemyToBiome("vulture", "desert", 0.0003f);
-        enemies::addEnemyToBiome("antlioncharger", "desert", 0.0003f);
+        //eaterofworldshead
+        {
+            enemyBase eaterofworlds = base;
+            eaterofworlds.aC.ai = ai_ZOMBIE;
+            eaterofworlds.pC.size = glm::vec2(5);
+            eaterofworlds.pC.friction = false;
+            eaterofworlds.pC.stoponcollision = false;
+            eaterofworlds.pC.weight = 0;
+            eaterofworlds.dC.size = glm::vec2(5);
+            eaterofworlds.dC.tex = "eaterofworldshead";
+            eaterofworlds.aC.onupdate = mobFunctions::eaterofworldsHeadOnUpdate;
+            eaterofworlds.aC.actions = { {1, mobFunctions::wormCreateBody, 1} };
+            eaterofworlds.aC.stats["length"].intVal = 67;
+            eaterofworlds.aC.stats["redirectdmgtohead"].boolVal = false;
+            eaterofworlds.aC.stats["body"].charp = "eaterofworldsbody";
+            eaterofworlds.aC.stats["tail"].charp = "eaterofworldstail";
+            eaterofworlds.mC.hitboxradius = 1.3;
+            eaterofworlds.mC.hp = eaterofworlds.mC.maxhp = 50;
+            eaterofworlds.mC.onCollision = { {mf_CRITTER, collisionFs::damage} };
+            eaterofworlds.mC.families = { mf_ENEMY };
+            eaterofworlds.mC.damage = 20;
+            eaterofworlds.mC.defense = 2;
+            eaterofworlds.mC.knockback = .7;
+            eaterofworlds.mC.kbResist = 1;
+            eaterofworlds.mC.displayName = "Eater of worlds";
+            eaterofworlds.mC.onDeath = mobFunctions::ondie_eaterofworlds;
+            eaterofworlds.hpbar = true;
+            eaterofworlds.mC.onPlayerCollision = collisionFs::damagePlayer;
+            eaterofworlds.drops = { {"demoniteore",{5, 2, 1}}, {"healthpotion", {1, 0, 0.1}}, {"shadowscales", {2, 1, 0.5}}, {"silvercoin",{4, 2, 1}} };
+            eaterofworlds.spawnFunc = enemies::wormSpawnFunc;
+            eaterofworlds.mC.gore = "eaterofworldshead";
+            eaterofworlds.slots = 10;
+            enemies::enemies.insert(std::make_pair("eaterofworldshead", eaterofworlds));
+        }
+        //eaterofworldsbody
+        {
+            enemyBase eaterofworlds = base;
+            eaterofworlds.aC.ai = ai_ZOMBIE;
+            eaterofworlds.pC.size = glm::vec2(4);
+            eaterofworlds.pC.friction = false;
+            eaterofworlds.pC.weight = 0;
+            eaterofworlds.pC.stoponcollision = false;
+            eaterofworlds.dC.size = glm::vec2(4);
+            eaterofworlds.dC.tex = "eaterofworldsbody";
+            eaterofworlds.aC.onupdate = mobFunctions::eaterofworldsbodyOnUpdate;
+            eaterofworlds.mC.hitboxradius = 1.3;
+            eaterofworlds.mC.hp = eaterofworlds.mC.maxhp = 50;
+            eaterofworlds.mC.onCollision = { {mf_CRITTER, collisionFs::damage} };
+            eaterofworlds.mC.families = { mf_ENEMY };
+            eaterofworlds.mC.damage = 20;
+            eaterofworlds.mC.defense = 2;
+            eaterofworlds.mC.kbResist = 1;
+            eaterofworlds.mC.knockback = .7;
+            eaterofworlds.mC.displayName = "Eater of worlds";
+            eaterofworlds.mC.onDeath = mobFunctions::ondie_eaterofworlds;
+            eaterofworlds.hpbar = true;
+            eaterofworlds.drops = { {"demoniteore",{5, 2, 1}}, {"healthpotion", {1, 0, 0.1}}, {"shadowscales", {2, 1, 0.5}}, {"silvercoin",{4, 2, 1}} };
+            eaterofworlds.mC.onPlayerCollision = collisionFs::damagePlayer;
+            eaterofworlds.mC.gore = "eaterofworldsbody";
+            eaterofworlds.slots = 0;
+            enemies::enemies.insert(std::make_pair("eaterofworldsbody", eaterofworlds));
+        }
+        //eaterofsoulstail
+        {
+            enemyBase eaterofworlds = base;
+            eaterofworlds.aC.ai = ai_ZOMBIE;
+            eaterofworlds.pC.size = glm::vec2(5);
+            eaterofworlds.pC.friction = false;
+            eaterofworlds.pC.weight = 0;
+            eaterofworlds.pC.stoponcollision = false;
+            eaterofworlds.dC.size = glm::vec2(5);
+            eaterofworlds.dC.tex = "eaterofworldstail";
+            eaterofworlds.aC.onupdate = mobFunctions::eaterofworldsbodyOnUpdate;
+            eaterofworlds.mC.hitboxradius = 4;
+            eaterofworlds.mC.hp = eaterofworlds.mC.maxhp = 50;
+            eaterofworlds.mC.onCollision = { {mf_CRITTER, collisionFs::damage} };
+            eaterofworlds.mC.families = { mf_ENEMY };
+            eaterofworlds.mC.damage = 20;
+            eaterofworlds.mC.defense = 2;
+            eaterofworlds.mC.kbResist = 1;
+            eaterofworlds.mC.knockback = .7;
+            eaterofworlds.mC.displayName = "Eater of worlds";
+            eaterofworlds.mC.onDeath = mobFunctions::ondie_eaterofworlds;
+            eaterofworlds.hpbar = true;
+            eaterofworlds.drops = { {"demoniteore",{5, 2, 1}}, {"healthpotion", {1, 0, 0.1}}, {"shadowscales", {2, 1, 0.5}}, {"silvercoin",{4, 2, 1}} };
+            eaterofworlds.mC.onPlayerCollision = collisionFs::damagePlayer;
+            eaterofworlds.mC.gore = "eaterofworldstail";
+            eaterofworlds.slots = 0;
+            enemies::enemies.insert(std::make_pair("eaterofworldstail", eaterofworlds));
+        }
+        //cloud
+        {
+            enemyBase cloud = base;
+            cloud.aC.ai = ai_ZOMBIE;
+            cloud.pC.friction = false;
+            cloud.pC.weight = 0;
+            cloud.dC.opacity = 0;
+            cloud.pC.stoponcollision = false;
+            cloud.spawnFunc = enemies::anywhereSpawnFunc;
+            cloud.aC.onupdate = mobFunctions::cloudOnUpdate;
+            cloud.mC.hp = cloud.mC.maxhp = 1;
+            cloud.resizeToSprite = true;
+            cloud.behindBlocks = true;
+            cloud.possibleSprites = { "cloud1", "cloud2", "cloud3", "cloud4", "cloud5", "cloud6", "cloud7", "cloud8","cloud9","cloud10","treecloud"};
+            cloud.slots = 0;
+            enemies::enemies.insert(std::make_pair("cloud", cloud));
+        }
+        //penguin1
+        {
+            enemyBase penguin1 = base;
+            penguin1.aC.ai = ai_BUNNY;
+            penguin1.pC.size = glm::vec2(1.3, 3.1);
+            penguin1.dC.size = glm::vec2(3.1);
+            penguin1.dC.tex = "pengu1";
+            penguin1.aC.onupdate = mobFunctions::bunnyUpdate;
+            penguin1.aC.stats["ms"].floatVal = 0.6;
+            penguin1.aC.stats["standinganim"].charp = "pengu1";
+            penguin1.aC.stats["walkinganim"].charp = "penguin1walk";
+            penguin1.pC.weight = 0.8;
+            penguin1.pC.friction = false;
+            penguin1.mC.hitboxradius = 1.2;
+            penguin1.mC.hp = penguin1.mC.maxhp = 5;
+            penguin1.mC.families = { mf_CRITTER };
+            penguin1.mC.displayName = "penguin <3";
+            penguin1.hpbar = true;
+            penguin1.slots = 0;
+            enemies::enemies.insert(std::make_pair("penguin1", penguin1));
+        }
+        //penguin2
+        {
+            enemyBase penguin1 = base;
+            penguin1.aC.ai = ai_BUNNY;
+            penguin1.pC.size = glm::vec2(1.3, 3.1);
+            penguin1.dC.size = glm::vec2(3.1);
+            penguin1.dC.tex = "pengu2";
+            penguin1.aC.onupdate = mobFunctions::bunnyUpdate;
+            penguin1.aC.stats["ms"].floatVal = 0.6;
+            penguin1.aC.stats["standinganim"].charp = "pengu2";
+            penguin1.aC.stats["walkinganim"].charp = "penguin2walk";
+            penguin1.pC.weight = 0.8;
+            penguin1.pC.friction = false;
+            penguin1.mC.hitboxradius = 1.2;
+            penguin1.mC.hp = penguin1.mC.maxhp = 5;
+            penguin1.mC.families = { mf_CRITTER };
+            penguin1.mC.displayName = "penguin";
+            penguin1.hpbar = true;
+            penguin1.slots = 0;
+            enemies::enemies.insert(std::make_pair("penguin2", penguin1));
+        }
+        //penguin3
+        {
+            enemyBase penguin1 = base;
+            penguin1.aC.ai = ai_BUNNY;
+            penguin1.pC.size = glm::vec2(1.3, 3.1);
+            penguin1.dC.size = glm::vec2(3.1);
+            penguin1.dC.tex = "pengu1";
+            penguin1.aC.onupdate = mobFunctions::bunnyUpdate;
+            penguin1.aC.stats["ms"].floatVal = 0.6;
+            penguin1.aC.stats["standinganim"].charp = "pengu3";
+            penguin1.aC.stats["walkinganim"].charp = "penguin3walk";
+            penguin1.pC.weight = 0.8;
+            penguin1.pC.friction = false;
+            penguin1.mC.hitboxradius = 1.2;
+            penguin1.mC.hp = penguin1.mC.maxhp = 5;
+            penguin1.mC.families = { mf_CRITTER };
+            penguin1.mC.displayName = "penguin!";
+            penguin1.hpbar = true;
+            penguin1.slots = 0;
+            enemies::enemies.insert(std::make_pair("penguin3", penguin1));
+        }
+        //penguin4
+        {
+            enemyBase penguin1 = base;
+            penguin1.aC.ai = ai_BUNNY;
+            penguin1.pC.size = glm::vec2(1.3, 3.1);
+            penguin1.dC.size = glm::vec2(3.1);
+            penguin1.dC.tex = "pengu4";
+            penguin1.aC.onupdate = mobFunctions::bunnyUpdate;
+            penguin1.aC.stats["ms"].floatVal = 0.6;
+            penguin1.aC.stats["standinganim"].charp = "pengu4";
+            penguin1.aC.stats["walkinganim"].charp = "penguin4walk";
+            penguin1.pC.weight = 0.8;
+            penguin1.pC.friction = false;
+            penguin1.mC.hitboxradius = 1.2;
+            penguin1.mC.hp = penguin1.mC.maxhp = 5;
+            penguin1.mC.families = { mf_CRITTER };
+            penguin1.mC.displayName = "penguin!!";
+            penguin1.hpbar = true;
+            penguin1.slots = 0;
+            enemies::enemies.insert(std::make_pair("penguin4", penguin1));
+        }
+        //grasshopper
+        {
+            enemyBase grasshopper = base;
+            grasshopper.pC.size = { 0.2, 0.2 };
+            grasshopper.pC.weight = 1;
+            grasshopper.pC.friction = false;
+            grasshopper.dC.size = { 0.7,0.7 };
+            grasshopper.dC.tex = "grasshopper";
+            grasshopper.mC.displayName = "Grasshopper";
+            grasshopper.mC.hitboxradius = 0.4;
+            grasshopper.dC.mat = glm::mat4(1.0f);
+            grasshopper.dC.mat = glm::mat4(1.0f);
+            grasshopper.aC.actions.push_back({ 180, mobFunctions::slimeWindup, -1 });
+            grasshopper.aC.stats["jumpanim"].charp = "grasshopperjump";
+            grasshopper.aC.stats["flip"].boolVal = true;
+            grasshopper.aC.onupdate = mobFunctions::slimeOnUpdate;
+            grasshopper.mC.maxhp = grasshopper.mC.hp = 2;
+            grasshopper.mC.families = { mf_CRITTER };
+            grasshopper.hpbar = true;
+            grasshopper.slots = 0;
+            enemies::enemies.insert(std::make_pair("grasshopper", grasshopper));
+        }
+        //firefly
+        {
+            enemyBase firefly = base;
+            firefly.pC.size = { 0.2, 0.2 };
+            firefly.pC.weight = 0;
+            firefly.pC.vel = glm::vec2(-1, 0);
+            firefly.pC.friction = false;
+            firefly.dC.size = { 0.7,0.7 };
+            firefly.dC.tex = "firefly";
+            firefly.mC.displayName = "Firefly";
+            firefly.mC.hitboxradius = 1.2;
+            firefly.dC.mat = glm::mat4(1.0f);
+            firefly.aC.onupdate = mobFunctions::fireflyOnUpdate;
+            firefly.mC.maxhp = firefly.mC.hp = 2;
+            firefly.mC.families = { mf_CRITTER };
+            firefly.hpbar = true;
+            firefly.slots = 0;
+            enemies::enemies.insert(std::make_pair("firefly", firefly));
+        }
+        //tombstone
+        {
+            enemyBase tombstone = base;
+            tombstone.pC.size = { 2, 2 };
+            tombstone.pC.weight = 2;
+            tombstone.pC.vel = glm::vec2(0, 0.7);
+            tombstone.pC.friction = false;
+            tombstone.dC.size = { 2, 2 };
+            tombstone.dC.tex = "tombstone";
+            tombstone.dC.mat = glm::mat4(1.0f);
+            tombstone.aC.onupdate = mobFunctions::tombstoneOnUpdate;
+            tombstone.mC.maxhp = tombstone.mC.hp = 1;
+            tombstone.randomvelangle = 25;
+            tombstone.slots = 0;
+            enemies::enemies.insert(std::make_pair("tombstone", tombstone));
+        }
+        enemies::addEnemyToDay("grasshopper", "forest");
+        enemies::addEnemyToDay("penguin1", "snow");
+        enemies::addEnemyToDay("penguin2", "snow");
+        enemies::addEnemyToDay("penguin3", "snow");
+        enemies::addEnemyToDay("penguin4", "snow");
+        enemies::addEnemyToDay("cloud", "forest");
+        enemies::addEnemyToDay("cloud", "jungle");
+        enemies::addEnemyToDay("cloud", "snow");
+        enemies::addEnemyToDay("cloud", "corruption");
+        enemies::addEnemyToDay("bunny", "forest");
+        enemies::addEnemyToDay("greenslime", "forest");
+        enemies::addEnemyToDay("iceslime", "snow");
+        enemies::addEnemyToUnderground("iceslime", "snow");
+        enemies::addEnemyToCavern("iceslime", "snow");
+        enemies::addEnemyToUnderworld("lavaslime", "forest");
+        enemies::addEnemyToDay("spikedjungleslime", "jungle");
+        enemies::addEnemyToUnderground("spikediceslime", "snow");
+        enemies::addEnemyToCavern("spikediceslime", "snow");
+        enemies::addEnemyToUnderground("colorableslime", "forest");
+        enemies::addEnemyToNight("zombie", "forest");
+        enemies::addEnemyToNight("zombie", "snow");
+        enemies::addEnemyToNight("zombie", "desert");
+        enemies::addEnemyToNight("demoneye", "forest");
+        enemies::addEnemyToNight("demoneye", "snow");
+        enemies::addEnemyToNight("demoneye", "desert");
+        enemies::addEnemyToDay("eaterofsouls", "corruption");
+        enemies::addEnemyToNight("eaterofsouls", "corruption");
+        enemies::addEnemyToNight("star", "forest");
+        enemies::addEnemyToNight("star", "corruption");
+        enemies::addEnemyToNight("star", "jungle");
+        enemies::addEnemyToNight("star", "snow");
+        enemies::addEnemyToUnderground("mouse", "forest");
+        enemies::addEnemyToUnderground("darkcaster", "forest");
+        enemies::addEnemyToUnderground("cavebat", "forest");
+        enemies::addEnemyToUnderworld("demon", "forest");
+        enemies::addEnemyToUnderworld("hellbat", "forest");
+        enemies::addEnemyToUnderground("hornet", "jungle");
+        enemies::addEnemyToDay("vulture", "desert");
+        enemies::addEnemyToUnderground("antlioncharger", "desert");
+        enemies::addEnemyToDay("antlioncharger", "desert");
+        enemies::addEnemyToNight("eyeofcthulu", "forest");
+        enemies::addEnemyToCavern("firefly", "forest");
     }
 
     void createEffects()
@@ -2860,7 +3624,7 @@ namespace resources {
         base.peC.tex = "dirt";
         base.peC.size = glm::vec2(1);
         base.peC.stoponcollision = false;
-        
+
         //cloud in a bottle
         {
             particles::effectBase effect;
@@ -2957,7 +3721,7 @@ namespace resources {
             terrablade.peC.randomizelifespan = 10;
             terrablade.peC.smallerAsDie = true;
             terrablade.peC.disappearAsDie = true;
-            terrablade.peC.size = glm::vec2(0.2);
+            terrablade.peC.size = glm::vec2(0.8);
             effect.push_back(terrablade);
             particles::addEffect("terrabladedamage", effect);
         }
@@ -3015,8 +3779,80 @@ namespace resources {
             effect.push_back(bomb);
             particles::addEffect("bombexplosion", effect);
         }
-    }
 
+        //eyeofcthuludash
+        {
+            particles::effectBase effect;
+            particles::particleBase eyeofcthuludash = base;
+            eyeofcthuludash.peC.amount = 1;
+            eyeofcthuludash.peC.dir = glm::vec2(-1, 0);
+            eyeofcthuludash.peC.disappearAsDie = true;
+            eyeofcthuludash.peC.killentity = true;
+            eyeofcthuludash.peC.lifespan = 1;
+            eyeofcthuludash.peC.ms = 0;
+            eyeofcthuludash.peC.size = glm::vec2(11);
+            eyeofcthuludash.peC.particleLifespan = 9;
+            eyeofcthuludash.peC.rate = 1;
+            eyeofcthuludash.peC.stoponcollision = false;
+            eyeofcthuludash.peC.tex = "eyeofcthulu2";
+            eyeofcthuludash.peC.weight = 0;
+            eyeofcthuludash.peC.color = glm::vec3(0.5, 0.5, 0.5);
+            eyeofcthuludash.peC.opacity = 0.3;
+            eyeofcthuludash.peC.matchparticledir = true;
+            effect.push_back(eyeofcthuludash);
+            particles::addEffect("eyeofcthuludash", effect);
+        }
+
+        //watersplash
+        {
+            particles::effectBase effect;
+            particles::particleBase watersplash = base;
+            watersplash.peC.amount = 4;
+            watersplash.peC.dir = glm::vec2(0, 1);
+            watersplash.peC.disappearAsDie = true;
+            watersplash.peC.killentity = true;
+            watersplash.peC.lifespan = 1;
+            watersplash.peC.ms = 0.3;
+            watersplash.peC.size = glm::vec2(0.5);
+            watersplash.peC.randangle = 30;
+            watersplash.peC.randomizems = 0.3;
+            watersplash.peC.randomizescale = 0.3;
+            watersplash.peC.particleLifespan = 60;
+            watersplash.peC.rate = 1;
+            watersplash.peC.stoponcollision = false;
+            watersplash.peC.tex = "particle:waterpart";
+            watersplash.peC.weight = 1;
+            watersplash.peC.randrotation = 20;
+            effect.push_back(watersplash);
+            particles::addEffect("watersplash", effect);
+        }
+
+        //lavasplash
+        {
+            particles::effectBase effect;
+            particles::particleBase lavasplash = base;
+            lavasplash.peC.amount = 4;
+            lavasplash.peC.dir = glm::vec2(0, 1);
+            lavasplash.peC.disappearAsDie = true;
+            lavasplash.peC.smallerAsDie = true;
+            lavasplash.peC.killentity = true;
+            lavasplash.peC.lifespan = 1;
+            lavasplash.peC.ms = 0.3;
+            lavasplash.peC.size = glm::vec2(0.5);
+            lavasplash.peC.randangle = 30;
+            lavasplash.peC.randomizems = 0.3;
+            lavasplash.peC.randomizescale = 0.3;
+            lavasplash.peC.particleLifespan = 60;
+            lavasplash.peC.rate = 1;
+            lavasplash.peC.stoponcollision = false;
+            lavasplash.peC.tex = "particle:lavapart";
+            lavasplash.peC.weight = 1.5;
+            lavasplash.peC.randrotation = 20;
+            effect.push_back(lavasplash);
+            particles::addEffect("lavasplash", effect);
+        }
+
+    }
     void registerTexture(const char* name)
     {   
         int id = textures::texidcounter;
@@ -3058,6 +3894,7 @@ namespace resources {
                 std::string rstr;
                 char ch = ' ';
                 int n = 0;
+                float f = 0;
 
                 std::string id;
                 glm::vec4 c = glm::vec4(0);
@@ -3105,15 +3942,15 @@ namespace resources {
                     while (ch != '{') {
                         file >> ch;
                     }
-                    file >> n;
-                    size.x = n;
+                    file >> f;
+                    size.x = f;
                     file >> ch;
 
                     while (ch != ',') {
                         file >> ch;
                     }
-                    file >> n;
-                    size.y = n;
+                    file >> f;
+                    size.y = f;
 
                     file >> ch;
                     while (ch != '}') {
@@ -3212,8 +4049,14 @@ namespace resources {
                     items::addStatV3(id.c_str(), statname.c_str(), valuev3);
                 }else
                 if (stattype == "t") {
-                    *file >> valuet;
-                    items::addStatT(id.c_str(), statname.c_str(), valuet);
+                    if (statname == "desc") {
+                        std::getline(*file, valuet);
+                        items::getInfo(id)->description = valuet.substr(1);
+                    }
+                    else {
+                        *file >> valuet;
+                        items::addStatT(id.c_str(), statname.c_str(), valuet);
+                    }
                 }
             }
         }

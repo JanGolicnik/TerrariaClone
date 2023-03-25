@@ -72,16 +72,29 @@ namespace Player
     extern float currsummons;
 
     extern int heartcrystals;
+    extern int manacrystals;
 
     extern std::array<ActiveBuff, 20> buffs;
     extern int manaregentimer;
     extern float regeneration;
 
     extern float enemyChance;
-    extern float critterChance;
+    extern bool spawnCap;
 
     extern float meeleDamage;
     extern float thorns;
+
+    extern std::string curritem;
+
+    extern std::string activeSetBonus;
+
+    extern float hue;
+
+    extern float breathtimer;
+
+    extern bool dead;
+
+    extern std::string timeToRespawn;
 
     void create();
     void update();
@@ -100,11 +113,17 @@ namespace Player
     glm::vec2* position();
     glm::vec2* velocity();
 
+    void doPrimary(std::string item);
+    void doSecondary(std::string item);
+    void doPrimaryHold(std::string item);
+
     void addStatsFromItem(std::string item);
 
     void addBuff(std::string name, int timer);
     bool hasBuff(std::string name);
 
     int pickUp(std::string  item, int num);
+
+    void dropCoins();
 };
 

@@ -22,6 +22,8 @@
 #include <layers.h>
 #include <game.h>
 #include <input.h>
+#include <liquids.h>
+#include <enemies.h>
 
 void physicsSystem::Update()
 {
@@ -37,8 +39,46 @@ void physicsSystem::Update()
         i.collideright = false;
         i.collideleft = false;
 
+        float viscosity = 1;
         if (!i.isstatic) {
-            i.vel.y -= globals::gravity * i.weight;
+            if (i.affectedByLiquid) {
+                int lastinliquid = i.isinliquid;
+                bool inliquid = false;
+                int level = 0;
+                for (int x = 0; x < i.size.x; x++) {
+                    if (level > 8) break;
+                    for (int y = 0; y < i.size.y; y++) {
+                        glm::vec2 pos = *i.position - i.size / glm::vec2(2);
+                        pos += glm::vec2(x, y);
+                        pos = round(pos);
+                        int data = liquids::at(pos);
+                        if (data != 0) {
+                            inliquid = true;
+                            if (i.isinliquid == -1) {
+                                i.isinliquid = (data & 0x00ff0000u) >> 16;
+                            }
+                            level += data & 0x0000000fu;
+                            if (level > 8) break;
+                        }
+                    }
+                }
+                if (!inliquid) {
+                    i.isinliquid = -1;
+                }
+                else {
+                    if (lastinliquid != i.isinliquid) {
+                        if (i.isinliquid == 0) {
+                            particles::spawnEffect("watersplash", *i.position - i.size / glm::vec2(2));
+                            sounds::watersplash();
+                        }else if (i.isinliquid == 0) {
+                            particles::spawnEffect("lavasplash", *i.position - i.size / glm::vec2(2));
+                            sounds::lavasplash();
+                        }
+                    }
+                    if (level > 8)viscosity = 1.8;
+                }
+            }
+            i.vel.y -= globals::gravity * (i.weight/ viscosity);
         }
         int botblock = globals::emptyid;
         glm::vec2 nBs = ceil(abs(i.vel));
@@ -170,7 +210,8 @@ void physicsSystem::Update()
                     i.vel.y = -i.vel.y * i.bounciness;
                 }
             }
-            *(i.position) += i.vel;
+
+            *(i.position) += i.vel/ viscosity;
         }
     }
 }
@@ -275,6 +316,32 @@ void drawSystem::UpdateBehindBackground()
     glDrawElements(GL_TRIANGLES, bsize * 6, GL_UNSIGNED_INT, nullptr);
 }
 
+void drawSystem::UpdateBehindBlocks()
+{
+    memset(vertices, 0, bsize * 4 * sizeof(SpriteVertex));
+    auto main = ECS::getComponent<drawC>(behindBlocks);
+    auto arr = static_cast<ComponentArray<drawC>*>(componentArray.get());
+    auto blocks = Layers::getLayer("blocks");
+
+    renderi = 0;
+
+    glUseProgram(shaderID);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textures::spriteSheet);
+    glUniform1i(1, 0);
+    glActiveTexture(GL_TEXTURE0 + 1);
+    glBindTexture(GL_TEXTURE_2D, text::texture);
+    glUniform1i(2, 1);
+    glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(camera::trans));
+    glBindBuffer(GL_ARRAY_BUFFER, VB);
+    glBindVertexArray(VA);
+
+    updateChildren(main, arr);
+
+    glBufferSubData(GL_ARRAY_BUFFER, 0, (sizeof(SpriteVertex) * bsize * 4), vertices);
+    glDrawElements(GL_TRIANGLES, bsize * 6, GL_UNSIGNED_INT, nullptr);
+}
+
 void drawSystem::UpdateFront()
 {
     memset(vertices, 0, bsize * 4 * sizeof(SpriteVertex));
@@ -311,6 +378,9 @@ void drawSystem::addComponent(int entity, drawC* dc, bool force)
         ECS::getComponent<drawC>(dc->parent)->children.push_back(entity);
     }
 
+    if (dc->position == nullptr) {
+        dc->position = std::make_shared<glm::vec2>(glm::vec2(0));
+    }
     if (force)
         ECS::addComponent<drawC>(entity, *dc);
     else
@@ -320,11 +390,13 @@ void drawSystem::addComponent(int entity, drawC* dc, bool force)
 void drawSystem::deleteComponent(int entity)
 {
     auto p = ECS::getComponent<drawC>(entity);
+    if (p == nullptr) return;
     for (auto i : p->children) {
         ECS::queueDeletion(i);
     }
     if (ECS::entityExists(p->parent)) {
         auto par = ECS::getComponent<drawC>(p->parent);
+        if(par != nullptr)
         for (int i = 0; i < par->children.size(); i++) {
             if (par->children[i] == entity) {
                 par->children.erase(par->children.begin() + i);
@@ -342,9 +414,13 @@ void drawSystem::updateChildren(drawC* parent, ComponentArray<drawC>* arr)
         auto p = &arr->components[arr->entityToComponent[parent->children[i]]];
         if (!p->hidden) {
             glm::vec3 light = p->color;
-            if (blocks != nullptr)
             if (p->autolight) {
-                light *= Layers::queryBlock(blocks, *p->position)->light;
+                if (blocks != nullptr && game::currScene == GAME) {
+                    light *= Layers::queryBlock(blocks, *p->position)->light;
+                }
+                else {
+                    light *= globals::dayclr;
+                }
             }
             glm::vec4 color(light.r, light.g, light.b, p->opacity);
             if (p->spriteCoords != glm::vec4(-1, -1, -1, -1)) {
@@ -374,11 +450,6 @@ void drawSystem::updateChildren(drawC* parent, ComponentArray<drawC>* arr)
             float maxscale = scale;
             for (int chi = 0; chi < p->text.size(); chi++) {
                 char ch = p->text[chi];
-                if (ch == '\n') {
-                    cursorpos.x = p->position->x;
-                    cursorpos.y -= (text::lineHeight / (float)globals::blocksizepx) * maxscale;
-                    continue;
-                }
                 if (ch == '\\') {
                     if (p->text[chi + 1] == 's') {
                         std::string tmp;
@@ -422,6 +493,11 @@ void drawSystem::updateChildren(drawC* parent, ComponentArray<drawC>* arr)
                     else {
                         ch = ' ';
                     }
+                }
+                if (ch == '\n') {
+                    cursorpos.x = p->position->x;
+                    cursorpos.y -= (text::lineHeight / (float)globals::blocksizepx) * maxscale;
+                    continue;
                 }
                 if (scale > maxscale) maxscale = scale;
                 const glyph* g = &text::glyphs[ch];
@@ -499,8 +575,8 @@ void aiSystem::Update()
         }
 
         if (p->onclick) {
-            if (input::mousePressed(GLFW_MOUSE_BUTTON_RIGHT)) {
-                glm::vec2 mc = globals::mouseBlockCoordsZoomed(false);
+            if (input::pressed(k_SECONDARY)) {
+                glm::vec2 mc = globals::mouseBlockCoords(false);
                 if (phys->position->x - phys->size.x / 2.0f < mc.x &&
                     phys->position->x + phys->size.x / 2.0f > mc.x &&
                     phys->position->y + phys->size.y / 2.0f > mc.y &&
@@ -568,7 +644,7 @@ void toolSystem::Update()
                     draw->hasmat = true;
 
                     *(phys->position) = Player::pos;
-                    glm::vec2 vec = globals::mouseBlockCoordsZoomed(false) - (*phys->position);
+                    glm::vec2 vec = globals::mouseBlockCoords(false) - (*phys->position);
                     float angle = int(utils::angleOfVector(vec) - 180) % 360;
                     phys->position->x += cos(angle * PI / 180.0f) * 2;
                     phys->position->y += sin(angle * PI / 180.0f) * 2;
@@ -613,6 +689,7 @@ void toolSystem::makeTool(int ent, glm::vec2 pos, std::string item, float usespe
     mc.knockback = items::getStat(item, "knockback").valueFloat;
     mc.hp = 10;
     mc.onCollision = { {mf_ENEMY, info->onhit}, {mf_CRITTER, collisionFs::damage} };
+    mc.destroydecor = true;
 
     auto spos = std::make_shared<glm::vec2>(pos);
     glm::vec2 size = glm::vec2(1.3) * glm::vec2(info->sizeMod);
@@ -638,7 +715,7 @@ void toolSystem::makeTool(int ent, glm::vec2 pos, std::string item, float usespe
 
 void droppedItemSystem::Update()
 {
-    glm::vec2 mc = globals::mouseBlockCoordsZoomed(false);
+    glm::vec2 mc = globals::mouseBlockCoords(false);
     auto arr = static_cast<ComponentArray<droppedItemC>*>(componentArray.get());
     auto sys = ECS::getSystem<physicsSystem>();
     auto drawsys = ECS::getSystem<drawSystem>();
@@ -669,25 +746,33 @@ void droppedItemSystem::Update()
             UI::setTStat(ECS::getComponent<uiC>(gameLoop::zoomedcursoritem), "text", text);
         }
 
+        if (phys->isinliquid == 1 && p->name != "hellstone") {
+            ECS::queueDeletion(arr->componentToEntity[i]);
+        }
+
         if (p->timer > 0) continue;
-        if (!UI::hotbar->hasRoomFor(p->name) && !UI::inventory->hasRoomFor(p->name)) continue;
-        glm::vec2 mid = glm::vec2(phys->position->x + 0.5f, phys->position->y + 0.5f);
-        float dist = glm::distance(playerpos, *phys->position);
-        if (dist < 1.2f) {
-            int prevAmount = p->amount;
-            p->amount = Player::pickUp(p->name, p->amount);
-        }
-        if (dist < Player::pickupRange) {
-            phys->dontcollide = true;
-            phys->isstatic = false;
-            phys->vel += utils::approach(phys->vel, glm::normalize(playerpos - *phys->position) * glm::vec2(1.0f), 1);
-            phys->vel = glm::clamp(phys->vel, -1.0f, 1.0f);
-        }
-        else {
-            phys->dontcollide = false;
+        if (!Player::dead) {
+            if (!UI::hotbar->hasRoomFor(p->name) && !UI::inventory->hasRoomFor(p->name)) continue;
+            glm::vec2 mid = glm::vec2(phys->position->x + 0.5f, phys->position->y + 0.5f);
+            float dist = glm::distance(playerpos, *phys->position);
+            if (dist < 1.2f) {
+                int prevAmount = p->amount;
+                p->amount = Player::pickUp(p->name, p->amount);
+                if (prevAmount != p->amount) {
+                    sounds::pickup();
+                }
+            }
+            if (dist < Player::pickupRange) {
+                phys->dontcollide = true;
+                phys->isstatic = false;
+                phys->vel += utils::approach(phys->vel, glm::normalize(playerpos - *phys->position) * glm::vec2(1.0f), 1);
+                phys->vel = glm::clamp(phys->vel, -1.0f, 1.0f);
+            }
+            else {
+                phys->dontcollide = false;
+            }
         }
         if (p->amount == 0) {
-            UI::refreshCrafting();
             ECS::queueDeletion(arr->componentToEntity[i]);
         }
     }
@@ -782,20 +867,44 @@ void uiSystem::updateChildren(uiC* parent, ComponentArray<uiC>* arr, glm::vec2 m
 
         if (p->interactable && !p->hidden && !p->removed) {
             if (mc.x > draw->position->x - draw->size.x / 2 && mc.x <  draw->position->x + draw->size.x / 2 && mc.y >  draw->position->y - draw->size.y / 2 && mc.y < draw->position->y + draw->size.y / 2) {
+                if (input::held(k_PRIMARY) && p->holding) {
+                    if (p->onhold) {
+                        p->onhold(p, draw, parent->children.at(i), arr);
+                    }
+                }
+                else {
+                    p->holding = false;
+                }
+
                 if (mouseClicked) {
-                    p->onclick(p, draw, parent->children.at(i), arr);
-                    if (!p->propagateClick) mouseClicked = false;
+                    p->holding = true;
+                    if (p->onclick) {
+                        p->onclick(p, draw, parent->children.at(i), arr);
+                        if (!p->propagateClick) {
+                            mouseClicked = false;
+                        }
+                    }
                 }
                 else if (mouseRightClicked) {
                     p->onrightclick(p, draw, parent->children.at(i), arr);
-                    if (!p->propagateClick) mouseRightClicked = false;
+                    if (!p->propagateClick) {
+                        mouseRightClicked = false;
+                    }
                 }
                 else {
-                    p->onhover(p, draw, parent->children.at(i), arr);
+                    if (p->hovering) {
+                        p->onhover(p, draw, parent->children.at(i), arr);
+                    }
+                    else {
+                        if(p->onenter)
+                        p->onenter(p, draw, parent->children.at(i), arr);
+                        p->hovering = true;
+                    }
                 }
             }
             else {
                 p->onnothover(p, draw, parent->children.at(i), arr);
+                p->hovering = false;
             }
         }
     }
@@ -814,7 +923,7 @@ void uiSystem::Update()
     auto arr = static_cast<ComponentArray<uiC>*>(componentArray.get());
 
     auto bodyC = ECS::getComponent<uiC>(body);
-    glm::vec2 mc = globals::mouseBlockCoords(false);
+    glm::vec2 mc = globals::mouseBlockCoordsGlobal(false);
     updateChildren(bodyC, arr, mc);
     
     mouseClicked = false;
@@ -831,17 +940,6 @@ void mobSystem::Update()
         p->iframes--;
 
         auto phys1 = ECS::getComponent<physicsC>(arr->componentToEntity[i]);
-        if(p->light.r > 0 || p->light.g > 0 || p->light.b > 0)
-        Layers::addLight(*(phys1->position), p->light);
-        
-        for (int buff = 0; buff < p->buffs.size(); buff++) {
-            buffs::buffs[p->buffs[buff].name].func(&p->buffs[buff], p, phys1);
-            p->buffs[buff].countdown--;
-            if (p->buffs[buff].countdown == 0) {
-                p->buffs.erase(p->buffs.begin() + buff);
-                buff--;
-            }
-        }
 
         if (p->onCollision.size() > 0) {
             for (int sec = 0; sec < arr->components.size(); sec++) {
@@ -860,23 +958,52 @@ void mobSystem::Update()
             }
         }
 
-        if(p->destroydecor) Layers::damageBlock(blocks, round(* phys1->position), 1, ceil(p->hitboxradius/2));
+        //onscreen
+        if (phys1->position->x > Player::pos.x - Layers::trueBsOnScr.x &&
+            phys1->position->x < Player::pos.x + Layers::trueBsOnScr.x &&
+            phys1->position->y > Player::pos.y - Layers::trueBsOnScr.y &&
+            phys1->position->y < Player::pos.y + Layers::trueBsOnScr.y) {
+           
+            if (p->light.r > 0 || p->light.g > 0 || p->light.b > 0)
+                Layers::addLight(*(phys1->position), p->light);
+
+            for (int buff = 0; buff < p->buffs.size(); buff++) {
+                buffs::buffs[p->buffs[buff].name].func(&p->buffs[buff], p, phys1);
+                p->buffs[buff].countdown--;
+                if (p->buffs[buff].countdown == 0) {
+                    p->buffs.erase(p->buffs.begin() + buff);
+                    buff--;
+                }
+            }
+
+            if (p->destroydecor) Layers::damageBlock(blocks, round(*phys1->position), 1, ceil(p->hitboxradius / 2));
+        
+            if (p->onPlayerCollision) {
+                if (glm::distance(*phys1->position, Player::pos) < (p->hitboxradius + Player::width) / 2.0f) {
+                    p->onPlayerCollision(p, phys1, i, arr);
+                }
+            }
+
+            if (p->damageInLava) {
+                if (phys1->isinliquid == 1) {
+                    if (p->iframes < 0) {
+                        p->hp -= 50;
+                        p->iframes = globals::iframes;
+                        p->buffs.push_back({ "onfire", 180, globals::time });
+                    }
+                }
+            }
+
+            if (p->displayName != "") {
+                glm::vec2 mc = globals::mouseBlockCoords(false);
+                if (glm::distance(mc, *phys1->position) < p->hitboxradius) {
+                    std::string text = p->displayName + " (" + std::to_string(p->hp) + "/" + std::to_string(p->maxhp) + ")";
+                    UI::setTStat(ECS::getComponent<uiC>(gameLoop::zoomedcursoritem), "text", text);
+                }
+            }
+        }
 
         float distfromplayer = glm::distance(*phys1->position, Player::pos);
-        if (p->onPlayerCollision) {
-            if (distfromplayer < (p->hitboxradius + Player::width) / 2.0f) {
-                p->onPlayerCollision(p, phys1, i, arr);
-            }
-        }
-
-        if (p->displayName != "") {
-            glm::vec2 mc = globals::mouseBlockCoordsZoomed(false);
-            if (glm::distance(mc, *phys1->position) < p->hitboxradius) {
-                std::string text = p->displayName + " (" + std::to_string(p->hp) + "/" + std::to_string(p->maxhp) + ")";
-                UI::setTStat(ECS::getComponent<uiC>(gameLoop::zoomedcursoritem), "text", text);
-            }
-        }
-
         if (distfromplayer > 450) {
             p->despawntimer = 0;
         }
@@ -895,9 +1022,13 @@ void mobSystem::Update()
             if (p->onDeath) {
                 p->onDeath(p, phys1, arr->componentToEntity[i]);
             }
+            if (p->gore != "") {
+                particles::dropGore(*phys1->position, p->gore);
+            }
             if (p->hpbar != -1) {
                 UI::deleteElement(p->hpbar);
             }
+            enemies::currslots -= p->slots;
             ECS::queueDeletion(arr->componentToEntity[i]);
         }
     }
@@ -929,7 +1060,7 @@ void particleEmmiterSystem::Update()
         if (p->rate + randrate <= 0) continue;
         p->countdown--;
         while (p->countdown <= 1) {
-            spawn(p, arr, i, phys);
+            if(globals::particles) spawn(p, arr, i, phys);
             p->countdown += p->rate + randrate + 1/(glm::length(phys->vel)) * p->speedmultiplier;
 
         }
@@ -976,6 +1107,7 @@ void particleEmmiterSystem::spawn(particleEmmiterC* p, ComponentArray<particleEm
         pc.size *= randscale;
         pc.dontcollide = !p->stoponcollision;
         pc.friction = false;
+        pc.affectedByLiquid = false;
 
         drawC dc;
         dc.position = pc.position;
@@ -993,7 +1125,15 @@ void particleEmmiterSystem::spawn(particleEmmiterC* p, ComponentArray<particleEm
         dc.hidden = false;
         dc.anim = -1;
         dc.opacity = p->opacity;
-        dc.mat = glm::mat4(1.0f);
+
+        if (p->matchparticledir) {
+            dc.hasmat = true;
+            int a = int(utils::angleOfVector(dirN)) % 360;
+            dc.mat = glm::rotate(glm::mat4(1.0f),float( a * PI / 180.0f), glm::vec3(0, 0, 1));
+        }
+        else {
+            dc.mat = glm::mat4(1.0f);
+        }
 
         aiC ac;
         ac.ai = ai_PARTICLE;
@@ -1010,6 +1150,8 @@ void particleEmmiterSystem::spawn(particleEmmiterC* p, ComponentArray<particleEm
         if (p->stopAsDie) {
             velOverTime = -vel / glm::vec2(p->particleLifespan);
         }
+
+        dc.color = p->color;
 
         ac.stats["rotation"] = rot;
         ac.stats["size"] = size;

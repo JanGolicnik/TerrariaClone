@@ -86,7 +86,6 @@ namespace globals {
 
     float cheaterlight;
 
-    float volume = 0.3;
     float transparency = 1;
 
     float bgoffset = 0.0f;
@@ -94,9 +93,9 @@ namespace globals {
     glm::vec3 textHightlightColor = glm::vec3(1, 1, 0);
     glm::vec3 textColor = glm::vec3(1,1,1);
     glm::vec3 itemslotColor = glm::vec3(0.1, 0.1, 0.5);
+    glm::vec3 shopitemslotColor = glm::vec3(0.5, 0.5, 0.1);
     glm::vec3 selecteditemslotColor = glm::vec3(1,1,0);
 
-    irrklang::ISoundEngine* engine;
     bool fullscreen;
 
     unsigned long long time;
@@ -128,7 +127,7 @@ namespace globals {
 
     bool background = true;
 
-    glm::vec2 mouseBlockCoords(bool round, glm::vec2 clampx, glm::vec2 clampy)
+    glm::vec2 mouseBlockCoordsGlobal(bool round, glm::vec2 clampx, glm::vec2 clampy)
     {
         double x, y;
         glfwGetCursorPos(window, &x, &y);
@@ -157,7 +156,7 @@ namespace globals {
         }
         return glm::vec2(x, y);
     }
-    glm::vec2 mouseBlockCoordsZoomed(bool round, glm::vec2 clampx, glm::vec2 clampy)
+    glm::vec2 mouseBlockCoords(bool round, glm::vec2 clampx, glm::vec2 clampy)
     {
         double x, y;
         glfwGetCursorPos(window, &x, &y);
@@ -171,7 +170,7 @@ namespace globals {
         y = y - 0.5;
 
         //apply zoom
-        x /=zoom;
+        x /= zoom;
         y /= zoom;
 
         //clamp?

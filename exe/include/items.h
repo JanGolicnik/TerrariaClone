@@ -34,7 +34,7 @@ enum itemFamily {
     if_BREASTPLATE,
     if_MATERIAL,
     if_MAGIC,
-    if_SUMMON
+    if_SUMMON,
 };
 
 enum itemMod {
@@ -82,6 +82,7 @@ enum Rarity {
 #define args std::string, int
 struct itemInfo {
     std::string tex;
+    std::string displayName;
     std::vector<std::function<bool(itemconditionargs)>> conditions;
     std::vector<std::function<void(args)>> onleftclick;
     std::set<itemFamily> families;
@@ -101,6 +102,8 @@ struct itemInfo {
     std::function <void(mobCargs)> onhit = collisionFs::damage;
     Rarity rarity = r_WHITE;
     std::string set = "none";
+    std::string description = "";
+    void(*soundsfunc)() = &sounds::swing;
 };
 
 struct itemChance {
@@ -110,6 +113,11 @@ struct itemChance {
 };
 struct naturalChest {
     std::unordered_map<std::string, itemChance> items;
+};
+
+struct setBonus {
+    std::function<void()> func;
+    std::string description = "Click to edit text";
 };
 
 namespace itemFuncs {
@@ -138,6 +146,8 @@ namespace itemFuncs {
     void impStaff(args);
     void increaseMaxHealth(args);
     void heal(args);
+    void bladeOfGrass(args);
+    void manaCrystal(args);
 
     void nonearmorbonus();
     void ironarmorbonus();
@@ -156,6 +166,7 @@ namespace itemConditions {
     bool lightdisc(itemconditionargs);
     bool hasSummonSpace(itemconditionargs);
     bool heartCrystal(itemconditionargs);
+    bool manaCrystal(itemconditionargs);
     bool heal(itemconditionargs);
 }
 
@@ -166,8 +177,8 @@ namespace items
     extern std::unordered_map<std::string, projectileBase> projectiles;
     extern std::unordered_map<std::string, naturalChest> naturalChests;
     extern std::unordered_map<std::string, itemChance> potItems;
-    extern std::unordered_map<std::string, std::function<void()>> setBonuses;
-    void addItem(std::string itemName, std::string tex,
+    extern std::unordered_map<std::string, setBonus> setBonuses;
+    void addItem(std::string itemName, std::string displayName,  std::string tex,
         std::vector<std::function<void(args)>> onleftclick = {}, float useSpeed = 60, std::set<itemFamily> families = {},
         std::unordered_map<std::string, itemStat> stats = {}, std::vector<std::function<bool(itemconditionargs)>> conditions = {itemConditions::nothing}, itemAnim animType = ia_DEFAULT, float sizeMod = 1.0f);
     void addRecipe(recipe rec);
@@ -181,13 +192,14 @@ namespace items
     void addStatV3(const char* item, const char* statname, glm::vec3 value);
     void addFamily(const char* item, itemFamily fam);
     void addLight(const char* item, glm::vec3 light);
+    void addSound(const char* item, void(*func)());
     void addSizeMod(const char* item, float sizemod);
     void disableAutouse(const char* item);
     void addEmmiter(const char* item, particleEmmiterC pec);
     void addOnhit(const char* item, std::function<void(mobCargs)> func);
     void addRarity(const char* item, Rarity rarity);
     void addToSet(const char* item, std::string set);
-    void addSet(std::string item, std::function<void()> func);
+    void addSet(std::string item, std::function<void()> func, std::string description);
     void printItems();
     glm::vec3 getRarityColor(Rarity rarity);
     std::string getRarityColorString(Rarity rarity);

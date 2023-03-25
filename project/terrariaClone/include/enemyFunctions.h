@@ -60,7 +60,14 @@ namespace mobFunctions
 	void bladeOfGrassOnUpdate(args);
 	void fireflyOnUpdate(args);
 	void tombstoneOnUpdate(args);
+	void goreOnUpdate(args);
+	void npcOnDie(args);
+	void snailUpdate(args);
+	void birdUpdate(args);
+	void goldfishUpdate(args);
+	void jellyfishUpdate(args);
 
+	void ondie_npc(mobDeathargs);
 	void ondie_nothing(mobDeathargs);
 	void ondie_waterbolt(mobDeathargs);
 	void ondie_magicprojectile(mobDeathargs);

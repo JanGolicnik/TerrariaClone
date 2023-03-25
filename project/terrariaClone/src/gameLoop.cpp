@@ -18,6 +18,8 @@
 #include <particles.h>
 #include <buffs.h>
 #include <liquids.h>
+#include <sounds.h>
+#include <regex>
 
 namespace gameLoop {
 
@@ -32,6 +34,7 @@ namespace gameLoop {
     int settingsUI;
     int inventoryC;
     int chestInvC;
+    int npcInvC;
     int equipmentC;
     int tooltip;
     int crafting;
@@ -58,6 +61,7 @@ namespace gameLoop {
     int NPCDialogue;
     int buffcontainer;
     int pickuptextcontainer;
+    int toasttextcontainer;
     int sun;
     int moon;
     int right;
@@ -75,6 +79,8 @@ namespace gameLoop {
     {
         map::load();
 
+        enemies::currslots = 0;
+
         Player::setPos(map::PlayerSpawn);
         camera::pos = -Player::pos;
         camera::limits = glm::vec2(-map::mapX + globals::resX / (globals::blocksizepx / 2), -map::mapY + globals::resY / (globals::blocksizepx / 2));
@@ -82,6 +88,11 @@ namespace gameLoop {
 
         createUI();
         createSettingsMenu();
+        int neki = UI::Elements::empty(uiSystem::body);
+        cursoritem = ECS::newEntity();
+        uiStat tmpstat;
+        tmpstat.itemp = &UI::cursorItem;
+        UI::addElement(cursoritem, ui_CURSORITEM, { 0, 0 }, { 2, 2 }, neki, { {"item", tmpstat}, {"parent", {.intVal = globals::topparticleLayer}} }, { {"text", ""} }, false, anchorNONE);
 
         sun = ECS::newEntity();
         drawC dc;
@@ -96,9 +107,12 @@ namespace gameLoop {
         dc.tex = "moon1";
         game::drawSys->addComponent(moon, &dc);
 
-        map::guideEnt = enemies::spawnEnemy("guide", map::PlayerSpawn);
-        ECS::commitQueues();
-        ECS::getComponent<mobC>(map::guideEnt)->displayName = map::guideName;
+        map::spawnLivingNPCS();
+
+
+        Inventory::setupInventory(&UI::merchantInventory, { 10, 4 });
+        UI::merchantInventory[0]->item = "dirt";
+        UI::merchantInventory[0]->num = 123;
     }
 
     void run()
@@ -133,33 +147,11 @@ namespace gameLoop {
                 globals::cdayTime = 0;
             }
 
-            //3375-225 jutro
-            //225-1575 dan
-            //1575-2025 vecer
-            //2025-3375 noc
-
-            if ((globals::cdayTime > 3375 && globals::cdayTime < 3600) || (globals::cdayTime < 225 && globals::cdayTime>0)) {
-                globals::dayclr += utils::approach(globals::dayclr, globals::morningclr, 225);
+            if (globals::cdayTime == 0) {
+                map::resetNPCS();
             }
 
-            if (globals::cdayTime > 225 && globals::cdayTime < 1575) {
-                globals::dayclr += utils::approach(globals::dayclr, globals::noonclr, 225);
-            }
 
-            if (globals::cdayTime > 1575 && globals::cdayTime < 2025) {
-                globals::dayclr += utils::approach(globals::dayclr, globals::eveningclr, 225);
-            }
-
-            if (globals::cdayTime > 2025 && globals::cdayTime < 3375) {
-                globals::dayclr += utils::approach(globals::dayclr, globals::nightclr, 225);
-            }
-
-            //noonW = glm::clamp(1 - (abs(globals::cdayTime - globals::dayLength / 4.0f) / (globals::dayLength / 4.0f)), 0.0f, 1.0f);
-            //eveningW = glm::clamp(1 - (abs(globals::cdayTime - (globals::dayLength / 4.0f * 2)) / (globals::dayLength / 4.0f)), 0.0f, 1.0f);
-            //nightW = glm::clamp(1 - (abs(globals::cdayTime - (globals::dayLength / 4.0f * 3)) / (globals::dayLength / 4.0f)), 0.0f, 1.0f);
-            //morningW = glm::clamp(1 - (abs(globals::cdayTime - (globals::dayLength / 4.0f * 0)) / (globals::dayLength / 4.0f)), 0.0f, 1.0f);
-            //morningW += glm::clamp(1 - (abs(globals::cdayTime - (globals::dayLength / 4.0f * 4)) / (globals::dayLength / 4.0f)), 0.0f, 1.0f);
-            //globals::dayclr = globals::noonclr * noonW + globals::eveningclr * eveningW + globals::nightclr * nightW + globals::morningclr * morningW;
             ldayutime = ctime;
         }
 
@@ -184,9 +176,24 @@ namespace gameLoop {
 
         if (dtime > 1.0f / maxFps) {
 
+            if ((globals::cdayTime > 3375 && globals::cdayTime < 3600) || (globals::cdayTime < 225 && globals::cdayTime>0)) {
+                globals::dayclr += utils::approach(globals::dayclr, globals::morningclr, 225);
+            }
+
+            if (globals::cdayTime > 225 && globals::cdayTime < 1575) {
+                globals::dayclr += utils::approach(globals::dayclr, globals::noonclr, 225);
+            }
+
+            if (globals::cdayTime > 1575 && globals::cdayTime < 2025) {
+                globals::dayclr += utils::approach(globals::dayclr, globals::eveningclr, 225);
+            }
+
+            if (globals::cdayTime > 2025 && globals::cdayTime < 3375) {
+                globals::dayclr += utils::approach(globals::dayclr, globals::nightclr, 225);
+            }
+
             sum += dtime * 1000.0f;
             if (++counter % 60 == 0) {
-                std::cout << 1000 / (sum / 60.0f )<< "\n";
                 counter = 0;
                 sum = 0;
             }
@@ -195,11 +202,10 @@ namespace gameLoop {
             Player::calculateStats();
             handleInput();
 
-            items::info["hermesboots"].stats;
-
             if (!settingsOpen) {
                 UI::refreshCrafting();
-                Layers::spawnMobs();
+                enemies::spawnNPCS();
+                enemies::doQueues();
                 animations::updateAnims();
                 game::physSys->Update();
                 Player::update();
@@ -252,6 +258,7 @@ namespace gameLoop {
             
             Player::render();
             liquids::renderOnScreen();
+            Layers::renderLights();
             game::drawMain();
 
             glBindFramebuffer(GL_FRAMEBUFFER, globals::tmpFB);
@@ -290,42 +297,23 @@ namespace gameLoop {
             UI::getStat(craftingC, "craftable")->intVal += input::scroll;
         }
 
-        if (input::pressed(k_PRIMARY)) {
-            animations::watchAnim("playeredit", &Player::anim);
-        }
-        if (input::released(k_PRIMARY)) {
-            animations::watchAnim("playeridle", &Player::anim);
-        }
-        if (input::pressed(k_SECONDARY)) {
-            animations::watchAnim("playeredit", &Player::anim);
-        }
-        if (input::released(k_SECONDARY)) {
-            animations::watchAnim("playeridle", &Player::anim);
-        }
-
         if (input::shift) {
             if (input::rpressed(GLFW_KEY_R)) {
                 resources::loadAssets(true, true, true);
             }
         }
         else {
-            if (input::pressed(k_LEFT)) {
-                animations::watchAnim("playerwalkleft", &Player::anim);
-            }
             if (input::held(k_LEFT)) {
                 auto vel = Player::velocity();
                 if (vel->x > 0) vel->x += utils::approach(vel->x, -Player::ms, 35);
                 vel->x +=  utils::approach(vel->x, -Player::ms, 60);
                 Player::friction = false;
                 Player::dir = -1;
-                animations::watchAnim("playerwalkleft", &Player::anim, false);
             }
             if (input::released(k_LEFT)) {
                 Player::friction = true;
-                animations::watchAnim("playeridle", &Player::anim);
             }
             if (input::pressed(k_RIGHT)) {
-                animations::watchAnim("playerwalkright", &Player::anim);
             }
             if (input::held(k_RIGHT)) {
                 auto vel = Player::velocity();
@@ -333,26 +321,18 @@ namespace gameLoop {
                 vel->x += utils::approach(vel->x, Player::ms, 60);
                 Player::dir = 1;
                 Player::friction = false;
-                animations::watchAnim("playerwalkright", &Player::anim, false);
             }
             if (input::released(k_RIGHT)) {
                 Player::friction = true;
-                animations::watchAnim("playeridle", &Player::anim);
             }
             if (input::held(k_DOWN)) {
-                if (Layers::queryBlockInfo(Layers::getLayer("blocks"), Player::pos - glm::vec2(0, Player::height / 2.0f + 0.1f))->skippable) {
-                    Player::ignorebot = true;
-                }
+                Player::wantstoskip = true;
             }
             if (input::pressed(k_JUMP)) {
                 Player::jump();
-                animations::watchAnim("playerjump", &Player::anim);
             }
             if (input::released(k_JUMP)) {
                 Player::currJumpTime = 0;
-            }
-            if (input::rpressed(GLFW_KEY_T)) {
-                Player::setPos(globals::mouseBlockCoordsZoomed(false));
             }
             if (input::pressed(k_INVENTORY)) {
                 if (Player::dead)
@@ -362,12 +342,18 @@ namespace gameLoop {
                 else {
                     UI::inventory->toggle();
                     UI::chest->toggle(1);
+                    UI::npc->toggle(1);
                     bool state = UI::inventory->hidden();
                     ECS::getComponent<uiC>(crafting)->hidden = state;
                     UI::hideChildren(ECS::getComponent<uiC>(equipmentC), state);
+                    UI::hideChildren(ECS::getComponent<uiC>(guideslot), true, true);
                     if (state) {
+                        sounds::menuclose();
                         UI::hideChildren(ECS::getComponent<uiC>(NPCDialogue), true, true);
                         game::droppedItemSys->dropItem(Player::pos, UI::guideItem.item, UI::guideItem.num);
+                    }
+                    else {
+                        sounds::menuopen();
                     }
                     UI::hideChildren(ECS::getComponent<uiC>(buffcontainer), !state);
                 }
@@ -405,23 +391,24 @@ namespace gameLoop {
             if (input::rpressed(GLFW_KEY_P)) {
                 ECS::print();
             }
-            if (input::rheld(GLFW_KEY_M)) {
-                enemies::spawnEnemy("tombstone", globals::mouseBlockCoordsZoomed());
-            }
             if (input::rheld(GLFW_KEY_L)) {
-                liquids::place("water", globals::mouseBlockCoordsZoomed(), 3);
+                liquids::place("water", globals::mouseBlockCoords(), 0x4);
             }
-            if (input::rheld(GLFW_KEY_U)) {
-                liquids::place("lava", globals::mouseBlockCoordsZoomed(), 2);
+            if (input::rheld(GLFW_KEY_M)) {
+                enemies::spawnEnemy("zombie", globals::mouseBlockCoords());
             }
-            if (input::rpressed(GLFW_KEY_K)) {
-                liquids::remove(globals::mouseBlockCoordsZoomed());
-            }
-            if (input::rheld(GLFW_KEY_J)) {
-                Layers::placeBlock(globals::mouseBlockCoordsZoomed(), "pot");
+            if (input::rpressed(GLFW_KEY_J)) {
+                enemies::spawnEnemy("jellyfish", globals::mouseBlockCoords(false));
             }
             if (input::rheld(GLFW_KEY_O)) {
-                map::spawnDebugSetup(globals::mouseBlockCoordsZoomed());
+                map::spawnDebugSetup(globals::mouseBlockCoords());
+            }
+            if (input::rheld(GLFW_KEY_U)) {
+                for(int i = 0; i < 10; i++)
+                game::droppedItemSys->dropItem(globals::mouseBlockCoords(false), "coppercoin", 1);
+            }
+            if (input::rheld(GLFW_KEY_T)) {
+                Player::setPos(globals::mouseBlockCoords(false));
             }
         }
     }
@@ -455,46 +442,34 @@ namespace gameLoop {
 
     void createUI()
     {
-        hpbarC = ECS::newEntity();
-        realtimeUI = ECS::newEntity();
-        settingsUI = ECS::newEntity();
-        equipmentC = ECS::newEntity();
-        buffcontainer = ECS::newEntity();
-        pickuptextcontainer = ECS::newEntity();
-        UI::addElement(hpbarC, ui_EMPTY, { 0,0 }, { 0,0 }, uiSystem::body, {}, {}, true, anchorNONE);
-        UI::addElement(buffcontainer, ui_EMPTY, { 0,0 }, { 0,0 }, uiSystem::body, {}, {}, true, anchorNONE);
-        UI::addElement(realtimeUI, ui_EMPTY, { 0,0 }, { 0,0 }, uiSystem::body, {}, {}, true, anchorNONE);
-        UI::addElement(pickuptextcontainer, ui_EMPTY, { 0,0 }, { 0,0 }, uiSystem::body, {}, {}, true, anchorNONE);
-        UI::addElement(settingsUI, ui_EMPTY, { 0,0 }, { 0,0 }, uiSystem::body, {}, {}, true, anchorNONE);
-        UI::addElement(equipmentC, ui_EMPTY, { 0,0 }, { 0,0 }, uiSystem::body, {}, {}, true, anchorNONE);
+       
+        hpbarC = UI::Elements::empty(uiSystem::body);
+        realtimeUI = UI::Elements::empty(uiSystem::body);
+        settingsUI = UI::Elements::empty(uiSystem::body);
+        equipmentC = UI::Elements::empty(uiSystem::body);
+        buffcontainer = UI::Elements::empty(uiSystem::body);
+        pickuptextcontainer = UI::Elements::empty(uiSystem::body);
+        toasttextcontainer = UI::Elements::empty(uiSystem::body);
 
         tooltip = ECS::newEntity();
         uiStat textSize; textSize.floatVal = globals::fontSize;
         uiStat padding; padding.floatVal = 0.3;
         UI::addElement(tooltip, ui_TOOLTIP, { 0,0 }, { 0,0 }, uiSystem::body, { {"textSize", textSize}, {"padding", padding} }, { {"item", "empty"} }, false, anchorNONE);
 
-        cursoritem = ECS::newEntity();
-        uiStat tmpstat;
-        tmpstat.itemp = &UI::cursorItem;
-        UI::addElement(cursoritem, ui_CURSORITEM, { 0, 0 }, { 2, 2 }, uiSystem::body, { {"item", tmpstat}, {"parent", {.intVal = globals::uiLayer}} }, { {"text", ""} }, false, anchorNONE);
-
         zoomedcursoritem = ECS::newEntity();
-        UI::addElement(zoomedcursoritem, ui_CURSORITEM, { 0, 0 }, { 2, 2 }, uiSystem::body, { {"item", {.itemp = nullptr}}, {"parent", {.intVal = globals::topparticleLayer}} }, { {"text", ""} }, false, anchorNONE);
+        UI::addElement(zoomedcursoritem, ui_CURSORITEM, { 0, 0 }, { 2, 2 }, uiSystem::body, { {"parent", {.intVal = globals::topparticleLayer}} }, { {"text", ""} }, false, anchorNONE);
 
-        inventoryC = ECS::newEntity();
-        UI::addElement(inventoryC, ui_EMPTY, { 0, 0 }, { 0 , 0 }, realtimeUI);
-        chestInvC = ECS::newEntity();
-        UI::addElement(chestInvC, ui_EMPTY, { 0, 0 }, { 0 , 0 }, realtimeUI);
+        inventoryC = UI::Elements::empty(realtimeUI);
+        chestInvC = UI::Elements::empty(realtimeUI);
+        npcInvC = UI::Elements::empty(realtimeUI);
 
         guideslot = ECS::newEntity();
         UI::addElement(guideslot, ui_ITEMSLOT, { 225, -125 }, { 100,100 }, inventoryC, { {"item", {.itemp = &UI::guideItem}}, {"guideslot", {.boolVal = true}}, {"limitFamily", {.intVal = (int)if_MATERIAL}} }, {}, true, anchorLEFT);
 
-        deathtextC = ECS::newEntity();
-        UI::addElement(deathtextC, ui_EMPTY, { 0, 0 }, { 0,0 }, uiSystem::body, { }, {  }, false, anchorMID);
-        UI::addElement(ECS::newEntity(), ui_TEXT, { 0, 0 }, { 0,0 }, deathtextC, { {"opacity", {.floatVal = 0.85}}, {"textSize", {.floatVal = globals::fontSize * 3}}, {"centered", {.boolVal = true} } }, { {"text", "\\c255100100You died!? Ugh ._."} }, false, anchorMID);
-        droppedCoinsText = ECS::newEntity();
-        UI::addElement(droppedCoinsText, ui_TEXT, { 0, -150 }, { 0,0 }, deathtextC, { {"opacity", {.floatVal = 0.85}}, {"textSize", {.floatVal = globals::fontSize * 1.2f}}, {"centered", {.boolVal = true}} }, { {"text", ""} }, false, anchorMID);
-        UI::addElement(ECS::newEntity(), ui_TEXT, { 0, -250 }, { 0,0 }, deathtextC, { {"opacity", {.floatVal = 0.85}}, {"textSize", {.floatVal = globals::fontSize * 1.2f}}, {"centered", {.boolVal = true}}, {"textp", {.stringp = &Player::timeToRespawn}} }, { {"text", ""} }, false, anchorMID);
+        deathtextC = UI::Elements::empty(uiSystem::body);
+        UI::Elements::text(deathtextC, { 0, 0 }, false, anchorMID, "\\c255100100You died!? Ugh ._.", globals::fontSize * 3, true, false, 1, 0.85);
+        droppedCoinsText = UI::Elements::text(deathtextC, { 0, -150 }, false, anchorMID, "", globals::fontSize * 3, true, false, 1, 0.85);
+        UI::Elements::text(deathtextC, { 0, -250 }, false, anchorMID, &Player::timeToRespawn, globals::fontSize * 3, true, false, 1, 0.85);
 
         UI::create();
 
@@ -572,21 +547,25 @@ namespace gameLoop {
 
         UI::addElement(ECS::newEntity(), ui_DISPLAY, { -215, -475 }, { 70,70 }, equipmentC, {}, { {"tex", "defense"} }, true, anchorRIGHT);
         uiStat centered; centered.boolVal = true;
-        defensetext = ECS::newEntity();
-        UI::addElement(defensetext, ui_TEXT, { -215, -475 }, { 1.3,1 }, equipmentC, { {"centered", centered } }, { {"text", ""} }, true, anchorRIGHT);
+        defensetext = UI::Elements::text(equipmentC, { -215, -475 }, true, anchorRIGHT, "", globals::fontSize, true);
 
         UI::addElement(ECS::newEntity(), ui_RADIAL, { 0,0 }, { 1,1 }, uiSystem::body, {}, {}, false, anchorNONE);
 
         cursor = ECS::newEntity();
         UI::addElement(cursor, ui_CURSOR, { 0,0 }, { 1,1 }, uiSystem::body, {}, {}, false, anchorNONE);
+
+        
     }
     void openDialogue(std::string npcname)
     {
         auto textboxp = ECS::getComponent<uiC>(NPCDialogue);
+        if (textboxp->hidden == false) return;
         auto npc = &enemies::npcs[npcname];
-        UI::setTStat(textboxp, "text", npc->dialogueOptions[rand() % npc->dialogueOptions.size()]);
-        for (int i = 2; i < textboxp->children.size(); i++) {
-            UI::deleteElement(textboxp->children[i]);
+        std::string text = npc->dialogueOptions[rand() % npc->dialogueOptions.size()];
+        text = std::regex_replace(text, std::regex("[$][N][A][M][E][$]"), Player::name);
+        UI::setTStat(textboxp, "text", text);
+        while (textboxp->children.size() > 2) {
+            UI::deleteElement(textboxp->children[textboxp->children.size()-1]);
         }
         for (auto& i : npc->buttons) {
             UI::addElement(ECS::newEntity(), ui_BUTTON, { 1232131,123132131 }, { 200, 200 }, NPCDialogue, { {"func", {.funcp = i.second}}, {"textSize", {.floatVal = globals::fontSize}} }, { {"tex", "empty"}, {"text", i.first} }, true, anchorTOP);
@@ -597,13 +576,11 @@ namespace gameLoop {
     void createSettingsMenu()
     {
         settingsMainContainer = ECS::newEntity();
-        right = ECS::newEntity();
         cheatsContainer = ECS::newEntity();
         generalContainer = ECS::newEntity();
         interfaceContainer = ECS::newEntity();
         videoContainer = ECS::newEntity();
         cursorContainer = ECS::newEntity();
-        controlsContainer = ECS::newEntity();
         
         uiStat textSize; textSize.floatVal = globals::fontSize * 1.2;
         UI::addElement(settingsMainContainer, ui_CONTAINER, { 0,0 }, { 0,0 }, settingsUI, { {"padding", {.floatVal = 1.5}}, {"opacity", {.floatVal = 0.87}} }, {}, !settingsOpen, anchorNONE);
@@ -616,7 +593,7 @@ namespace gameLoop {
         float sliderpos = pos + width / 5;
         float sliderTextSize = globals::fontSize * 0.95;
 
-        UI::addElement(ECS::newEntity(), ui_TEXT, { 0, height/2 + 100 }, { 0,0 }, settingsMainContainer, { {"centered", {.boolVal = true}}, {"textSize", {.floatVal = globals::fontSize} } }, { {"text", "Settings Menu"} }, !settingsOpen, anchorMID);
+        UI::Elements::text(settingsMainContainer, { 0, height/2 + 100}, !settingsOpen, anchorMID, "Settings Menu", globals::fontSize, true);
 
         //------------------------------------------left-----------------------------------------------
 
@@ -649,13 +626,13 @@ namespace gameLoop {
 
         //------------------------------------------left-----------------------------------------------
 
-        UI::addElement(right, ui_EMPTY, { 0,0 }, { 0,0 }, settingsMainContainer, {}, {}, !settingsOpen, anchorNONE);
+        right = UI::Elements::empty(settingsMainContainer);
         UI::addElement(cheatsContainer, ui_BACK, { pos,0 }, { width,height }, right, { {"opacity", {.floatVal = 0.97}} }, {}, !settingsOpen, anchorMID);
         UI::addElement(generalContainer, ui_BACK, { pos,0 }, { width,height }, right, { {"opacity", {.floatVal = 0.97}} }, {}, !settingsOpen, anchorMID);
         UI::addElement(interfaceContainer, ui_BACK, { pos,0 }, { width,height }, right, { {"opacity", {.floatVal = 0.97}} }, {}, !settingsOpen, anchorMID);
         UI::addElement(videoContainer, ui_BACK, { pos,0 }, { width,height }, right, { {"opacity", {.floatVal = 0.97}} }, {}, !settingsOpen, anchorMID);
         UI::addElement(cursorContainer, ui_BACK, { pos,0 }, { width,height }, right, { {"opacity", {.floatVal = 0.97}} }, {}, !settingsOpen, anchorMID);
-        UI::addElement(controlsContainer, ui_EMPTY, { 0,0 }, { 0,0 }, right, {  }, {}, !settingsOpen, anchorMID);
+        controlsContainer = UI::Elements::empty(right);
 
 
         //------------------------------------------cheats-----------------------------------------------
@@ -679,15 +656,9 @@ namespace gameLoop {
         UI::addElement(playerrange, ui_DRAGFLOAT, { sliderpos, -20 }, { 333,333 / 11 }, cheatsContainer, { {"textSize", textSize}, {"ref", ref}, {"max", max}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", "ranger"} }, !settingsOpen);
 
         roundAt.floatVal = 0.04f;
-        ref.floatValp = &globals::volume;
-        max.floatVal = 1.0f;
-        playerrange = ECS::newEntity();
-        UI::addElement(playerrange, ui_DRAGFLOAT, { sliderpos, -70 }, { 333,333 / 11 }, cheatsContainer, { {"textSize", textSize}, {"ref", ref}, {"max", max}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", "veolumes"} }, !settingsOpen);
-
-        roundAt.floatVal = 0.04f;
         ref.floatValp = &globals::cdayTime;
         max.floatVal = 3600.0f;
-        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { sliderpos, -120 }, { 333,333 / 11 }, cheatsContainer, { {"textSize", textSize}, {"ref", ref}, {"max", max}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", "dazs"} }, !settingsOpen);
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { sliderpos, -70 }, { 333,333 / 11 }, cheatsContainer, { {"textSize", textSize}, {"ref", ref}, {"max", max}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", "dazs"} }, !settingsOpen);
 
 
         //------------------------------------------cheats-----------------------------------------------
@@ -696,15 +667,25 @@ namespace gameLoop {
 
         //------------------------------------------general-----------------------------------------------
 
-        UI::addElement(ECS::newEntity(), ui_TEXT, { pos, halfheight - 100 }, { 0,0 }, generalContainer, { {"centered", {.boolVal = true}}, {"textSize", {.floatVal = globals::fontSize} } }, { {"text", "Volume"} }, !settingsOpen, anchorMID);
-        
-        ref.floatValp = &globals::volume;
+        UI::Elements::text(generalContainer, { pos, halfheight - 100 }, !settingsOpen, anchorMID, "Volume", globals::fontSize, true);
+        ref.floatValp = &sounds::mastervolume;
         max.floatVal = 1.0f;
         roundAt.floatVal = 0.04f;
         UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { sliderpos, halfheight - 175 }, { 333,333 / 11 }, generalContainer, { {"textSize", {.floatVal = sliderTextSize}}, {"ref", ref}, {"max", max}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", "Master: "} }, true);
 
-        UI::addElement(ECS::newEntity(), ui_TEXT, { pos, halfheight - 375 }, { 0,0 }, generalContainer, { {"centered", {.boolVal = true}}, {"textSize", {.floatVal = globals::fontSize} } }, { {"text", "Zoom"} }, !settingsOpen, anchorMID);
-        
+        ref.floatValp = &sounds::musicvolume;
+        max.floatVal = 1.0f;
+        roundAt.floatVal = 0.04f;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { sliderpos, halfheight - 225 }, { 333,333 / 11 }, generalContainer, { {"textSize", {.floatVal = sliderTextSize}}, {"ref", ref}, {"max", max}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", "Music: "} }, true);
+
+        ref.floatValp = &sounds::soundsvolume;
+        max.floatVal = 1.0f;
+        roundAt.floatVal = 0.04f;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { sliderpos, halfheight - 275 }, { 333,333 / 11 }, generalContainer, { {"textSize", {.floatVal = sliderTextSize}}, {"ref", ref}, {"max", max}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", "Sounds: "} }, true);
+
+
+        UI::Elements::text(generalContainer, { pos, halfheight - 375 }, !settingsOpen, anchorMID, "Zoom", globals::fontSize, true);
+
         max.floatVal = 5.0f;
         roundAt.floatVal = .09f;
         ref.floatValp = &globals::zoom;
@@ -734,7 +715,7 @@ namespace gameLoop {
 
         //------------------------------------------cursor-----------------------------------------------
         
-        UI::addElement(ECS::newEntity(), ui_TEXT, { sliderpos, halfheight - 75 }, { 333,333 / 11 }, cursorContainer, { {"textSize", textSize}, {"centered", {.boolVal = true}} }, { {"text", "Border"} }, true);
+        UI::Elements::text(cursorContainer, { sliderpos, halfheight - 75 }, true, anchorMID, "Border", textSize.floatVal, true);
 
         max.floatVal = 360;
         uiStat min; min.floatVal = 0;
@@ -754,7 +735,7 @@ namespace gameLoop {
         roundAt.intVal = 0.01;
         UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { sliderpos, halfheight - 300 }, { 333,333 / 11 }, cursorContainer, { {"textSize", textSize}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
 
-        UI::addElement(ECS::newEntity(), ui_TEXT, { sliderpos, halfheight - 375 }, { 333,333 / 11 }, cursorContainer, { {"textSize", textSize}, {"centered", {.boolVal = true}} }, { {"text", "Cursor"} }, true);
+        UI::Elements::text(cursorContainer, { sliderpos, halfheight - 375 }, true, anchorMID, "Cursor", textSize.floatVal, true);
 
         max.floatVal = 360;
         min.floatVal = 0;
@@ -846,6 +827,23 @@ namespace gameLoop {
         }
         UI::hideChildren(ECS::getComponent<uiC>(right), true);
         UI::hideChildren(ECS::getComponent<uiC>(menu), false, true);
+    }
+
+    void toast(std::string text)
+    {
+        UI::Elements::toast(toasttextcontainer, glm::vec2(200, 200), false, anchorBOTLEFT, text);
+
+        auto container = ECS::getComponent<uiC>(toasttextcontainer);
+        for (int i = container->children.size()-1; i >= 1; i--) {
+            auto p = ECS::getComponent<uiC>(container->children[i]);
+            auto p2 = ECS::getComponent<uiC>(container->children[i-1]);
+        
+            if (p->stats["wantToBeAt"].floatVal >= p2->pos.y) {
+                p2->stats["wantToBeAt"].floatVal = p2->pos.y + 30;
+                ECS::getComponent<drawC>(container->children[i - 1])->opacity = 1;
+            }
+        }
+
     }
 
 }

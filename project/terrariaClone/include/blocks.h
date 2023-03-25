@@ -19,6 +19,7 @@ namespace blocks {
 	struct Decor {
 		std::string block;
 		float chance;
+		std::string height;
 		std::set<std::string> ontop;
 		std::set<std::string> onright;
 		std::set<std::string> onleft;
@@ -28,6 +29,7 @@ namespace blocks {
 
 	struct BlockInfo {
 		float life;
+		bool collidable;
 		bool collidableTop;
 		bool collidableBot;
 		bool collidableLeft;
@@ -67,6 +69,7 @@ namespace blocks {
 		bool canBreakBelow = true;
 		std::string buff = "nothing";
 		bool canpassliquid = false;
+		int numsprites = 1;
 	};
 
 }
@@ -85,6 +88,7 @@ namespace BFuncs {
 	bool buffBlockOnUpdate(BlockFuncArgs);
 	bool shadoworbOnBreak(BlockFuncArgs);
 	bool hellstoneOnBreak(BlockFuncArgs);
+	bool grasssoundOnBreak(BlockFuncArgs);
 }
 
 namespace BRules {
@@ -109,6 +113,7 @@ namespace BConditions {
 	bool isntempty(BlockConditionArgs);
 	bool issolidbelow(BlockConditionArgs);
 	bool bottle(BlockConditionArgs);
+	bool isempty(BlockConditionArgs);
 }
 
 
@@ -150,6 +155,7 @@ namespace blocks
 	void animate(std::string name, glm::vec4 frameoffset, int rate, int numframes);
 	void clean();
 	int addToBuffer(std::string texture, glm::vec2 size, SpriteType st);
-	void addDecor(std::string block, float chance, std::set<std::string> ontop = {}, std::set<std::string> onbot = {}, std::set<std::string> onleft = {}, std::set<std::string> onright = {});
+	void addDecor(std::string block, float chance, std::string height = "any", std::set<std::string> ontop = {}, std::set<std::string> onbot = {}, std::set<std::string> onleft = {}, std::set<std::string> onright = {});
 	float potCoinMod(glm::vec2);
+	void setNextNumSprites(int n);
 };

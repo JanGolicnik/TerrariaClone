@@ -18,6 +18,7 @@
 #include <player.h>
 #include <buffs.h>
 #include <liquids.h>
+#include <sounds.h>
 
 namespace resources {
     void registerAssets()
@@ -114,9 +115,9 @@ namespace resources {
         blocks::addBlock("borealtrunkbase3", "borealtrunkbase3", false, true, "borealwood", "blocks", false, st_SINGLE, { 1, 1 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, true, false);
         blocks::addBlock("borealleaves", "borealleaves", false, true, "acorn", "blocks", false, st_SINGLE, glm::vec2(1), 0, { BConditions::isreplacable }, false, false, false, false);
         blocks::addBlock("borealsapling", "borealsapling", false, true, "acorn", "blocks", false, st_SINGLE, { 1, 2 }, 0, { BConditions::nowall, BConditions::isntreplacablebelow, BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("normalgrassdecor", "normalgrassdecor", false, false, "empty", "blocks", false, st_GRASS, { 1, 2 }, 0, { BConditions::nowall, BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("corruptgrassdecor", "corruptgrassdecor", false, false, "empty", "blocks", false, st_GRASS, { 1, 2 }, 0, { BConditions::nowall, BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("junglegrassdecor", "junglegrassdecor", false, false, "empty", "blocks", false, st_GRASS, { 1, 2 }, 0, { BConditions::nowall, BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("normalgrassdecor", "normalgrassdecor", false, false, "empty", "blocks", false, st_GRASS, { 1, 2 }, 0, { BConditions::isempty, BConditions::nowall, BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("corruptgrassdecor", "corruptgrassdecor", false, false, "empty", "blocks", false, st_GRASS, { 1, 2 }, 0, {BConditions::isempty, BConditions::nowall, BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("junglegrassdecor", "junglegrassdecor", false, false, "empty", "blocks", false, st_GRASS, { 1, 2 }, 0, { BConditions::isempty, BConditions::nowall, BConditions::isreplacable }, false, false, false, false);
         blocks::addBlock("normalbranchr", "normalbranchr", false, false, "wood", "blocks", false, st_SINGLE, { 2, 2 }, 0, {  }, false, false, false, false);
         blocks::addBlock("normalbranchl", "normalbranchl", false, false, "wood", "blocks", false, st_SINGLE, { 2, 2 }, 0, {  }, false, false, false, false);
         blocks::addBlock("corruptbranchr", "corruptbranchr", false, false, "ebonwood", "blocks", false, st_SINGLE, { 2, 2 }, 0, {  }, false, false, false, false);
@@ -132,8 +133,10 @@ namespace resources {
         blocks::addBlock("stalagmit", "stalagmit", false, false, "empty", "blocks", false, st_STALAGMIT, { 1, 2 }, 0, { BConditions::haswall, BConditions::isreplacable }, false, false, false, false);
         blocks::addBlock("sandstalagmit", "sandstalagmit", false, false, "empty", "blocks", false, st_STALAGMIT, { 1, 2 }, 0, { BConditions::haswall, BConditions::isreplacable }, false, false, false, false);
         blocks::addBlock("corruptstalagmit", "corruptstalagmit", false, false, "empty", "blocks", false, st_STALAGMIT, { 1, 2 }, 0, { BConditions::haswall, BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("smallrock", "smallrock", false, false, "empty", "blocks", false, st_SMALLROCK, { 1, 1 }, 0, { BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("mediumrock", "mediumrock", false, false, "empty", "blocks", false, st_MEDIUMROCK, { 2, 1 }, 0, { BConditions::isreplacable }, false, false, false, false);
+        blocks::setNextNumSprites(6);
+        blocks::addBlock("smallrock", "smallrock", false, false, "empty", "blocks", false, st_MULTISPRITE, { 1, 1 }, 0, { BConditions::isempty,BConditions::isreplacable }, false, false, false, false);
+        blocks::setNextNumSprites(3);
+        blocks::addBlock("mediumrock", "mediumrock", false, false, "empty", "blocks", false, st_MULTISPRITE, { 2, 1 }, 0, { BConditions::isempty, BConditions::isreplacable }, false, false, false, false);
         blocks::addBlock("woodenplatform", "woodenplatform", false, false, "woodenplatform", "blocks", false, st_PLATFORM, { 1 ,1 }, 1, { BConditions::isreplacable }, false, false, false, false);
         blocks::addBlock("campfire", "campfire", false, true, "campfire", "blocks", false, st_SINGLE, { 3,2 }, 1, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
         blocks::addBlock("goldore", "goldore", true, true, "goldore", "blocks", true, st_BLOCK);
@@ -174,6 +177,34 @@ namespace resources {
         blocks::addBlock("goldchest", "goldchest", false, true, "goldchest", "blocks", false, st_SINGLE, glm::vec2(2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
         blocks::addBlock("shadowchest", "shadowchest", false, true, "shadowchest", "blocks", false, st_SINGLE, glm::vec2(2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
         blocks::addBlock("waterchest", "waterchest", false, true, "waterchest", "blocks", false, st_SINGLE, glm::vec2(2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::setNextNumSprites(3);
+        blocks::addBlock("bigrock", "bigrock", false, false, "empty", "blocks", false, st_MULTISPRITE, { 3, 2 }, 0, { BConditions::isempty,BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::setNextNumSprites(18);
+        blocks::addBlock("normalflowers", "normalflowers", false, false, "empty", "blocks", false, st_MULTISPRITE, { 1, 2 }, 0, { BConditions::isempty,BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::setNextNumSprites(19);
+        blocks::addBlock("jungleflowers", "jungleflowers", false, false, "empty", "blocks", false, st_MULTISPRITE, { 1, 2 }, 0, { BConditions::isempty,BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::setNextNumSprites(13);
+        blocks::addBlock("corruptflowers", "corruptflowers", false, false, "empty", "blocks", false, st_MULTISPRITE, { 1, 2 }, 0, { BConditions::isempty, BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::setNextNumSprites(9);
+        blocks::addBlock("undergroundskeletondecor", "undergroundskeletondecor", false, false, "empty", "blocks", false, st_MULTISPRITE, { 1, 1 }, 0, { BConditions::isempty, BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::setNextNumSprites(8);
+        blocks::addBlock("undergroundtooldecor", "undergroundtooldecor", false, false, "empty", "blocks", false, st_MULTISPRITE, { 1, 1 }, 0, { BConditions::isempty,BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::setNextNumSprites(6);
+        blocks::addBlock("smallice", "smallice", false, false, "empty", "blocks", false, st_MULTISPRITE, { 1, 1 }, 0, { BConditions::isempty, BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::setNextNumSprites(3);
+        blocks::addBlock("mediumice", "mediumice", false, false, "empty", "blocks", false, st_MULTISPRITE, { 2, 1 }, 0, { BConditions::isempty, BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::setNextNumSprites(3);
+        blocks::addBlock("bigice", "bigice", false, false, "empty", "blocks", false, st_MULTISPRITE, { 3, 2 }, 0, { BConditions::isempty, BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::setNextNumSprites(6);
+        blocks::addBlock("smalldesert", "smalldesert", false, false, "empty", "blocks", false, st_MULTISPRITE, { 1, 1 }, 0, { BConditions::isempty,BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::setNextNumSprites(3);
+        blocks::addBlock("mediumdesert", "mediumdesert", false, false, "empty", "blocks", false, st_MULTISPRITE, { 2, 1 }, 0, { BConditions::isempty,BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::setNextNumSprites(3);
+        blocks::addBlock("bigdesert", "bigdesert", false, false, "empty", "blocks", false, st_MULTISPRITE, { 3, 2 }, 0, { BConditions::isempty, BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::setNextNumSprites(2);
+        blocks::addBlock("bigjungle", "bigjungle", false, false, "empty", "blocks", false, st_MULTISPRITE, { 3, 2 }, 0, { BConditions::isempty,BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::setNextNumSprites(5);
+        blocks::addBlock("mediumjungle", "mediumjungle", false, false, "empty", "blocks", false, st_MULTISPRITE, { 2, 2 }, 0, {BConditions::isempty, BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
 
         globals::waterid = blocks::nameToID["water"];
 
@@ -186,21 +217,6 @@ namespace resources {
         blocks::addFunction("goldchest", BFuncs::chestFunction);
         blocks::addFunction("mahoganychest", BFuncs::chestFunction);
         blocks::addFunction("waterchest", BFuncs::chestFunction);
-        blocks::addOnPlace("chest", BFuncs::chestOnPlace);
-        blocks::addOnPlace("frozenchest", BFuncs::chestOnPlace);
-        blocks::addOnPlace("shadowchest", BFuncs::chestOnPlace);
-        blocks::addOnPlace("goldchest", BFuncs::chestOnPlace);
-        blocks::addOnPlace("mahoganychest", BFuncs::chestOnPlace);
-        blocks::addOnPlace("waterchest", BFuncs::chestOnPlace);
-        blocks::addOnBreak("chest", BFuncs::chestOnBreak);
-        blocks::addOnBreak("frozenchest", BFuncs::chestOnBreak);
-        blocks::addOnBreak("shadowchest", BFuncs::chestOnBreak);
-        blocks::addOnBreak("goldchest", BFuncs::chestOnBreak);
-        blocks::addOnBreak("mahoganychest", BFuncs::chestOnBreak);
-        blocks::addOnBreak("waterchest", BFuncs::chestOnBreak);
-        blocks::addOnBreak("pot", BFuncs::potOnBreak);
-        blocks::addOnBreak("hellstone", BFuncs::hellstoneOnBreak);
-        blocks::addOnBreak("shadoworb", BFuncs::shadoworbOnBreak);
         blocks::addFunction("borealdoor", BFuncs::toggleDoor);
         blocks::addFunction("borealdoorright", BFuncs::toggleDoor);
         blocks::addFunction("borealdoorleft", BFuncs::toggleDoor);
@@ -210,11 +226,27 @@ namespace resources {
         blocks::addFunction("ebonwooddoor", BFuncs::toggleDoor);
         blocks::addFunction("ebonwooddoorright", BFuncs::toggleDoor);
         blocks::addFunction("ebonwooddoorleft", BFuncs::toggleDoor);
-        
-        blocks::animate("campfire", { 0, -17, 0, -17 }, 1, 8);
-        blocks::animate("heartcrystal", { 0, -16, 0, -16 }, 1, 10);
-        blocks::animate("water", { 0, -24, 0, -24 }, 1, 4);
-        blocks::animate("lava", { 0, -24, 0, -24 }, 1, 4);
+
+        blocks::addOnPlace("chest", BFuncs::chestOnPlace);
+        blocks::addOnPlace("frozenchest", BFuncs::chestOnPlace);
+        blocks::addOnPlace("shadowchest", BFuncs::chestOnPlace);
+        blocks::addOnPlace("goldchest", BFuncs::chestOnPlace);
+        blocks::addOnPlace("mahoganychest", BFuncs::chestOnPlace);
+        blocks::addOnPlace("waterchest", BFuncs::chestOnPlace);
+
+        blocks::addOnBreak("chest", BFuncs::chestOnBreak);
+        blocks::addOnBreak("frozenchest", BFuncs::chestOnBreak);
+        blocks::addOnBreak("shadowchest", BFuncs::chestOnBreak);
+        blocks::addOnBreak("goldchest", BFuncs::chestOnBreak);
+        blocks::addOnBreak("mahoganychest", BFuncs::chestOnBreak);
+        blocks::addOnBreak("waterchest", BFuncs::chestOnBreak);
+        blocks::addOnBreak("pot", BFuncs::potOnBreak);
+        blocks::addOnBreak("hellstone", BFuncs::hellstoneOnBreak);
+        blocks::addOnBreak("shadoworb", BFuncs::shadoworbOnBreak);
+        blocks::addOnBreak("grass", BFuncs::grasssoundOnBreak);
+        blocks::addOnBreak("junglegrass", BFuncs::grasssoundOnBreak);
+        blocks::addOnBreak("corruptgrass", BFuncs::grasssoundOnBreak);
+        blocks::addOnBreak("vines", BFuncs::grasssoundOnBreak);
 
         blocks::addOnUpdate("craftingbench", BFuncs::craftingStationOnUpdate);
         blocks::addOnUpdate("borealworkbench", BFuncs::craftingStationOnUpdate);
@@ -233,6 +265,11 @@ namespace resources {
         blocks::addOnPlace("ebonwoodchairright", BFuncs::chairOnPlace);
         blocks::addOnPlace("mahoganychairright", BFuncs::chairOnPlace);
 
+        blocks::animate("campfire", { 0, -17, 0, -17 }, 1, 8);
+        blocks::animate("heartcrystal", { 0, -16, 0, -16 }, 1, 10);
+        blocks::animate("water", { 0, -24, 0, -24 }, 1, 4);
+        blocks::animate("lava", { 0, -24, 0, -24 }, 1, 4);
+
         blocks::addCraftingStation("craftingbench", "craftingbench");
         blocks::addCraftingStation("borealworkbench", "craftingbench");
         blocks::addCraftingStation("mahoganyworkbench", "craftingbench");
@@ -244,15 +281,11 @@ namespace resources {
         blocks::addCraftingStation("bottle", "bottle");
         blocks::addCraftingStation("demonaltar", "demonaltar");
 
-        Layers::biomes.insert(std::make_pair<std::string, Biome>("forest", { 100, "forest" }));
-        Layers::biomes.insert(std::make_pair<std::string, Biome>("none", { 0, "forest" }));
-        Layers::biomes.insert(std::make_pair<std::string, Biome>("snow", { 100, "forest" }));
-        Layers::biomes.insert(std::make_pair<std::string, Biome>("desert", { 100, "desert" }));
-        Layers::biomes.insert(std::make_pair<std::string, Biome>("corruption", { 100, "corruption" }));
-        Layers::biomes.insert(std::make_pair<std::string, Biome>("jungle", { 100, "forest" }));
-        Layers::biomes.insert(std::make_pair<std::string, Biome>("underworld", { 100, "underworld" }));
-        Layers::biomes.insert(std::make_pair<std::string, Biome>("underground", { 100, "underground" }));
-        Layers::biomes.insert(std::make_pair<std::string, Biome>("space", { 100, "space" }));
+        Layers::biomes.insert(std::make_pair<std::string, Biome>("forest", { 100, "forest", {600, 5}, {600, 5}, {600, 5}, {600, 5}, {600, 5} }));
+        Layers::biomes.insert(std::make_pair<std::string, Biome>("snow", { 100, "snow", {600, 5}, {600, 5}, {600, 5}, {600, 5}, {600, 5} }));
+        Layers::biomes.insert(std::make_pair<std::string, Biome>("desert", { 100, "desert", {600, 5}, {600, 5}, {600, 5}, {600, 5}, {600, 5} }));
+        Layers::biomes.insert(std::make_pair<std::string, Biome>("corruption", { 100, "corruption", {390, 6}, {234, 9}, {195, 10}, {156, 11}, {0, 0} }));
+        Layers::biomes.insert(std::make_pair<std::string, Biome>("jungle", { 100, "jungle", {240, 7}, {144, 9}, {120, 12}, {96, 13}, {0, 0} }));
 
         //campfire particles
         {
@@ -340,26 +373,39 @@ namespace resources {
         blocks::addBiome("junglegrass", "jungle");
         blocks::addBiome("ash", "underworld");
 
-        blocks::addDecor("normalgrassdecor", 0.5, {}, { "grass" });
-        blocks::addDecor("corruptgrassdecor", 0.5, {}, { "corruptgrass" });
-        blocks::addDecor("junglegrassdecor", 0.5, {}, { "junglegrass" });
-        blocks::addDecor("icicle", 0.3, { "snow" });
-        blocks::addDecor("stalaktit", 0.2, { "stone" });
-        blocks::addDecor("corruptstalaktit", 0.25, { "ebonstone" });
-        blocks::addDecor("sandstalaktit", 0.25, { "sandstone" });
-        blocks::addDecor("stalagmit", 0.2, {}, { "stone" });
-        blocks::addDecor("corruptstalagmit", 0.2, {}, { "ebonstone" });
-        blocks::addDecor("sandstalagmit", 0.2, {}, { "sandstone" });
-        blocks::addDecor("smallrock", 0.2, {}, { "grass", "stone" });
-        blocks::addDecor("mushroom", 0.05, {}, { "grass" });
-        blocks::addDecor("daybloom", 0.05, {}, { "grass" });
-        blocks::addDecor("junglespores", 0.007, {}, { "junglegrass" });
-        blocks::addDecor("heartcrystal", 0.001, {}, { "stone" });
-        blocks::addDecor("demonaltar", 0.5, {}, { "ebonstone" });
-        blocks::addDecor("pot", 0.02, {}, { "grass", "stone", "dirt"});
-        blocks::addDecor("icepot", 0.02, {}, { "snow" });
-        blocks::addDecor("junglepot", 0.01, {}, { "junglegrass" });
-        blocks::addDecor("hellpot", 0.05, {}, { "ash", "hellstone"});
+        blocks::addDecor("normalgrassdecor", 0.5, "surface", {}, {"grass"});
+        blocks::addDecor("corruptgrassdecor", 0.5, "surface", {}, { "corruptgrass" });
+        blocks::addDecor("junglegrassdecor", 0.5, "surface", {}, { "junglegrass" });
+        blocks::addDecor("icicle", 0.3, "any", { "snow" });
+        blocks::addDecor("stalaktit", 0.2, "underground", { "stone" });
+        blocks::addDecor("corruptstalaktit", 0.25, "underground", { "ebonstone" });
+        blocks::addDecor("sandstalaktit", 0.25, "underground", { "sandstone" });
+        blocks::addDecor("stalagmit", 0.2, "underground", {}, { "stone" });
+        blocks::addDecor("corruptstalagmit", 0.2, "underground", {}, { "ebonstone" });
+        blocks::addDecor("sandstalagmit", 0.2, "underground", {}, { "sandstone" });
+        blocks::addDecor("smallrock", 0.2, "any", {}, { "grass", "stone" });
+        blocks::addDecor("mushroom", 0.05, "surface", {}, { "grass" });
+        blocks::addDecor("daybloom", 0.05, "surface", {}, { "grass" });
+        blocks::addDecor("junglespores", 0.007, "any", {}, { "junglegrass" });
+        blocks::addDecor("heartcrystal", 0.001, "underground", {}, { "stone" });
+        blocks::addDecor("demonaltar", 0.5, "underground", {}, { "ebonstone" });
+        blocks::addDecor("pot", 0.02, "any", {}, { "grass", "stone", "dirt"});
+        blocks::addDecor("icepot", 0.02, "any", {}, { "snow" });
+        blocks::addDecor("junglepot", 0.01, "any", {}, { "junglegrass" });
+        blocks::addDecor("hellpot", 0.05, "any", {}, { "ash", "hellstone"});
+        blocks::addDecor("normalflowers", 0.1, "surface", {}, { "grass" });
+        blocks::addDecor("jungleflowers", 0.2, "surface", {}, { "junglegrass" });
+        blocks::addDecor("corruptflowers", 0.04, "surface", {}, { "corruptgrass" });
+        blocks::addDecor("undergroundskeletondecor", 0.04, "underground", {}, { "stone" });
+        blocks::addDecor("undergroundtooldecor", 0.04, "underground", {}, { "stone" });
+        blocks::addDecor("smallice", 0.15, "any", {}, { "snow" });
+        blocks::addDecor("mediumice", 0.1, "any", {}, { "snow" });
+        blocks::addDecor("bigice", 0.06, "any", {}, { "snow" });
+        blocks::addDecor("smalldesert", 0.15, "underground", {}, { "hardenedsand", "sandstone" });
+        blocks::addDecor("mediumdesert", 0.1, "underground", {}, { "hardenedsand", "sandstone" });
+        blocks::addDecor("bigdesert", 0.07, "underground", {}, { "hardenedsand", "sandstone" });
+        blocks::addDecor("mediumjungle", 0.2, "any", {}, { "junglegrass" });
+        blocks::addDecor("bigjungle", 0.1, "any", {}, { "junglegrass"});
 
         blocks::addDamageParticle("dirt", "particle:dirtpart");
         blocks::addDamageParticle("pot", "particle:dirtpart");
@@ -428,10 +474,28 @@ namespace resources {
         blocks::addMinPickaxe("normalvines", 0);
         blocks::addMinPickaxe("junglevines", 0);
         blocks::addMinPickaxe("pot", 0);
+        blocks::addMinPickaxe("hellstone", 65);
 
         blocks::modifyCollidable("woodenplatform", true, false, false, false);
+        blocks::modifyCollidable("craftingbench", true, false, false, false);
+        blocks::modifyCollidable("table", true, false, false, false);
+        blocks::modifyCollidable("mahoganytable", true, false, false, false);
+        blocks::modifyCollidable("mahoganyworkbench", true, false, false, false);
+        blocks::modifyCollidable("borealworkbench", true, false, false, false);
+        blocks::modifyCollidable("borealtable", true, false, false, false);
+        blocks::modifyCollidable("ebonwoodworkbench", true, false, false, false);
+        blocks::modifyCollidable("ebonwoodtable", true, false, false, false);
 
+        blocks::addSkippable("empty");
         blocks::addSkippable("woodenplatform");
+        blocks::addSkippable("craftingbench");
+        blocks::addSkippable("table");
+        blocks::addSkippable("mahoganytable");
+        blocks::addSkippable("mahoganyworkbench");
+        blocks::addSkippable("borealworkbench");
+        blocks::addSkippable("borealtable");
+        blocks::addSkippable("ebonwoodworkbench");
+        blocks::addSkippable("ebonwoodtable");
 
         blocks::addDamagableWith("trunk", if_AXE);
         blocks::addDamagableWith("trunkbase1", if_AXE);
@@ -675,6 +739,7 @@ namespace resources {
         items::addItem("shadowchest", "Shadow Chest", "shadowchestitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
         items::addItem("mahoganychest", "Mahogany Chest", "mahoganychestitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
         items::addItem("waterchest", "Water Chest", "waterchestitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("manacrystal", "Mana Crystal", "manacrystal", { itemFuncs::removeAmmo, itemFuncs::manaCrystal}, globals::blockPlaceSpeed, {if_BLOCK}, {}, {itemConditions::manaCrystal});
 
         items::addSet("none", itemFuncs::nonearmorbonus, "");
         items::addSet("ironarmor", itemFuncs::ironarmorbonus, "Set bonus: 2 defense");
@@ -909,6 +974,23 @@ namespace resources {
         items::disableAutouse("goldsword");
         items::disableAutouse("platinumsword");
 
+        items::addSound("minishark", &sounds::gun);
+        items::addSound("aquastaff", &sounds::aquastaff);
+        items::addSound("woodenbow", &sounds::bow);
+        items::addSound("ironbow", &sounds::bow);
+        items::addSound("goldbow", &sounds::bow);
+        items::addSound("copperbow", &sounds::bow);
+        items::addSound("silverbow", &sounds::bow);
+        items::addSound("demonbow", &sounds::bow);
+        items::addSound("moltenfury", &sounds::bow);
+        items::addSound("mushroom", &sounds::eat);
+        items::addSound("healthpotion", &sounds::drink);
+        items::addSound("magicmirror", &sounds::magicmirror);
+        items::addSound("spacegun", &sounds::spacegun);
+        items::addSound("star", &sounds::star);
+        items::addSound("manastar", &sounds::star);
+        items::addSound("heartcrystal", &sounds::star);
+
         //volcanoeffect
         {
             particleEmmiterC pec;
@@ -941,12 +1023,6 @@ namespace resources {
         items::addOnhit("moltenpickaxe", collisionFs::moltenPickaxeDamage);
         items::addOnhit("moltenhamaxe", collisionFs::moltenHamaxeDamage);
 
-        map::guidenames.push_back("micky");
-        map::guidenames.push_back("jacky");
-        map::guidenames.push_back("guidemaster123");
-        map::guidenames.push_back("MIAIJ JAKISON");
-        map::guidenames.push_back("HE HE");
-
         buffs::addBuff("nothing", "empty", buffs::nothing, true);
         buffs::addBuff("onfire", "onfirebuff", buffs::onfirebuff, false, "Slowly losing life");
         buffs::addBuff("twins", "twinsbuff", buffs::nothing, true, "The twins will fight for you ");
@@ -956,6 +1032,8 @@ namespace resources {
         buffs::addBuff("potionsickness", "potionsicknessbuff", buffs::nothing, false, "Cannot consume anymore healing items");
         buffs::addBuff("poisoned", "poisonedbuff", buffs::poisoned, false, "Slowly losing life");
         buffs::addBuff("chilled", "chilledbuff", buffs::chilled, false, "Your movement speed has been reduced");
+   
+
     }
     void resources::loadAssets(bool shaders, bool textures, bool items)
     {
@@ -989,7 +1067,7 @@ namespace resources {
             utils::createShader("src/shaders/testLighting.frag", "src/shaders/overlayVert.vert", &globals::testLightingShaderID);
             utils::createShader("src/shaders/displayFrag.frag", "src/shaders/overlayVert.vert", &globals::displayShaderID);
             utils::createShader("src/shaders/backgroundFrag.frag", "src/shaders/overlayVert.vert", &globals::backgroundShaderID);
-            utils::createShader("src/shaders/lightFrag.frag", "src/shaders/overlayVert.vert", &globals::lightShaderID);
+            utils::createShader("src/shaders/lightFrag.frag", "src/shaders/blockVert.vert", &globals::lightShaderID);
             utils::createShader("src/shaders/zoomFrag.frag", "src/shaders/overlayVert.vert", &globals::zoomShaderID);
             utils::createShader("src/shaders/bloomFrag.frag", "src/shaders/overlayVert.vert", &globals::bloomShaderID);
             utils::createShader("src/shaders/waterFrag.frag", "src/shaders/waterVert.vert", &globals::waterShaderID);
@@ -1003,6 +1081,7 @@ namespace resources {
             background::load();
 
             textures::spriteSheet = utils::LoadTexture("assets/spritesheet2.png");
+            textures::playerSheet = utils::LoadTexture("assets/playersheet.png");
 
             globals::broken1Tex = utils::LoadTexture("assets/broken1.png");
             globals::broken2Tex = utils::LoadTexture("assets/broken2.png");
@@ -1217,6 +1296,87 @@ namespace resources {
             }
             animations::createAnim("guidewalk", textures::nametocoords["guidewalk"]->coords, { tmpframes }, 3 * 11);
 
+            tmpframes.clear();
+            pixels = 24;
+            for (int i = 0; i < 11; i++) {
+                tmpframes.push_back({ i * 3, {0, -i * pixels, 0, -i * pixels}, ft_OFFSET1 });
+            }
+            animations::createAnim("merchantwalk", textures::nametocoords["merchantwalk"]->coords, { tmpframes }, 3 * 11);
+
+            tmpframes.clear();
+            pixels = 11;
+            for (int i = 0; i < 4; i++) {
+                tmpframes.push_back({ i * 2, {0, -i * pixels, 0, -i * pixels}, ft_OFFSET1 });
+            }
+            animations::createAnim("scorpionwalk", textures::nametocoords["scorpion"]->coords, { tmpframes }, 4 * 2);
+
+            tmpframes.clear();
+            pixels = 9;
+            for (int i = 0; i < 6; i++) {
+                tmpframes.push_back({ i * 8, {0, -i * pixels, 0, -i * pixels}, ft_OFFSET1 });
+            }
+            animations::createAnim("frogidle", textures::nametocoords["frog"]->coords, { tmpframes }, 8 * 6);
+
+            tmpframes.clear();
+            pixels = 9;
+            for (int i = 0; i < 7; i++) {
+                tmpframes.push_back({ i * 4, {0, -45 -i * pixels, 0, -45 -i * pixels}, ft_OFFSET1 });
+            }
+            animations::createAnim("frogwalk", textures::nametocoords["frog"]->coords, { tmpframes }, 7 * 4);
+
+            tmpframes.clear();
+            pixels = 4;
+            for (int i = 0; i < 4; i++) {
+                tmpframes.push_back({ i * 6, {0, - i * pixels, 0, - i * pixels}, ft_OFFSET1 });
+            }
+            animations::createAnim("grubbywalk", textures::nametocoords["grubby"]->coords, { tmpframes }, 6 * 4);
+
+            tmpframes.clear();
+            pixels = 8;
+            for (int i = 0; i < 4; i++) {
+                tmpframes.push_back({ i * 6, {0, -i * pixels, 0, -i * pixels}, ft_OFFSET1 });
+            }
+            animations::createAnim("snailwalk", textures::nametocoords["snail"]->coords, { tmpframes }, 6 * 4);
+
+            animations::createAnim("snailstuck", textures::nametocoords["snail"]->coords, { {0, {0, 0, 0, 0} , ft_OFFSET1 }, {6, {0, -32, 0, -32} , ft_OFFSET1 }, {12, {0, -40, 0, -40} , ft_OFFSET1 } }, 18, true, 1);
+
+            tmpframes.clear();
+            pixels = 8;
+            for (int i = 0; i < 4; i++) {
+                tmpframes.push_back({ i * 6, {0, -i * pixels, 0, -i * pixels}, ft_OFFSET1 });
+            }
+            animations::createAnim("snailwalk", textures::nametocoords["snail"]->coords, { tmpframes }, 6 * 4);
+
+            tmpframes.clear();
+            pixels = 9;
+            for (int i = 0; i < 4; i++) {
+                tmpframes.push_back({ i * 3, {0, -9 -i * pixels, 0, -9 -i * pixels}, ft_OFFSET1 });
+            }
+            animations::createAnim("birdfly", textures::nametocoords["bird"]->coords, { tmpframes }, 3 * 4);
+
+            tmpframes.clear();
+            pixels = 11;
+            for (int i = 0; i < 4; i++) {
+                tmpframes.push_back({ i * 6, {0, - i * pixels, 0, - i * pixels}, ft_OFFSET1 });
+            }
+            animations::createAnim("goldfishswim", textures::nametocoords["goldfish"]->coords, { tmpframes }, 6 * 4);
+
+            animations::createAnim("goldfishonground", textures::nametocoords["goldfish"]->coords, { {0, {0, -45, 0, -48} , ft_OFFSET1 }, {4, {0, -53, 0, -56} , ft_OFFSET1 } }, 8);
+
+            animations::createAnim("jellyfishboost", textures::nametocoords["jellyfish"]->coords, { {0, {0, -0, 0, -0} , ft_OFFSET1 }, {3, {0, -15, 0, -15}, ft_OFFSET1 },
+                                                                                                    {6, {0, -30, 0, -30}, ft_OFFSET1 }, {40, {0, -45, 0, -45}, ft_OFFSET1 } },44, false);
+
+
+            items::addArmorSprites("skin", textures::nametocoords["plrhands"]->coords, glm::vec4(0));
+            items::addArmorSprites("empty", textures::nametocoords["plrclothes"]->coords, textures::nametocoords["plremptylegswalk"]->coords);
+            items::addArmorSprites("gold", textures::nametocoords["plrgoldarmor"]->coords, textures::nametocoords["plrgoldarmorlegswalk"]->coords);
+            items::addArmorSprites("silver", textures::nametocoords["plrsilverarmor"]->coords, textures::nametocoords["plrsilverarmorlegswalk"]->coords);
+            items::addArmorSprites("iron", textures::nametocoords["plrironarmor"]->coords, textures::nametocoords["plrironarmorlegswalk"]->coords);
+            items::addArmorSprites("copper", textures::nametocoords["plrcopperarmor"]->coords, textures::nametocoords["plrcopperarmorlegswalk"]->coords);
+            items::addArmorSprites("cactus", textures::nametocoords["plrcactusarmor"]->coords, textures::nametocoords["plrcactusarmorlegswalk"]->coords);
+            items::addArmorSprites("molten", textures::nametocoords["plrmoltenarmor"]->coords, textures::nametocoords["plrmoltenarmorlegswalk"]->coords);
+            items::addArmorSprites("shoes", textures::nametocoords["plrshoes"]->coords, textures::nametocoords["plrshoeswalk"]->coords);
+
         }
 
         //rules
@@ -1238,8 +1398,6 @@ namespace resources {
         blocks::addRule("leaves", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "trunk", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
         blocks::addRule("normalbranchr", { { br_ISNT, bs_BLOCK, glm::vec2(2, 0), "trunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
         blocks::addRule("normalbranchl", { { br_ISNT, bs_BLOCK, glm::vec2(-1, 0), "trunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-
-
         blocks::addRule("normalgrassdecor",  { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "normalgrassdecor", "blocks"},
                                             {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "grass", "blocks"}
                                         }, BRules::breakSelf, "empty", "blocks", false);
@@ -1249,23 +1407,29 @@ namespace resources {
         blocks::addRule("corruptgrassdecor", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corruptgrassdecor", "blocks"},
                                 {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corruptgrass", "blocks"}
             }, BRules::breakSelf, "empty", "blocks", false);
+        blocks::addRule("normalflowers", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "normalgrassdecor", "blocks"},
+                                            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "grass", "blocks"}
+            }, BRules::breakSelf, "empty", "blocks", false);
+        blocks::addRule("jungleflowers", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "jungleflowers", "blocks"},
+                                    {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "junglegrass", "blocks"}
+            }, BRules::breakSelf, "empty", "blocks", false);
+        blocks::addRule("corruptflowers", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corruptflowers", "blocks"},
+                                    {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corruptgrass", "blocks"}
+            }, BRules::breakSelf, "empty", "blocks", false);
         blocks::addRule("torch", { {br_ISNT, bs_STAT, glm::vec2(1,0), "updates", "blocks"},
                                     {br_ISNT, bs_STAT, glm::vec2(-1,0), "updates", "blocks"},
                                     {br_ISNT, bs_STAT, glm::vec2(0,1), "updates", "blocks"},
                                     {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", "blocks"},
                                     {br_ISNT, bs_STAT, glm::vec2(0,0), "updates", "bg"}
                                     }, BRules::breakSelf, "empty", "blocks", true);
-
         blocks::addRule("purpletorch", { {br_ISNT, bs_STAT, glm::vec2(1,0), "updates", "blocks"},
                                             {br_ISNT, bs_STAT, glm::vec2(-1,0), "updates", "blocks"},
                                             {br_ISNT, bs_STAT, glm::vec2(0,1), "updates", "blocks"},
                                             {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", "blocks"},
                                             {br_ISNT, bs_STAT, glm::vec2(0,0), "updates", "bg"}
                                             }, BRules::breakSelf, "empty", "blocks", true);
-
         blocks::addRule("sand", { {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", "blocks"} }, BRules::breakSelf, "empty", "blocks", false);
         blocks::addRule("sand", { {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", "blocks"} }, BRules::spawnSand);
-
         blocks::addRule("corrupttrunk", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corrupttrunk", "blocks"},
                         {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corrupttrunkbase1", "blocks"},
             }, BRules::breakSelf, "empty", "blocks", true);
@@ -1277,7 +1441,6 @@ namespace resources {
         blocks::addRule("corruptleaves", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corrupttrunk", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
         blocks::addRule("corruptbranchr", { { br_ISNT, bs_BLOCK, glm::vec2(2, 0), "corrupttrunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
         blocks::addRule("corruptbranchl", { { br_ISNT, bs_BLOCK, glm::vec2(-1, 0), "corrupttrunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-
         blocks::addRule("borealtrunk", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "borealtrunk", "blocks"},
             {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "borealtrunkbase1", "blocks"},
             }, BRules::breakSelf, "empty", "blocks", true);
@@ -1289,7 +1452,6 @@ namespace resources {
         blocks::addRule("borealleaves", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "borealtrunk", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
         blocks::addRule("borealbranchr", { { br_ISNT, bs_BLOCK, glm::vec2(3, 0), "borealtrunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
         blocks::addRule("borealbranchl", { { br_ISNT, bs_BLOCK, glm::vec2(-1, 0), "borealtrunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-
         blocks::addRule("mahoganytrunk", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "mahoganytrunk", "blocks"},
             {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "mahoganytrunkbase1", "blocks"},
             }, BRules::breakSelf, "empty", "blocks", true);
@@ -1301,7 +1463,6 @@ namespace resources {
         blocks::addRule("mahoganyleaves", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "mahoganytrunk", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
         blocks::addRule("junglebranchr", { { br_ISNT, bs_BLOCK, glm::vec2(3, 0), "mahoganytrunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
         blocks::addRule("junglebranchl", { { br_ISNT, bs_BLOCK, glm::vec2(-1, 0), "mahoganytrunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-            
         blocks::addRule("icicle", { { br_ISNT, bs_BLOCK, glm::vec2(0, 2), "snow", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
         blocks::addRule("stalaktit", { { br_ISNT, bs_BLOCK, glm::vec2(0, 2), "stone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
         blocks::addRule("corruptstalaktit", { { br_ISNT, bs_BLOCK, glm::vec2(0, 2), "ebonstone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
@@ -1309,18 +1470,31 @@ namespace resources {
         blocks::addRule("stalagmit", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "stone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
         blocks::addRule("corruptstalagmit", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "ebonstone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
         blocks::addRule("sandstalagmit", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "sandstone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-
         blocks::addRule("smallrock", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "stone", "blocks" }, { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "grass", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("mediumrock", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "grass", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(0, -1), "stone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-            
+        blocks::addRule("mediumrock", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "grass", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(0, -1), "stone", "blocks" },
+    { br_ISNT, bs_BLOCK, glm::vec2(2, -1), "grass", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(2, -1), "stone", "blocks" }, }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("bigrock", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "grass", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(0, -1), "stone", "blocks" },
+            { br_ISNT, bs_BLOCK, glm::vec2(1, -1), "grass", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(1, -1), "stone", "blocks" }, 
+            { br_ISNT, bs_BLOCK, glm::vec2(2, -1), "grass", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(2, -1), "stone", "blocks" },}, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("smallice", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "snow", "blocks" }}, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("mediumice", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "snow", "blocks" }, { br_ISNT, bs_BLOCK, glm::vec2(1, -1), "snow", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("bigice", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "snow", "blocks" }, { br_ISNT, bs_BLOCK, glm::vec2(1, -1), "snow", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(2, -1), "snow", "blocks" }, }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("mediumjungle", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "sjunglegrassnow", "blocks" }, { br_ISNT, bs_BLOCK, glm::vec2(1, -1), "snow", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("bigjungle", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "junglegrass", "blocks" }, { br_ISNT, bs_BLOCK, glm::vec2(1, -1), "snow", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(2, -1), "snow", "blocks" }, }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("smalldesert", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "sandstone", "blocks" }, { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "hardenedsand", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("mediumdesert", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "sandstone", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(0, -1), "hardenedsand", "blocks" },
+    { br_ISNT, bs_BLOCK, glm::vec2(2, -1), "sandstone", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(2, -1), "hardenedsand", "blocks" }, }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("bigdesert", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "sandstone", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(0, -1), "hardenedsand", "blocks" },
+            { br_ISNT, bs_BLOCK, glm::vec2(1, -1), "sandstone", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(1, -1), "hardenedsand", "blocks" },
+            { br_ISNT, bs_BLOCK, glm::vec2(2, -1), "sandstone", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(2, -1), "hardenedsand", "blocks" }, }, BRules::breakSelf, "empty", "blocks", true);
         blocks::addRule("pot", { { br_ISNT, bs_STAT, glm::vec2(0, -1), "updates", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
         blocks::addRule("pot", { { br_ISNT, bs_STAT, glm::vec2(1, -1), "updates", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-
         blocks::addRule("sapling", {  {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "grass", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
         blocks::addRule("mahoganysapling", {    {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "junglegrass", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
         blocks::addRule("corruptsapling", {  {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corruptgrass", "blocks"}   }, BRules::breakSelf, "empty", "blocks", true);
         blocks::addRule("borealsapling", {  {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "snow", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            
+        blocks::addRule("undergroundskeletondecor", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "stone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
+        blocks::addRule("undergroundtooldecor", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "stone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
         blocks::addRule("cactusmid", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "sand", "blocks"},
             {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusmid", "blocks"},
             {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusleft", "blocks"}, 
@@ -1352,18 +1526,14 @@ namespace resources {
             {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusarmrighttop", "blocks"} }, BRules::replaceWith, "cactusarmrightop", "blocks", true);
         blocks::addRule("cactusarmlefttop", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusarmleftmid", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
         blocks::addRule("cactusarmrighttop", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusarmrightmid", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            
         blocks::addRule("sunflower", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "grass", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
         blocks::addRule("sunflower", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "grass", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-            
         blocks::addRule("heartcrystal", { {br_ISNT, bs_STAT, glm::vec2(1,-1), "updates", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
         blocks::addRule("heartcrystal", { {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
         blocks::addRule("bottle", { {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-
         blocks::addRule("normalvines", { {br_ISNT, bs_BLOCK, glm::vec2(0,1), "normalvines", "blocks"},
                                     {br_ISNT, bs_BLOCK, glm::vec2(0,1), "grass", "blocks"},
             }, BRules::breakSelfAndUpdateBelow, "empty", "blocks", true);
-
         blocks::addRule("junglevines", { {br_ISNT, bs_BLOCK, glm::vec2(0,1), "junglevines", "blocks"},
                                     {br_ISNT, bs_BLOCK, glm::vec2(0,1), "junglegrass", "blocks"},
             }, BRules::breakSelfAndUpdateBelow, "empty", "blocks", true);
@@ -1452,6 +1622,7 @@ namespace resources {
             items::addRecipe({ {{"hellstonebar", 15}}, 1, "moltengreaves", {"anvil"} });
             items::addRecipe({ {{"junglespores", 15},{"vines", 3},{"stinger", 12}}, 1, "bladeofgrass", {"anvil"} });
             items::addRecipe({ {{"iceblade", 1},{"lightsbane", 1},{"bladeofgrass", 1},{"volcano", 1}}, 1, "terrablade", {"anvil"} });
+            items::addRecipe({ {{"star", 5}}, 1, "manacrystal", {"none"} });
         }
     }
 
@@ -2346,6 +2517,7 @@ namespace resources {
             slime.drops = { {"gel", {2, 1, 1}}, {"coppercoin", {3, 1, 1}} };
             slime.mC.families = { mf_ENEMY };
             slime.hpbar = true;
+            slime.mC.damageSound = &sounds::slimehit;
             enemies::enemies.insert(std::make_pair("greenslime", slime));
         }
         //ice slime
@@ -2373,6 +2545,7 @@ namespace resources {
             slime.drops = { {"gel", {2, 1, 1}}, {"coppercoin", {3, 1, 1}} };
             slime.mC.families = { mf_ENEMY };
             slime.hpbar = true;
+            slime.mC.damageSound = &sounds::slimehit;
             enemies::enemies.insert(std::make_pair("iceslime", slime));
         }
         //lava slime
@@ -2400,6 +2573,7 @@ namespace resources {
             slime.drops = { {"gel", {2, 1, 1}}, {"coppercoin", {3, 1, 1}} };
             slime.mC.families = { mf_ENEMY };
             slime.hpbar = true;
+            slime.mC.damageSound = &sounds::slimehit;
             enemies::enemies.insert(std::make_pair("lavaslime", slime));
         }
         //random slime
@@ -2430,6 +2604,7 @@ namespace resources {
             slime.hpbar = true;
             slime.randomsize = 0.6;
             slime.randomcolor = 0.6;
+            slime.mC.damageSound = &sounds::slimehit;
             enemies::enemies.insert(std::make_pair("colorableslime", slime));
         }
         //spiked ice slime
@@ -2445,7 +2620,7 @@ namespace resources {
             slime.mC.hitboxradius = 1.2;
             slime.dC.mat = glm::mat4(1.0f);
             slime.dC.mat = glm::mat4(1.0f);
-            slime.aC.actions = {{ 140, mobFunctions::slimeWindup, -1 }, { 90, mobFunctions::slimeFireProjectile, -1 }};
+            slime.aC.actions = { { 140, mobFunctions::slimeWindup, -1 }, { 90, mobFunctions::slimeFireProjectile, -1 } };
             slime.aC.onupdate = mobFunctions::slimeOnUpdate;
             slime.aC.stats["jumpanim"].charp = "spikediceslime";
             slime.aC.stats["projectile"].charp = "spikediceslimeprojectile";
@@ -2459,6 +2634,7 @@ namespace resources {
             slime.mC.defense = 2;
             slime.mC.families = { mf_ENEMY };
             slime.hpbar = true;
+            slime.mC.damageSound = &sounds::slimehit;
             enemies::enemies.insert(std::make_pair("spikediceslime", slime));
         }
         //spiked jungle slime
@@ -2488,6 +2664,7 @@ namespace resources {
             slime.mC.defense = 2;
             slime.mC.families = { mf_ENEMY };
             slime.hpbar = true;
+            slime.mC.damageSound = &sounds::slimehit;
             enemies::enemies.insert(std::make_pair("spikedjungleslime", slime));
         }
         //sand
@@ -2498,6 +2675,7 @@ namespace resources {
             sand.dC.tex = "sand";
             sand.aC.onupdate = mobFunctions::sandOnUpdate;
             sand.mC.hp = sand.mC.maxhp = 1931;
+            sand.slots = 0;
             enemies::enemies.insert(std::make_pair("sand", sand));
         }
         //demoneye
@@ -2520,11 +2698,10 @@ namespace resources {
             demoneye.mC.knockback = 0.5;
             demoneye.mC.damage = 18;
             demoneye.mC.displayName = "Demon eye";
-            demoneye.spawntime = globals::dayLength * 0.75;
-            demoneye.spawnrange = globals::dayLength * 0.25 / 2.0f;
             demoneye.hpbar = true;
             demoneye.spawnFunc = enemies::flyingSpawnFunc;
             demoneye.drops = { {"coppercoin", {60, 10, 1}} };
+            demoneye.mC.gore = "demoneye";
             enemies::enemies.insert(std::make_pair("demoneye", demoneye));
         }
         //servantofcthulu
@@ -2546,16 +2723,18 @@ namespace resources {
             demoneye.mC.damage = 12;
             demoneye.mC.displayName = "Servant of Cthulu";
             demoneye.hpbar = true;
+            demoneye.mC.gore = "servantofcthulu";
+            demoneye.slots = 0;
             enemies::enemies.insert(std::make_pair("demoneye", demoneye));
         }
         //zombie
         {
             enemyBase zombie = base;
             zombie.aC.ai = ai_ZOMBIE;
-            zombie.pC.size = glm::vec2(2.8);
+            zombie.pC.size = glm::vec2(2.125, 3);
             zombie.pC.friction = false;
             zombie.pC.weight = 1.1;
-            zombie.dC.size = glm::vec2(2.8);
+            zombie.dC.size = glm::vec2(3);
             zombie.dC.tex = "zombie";
             zombie.aC.onupdate = mobFunctions::zombieOnUpdate;
             zombie.aC.stats["walkanim"].charp = "zombiewalk";
@@ -2568,10 +2747,10 @@ namespace resources {
             zombie.mC.kbResist= .2;
             zombie.mC.displayName = "Zombie";
             zombie.hpbar = true;
-            zombie.spawntime = globals::dayLength * 0.75;
-            zombie.spawnrange = globals::dayLength * 0.25 / 2.0f;
             zombie.mC.onPlayerCollision = collisionFs::damagePlayer;
             zombie.drops = { {"shackle", {1, 0, 0.02}}, {"coppercoin", {60, 10, 1}} };
+            zombie.mC.deathSound = &sounds::zombiedie;
+            zombie.mC.gore = "zombie";
             enemies::enemies.insert(std::make_pair("zombie", zombie));
         }
         //bunny
@@ -2584,6 +2763,7 @@ namespace resources {
             bunny.aC.actions.push_back({ 1, mobFunctions::bunnyUpdate, -1 });
             bunny.aC.stats["standinganim"].charp = "bunny";
             bunny.aC.stats["walkinganim"].charp = "bunnyhop";
+            bunny.aC.stats["stridetime"].floatVal = 42;
             bunny.pC.weight = 0.8;
             bunny.pC.friction = false;
             bunny.mC.hitboxradius = 0.9;
@@ -2591,8 +2771,8 @@ namespace resources {
             bunny.mC.families = { mf_CRITTER };
             bunny.mC.displayName = "Bunyy omg uwuwuwu";
             bunny.hpbar = true;
-            bunny.spawntime = globals::dayLength * 0.25;
-            bunny.spawnrange = globals::dayLength * 0.25 / 2.0f;
+            bunny.mC.gore = "bunny";
+            bunny.slots = 0;
             enemies::enemies.insert(std::make_pair("bunny", bunny));
         }
         //star
@@ -2623,8 +2803,7 @@ namespace resources {
             star.pec.ms = 0.04;
             star.pec.rate = 6;
             star.spawnFunc = enemies::fallenStarSpawnFunc;
-            star.spawntime = globals::dayLength * 0.75;
-            star.spawnrange= globals::dayLength * 0.25 / 2.0f;
+            star.slots = 0;
             enemies::enemies.insert(std::make_pair("star", star));
         }
         //bomb
@@ -2671,13 +2850,17 @@ namespace resources {
         {
             enemyBase guide = base;
             guide.aC.ai = ai_GUIDE;
-            guide.pC.size = glm::vec2(1.5,3);
-            guide.dC.size = glm::vec2(2.8);
+            guide.pC.size = glm::vec2(2,3);
+            guide.dC.size = glm::vec2(3);
             guide.dC.tex = "guide";
+            guide.aC.stats["walkanim"].charp = "guidewalk";
+            guide.aC.stats["npcmenu"].charp = "guide";
+            guide.aC.stats["npcname"].charp = "guide";
             guide.mC.hp = guide.mC.maxhp = 250;
             guide.hpbar = true;
             guide.aC.onupdate = mobFunctions::guideOnUpdate;
             guide.aC.onclick = mobFunctions::guideOnClick;
+            guide.mC.onDeath = mobFunctions::ondie_npc;
             guide.pC.weight = 1;
             guide.pC.friction = false;
             guide.mC.hitboxradius = 1.3;
@@ -2686,11 +2869,37 @@ namespace resources {
             guide.mC.candespawn = false;
             guide.drops = { {"arrow",{10, 10, 1}} };
             enemies::enemies.insert(std::make_pair("guide", guide));
-            enemies::addNPCDialogue("guide", "Hello \\n");
-            enemies::addNPCDialogue("guide", "Hi \\n");
+            enemies::addNPCDialogue("guide", "Hello $NAME$");
+            enemies::addNPCDialogue("guide", "Hi $NAME$");
             enemies::addNPCDialogue("guide", "Its quite nice here");
             enemies::addNPCButton("guide", "Help", UI::uiCfunc_guideHelp);
             enemies::addNPCButton("guide", "Crafting", UI::uiCfunc_openGuideslot);
+        }
+        //merchant
+        {
+            enemyBase merchant = base;
+            merchant.aC.ai = ai_GUIDE;
+            merchant.pC.size = glm::vec2(1.5, 3);
+            merchant.dC.size = glm::vec2(2.8);
+            merchant.dC.tex = "merchant";
+            merchant.mC.hp = merchant.mC.maxhp = 250;
+            merchant.hpbar = true;
+            merchant.aC.stats["walkanim"].charp = "merchantwalk";
+            merchant.aC.stats["npcmenu"].charp = "merchant";
+            merchant.aC.stats["npcname"].charp = "merchant";
+            merchant.aC.onupdate = mobFunctions::guideOnUpdate;
+            merchant.aC.onclick = mobFunctions::guideOnClick;
+            merchant.mC.onDeath = mobFunctions::ondie_npc;
+            merchant.pC.weight = 1;
+            merchant.pC.friction = false;
+            merchant.mC.hitboxradius = 1.3;
+            merchant.mC.displayName = "Jackson";
+            merchant.mC.despawntimer = -1;
+            merchant.mC.candespawn = false;
+            merchant.drops = { {"arrow",{10, 10, 1}} };
+            enemies::enemies.insert(std::make_pair("merchant", merchant));
+            enemies::addNPCDialogue("merchant", "i am merchant $NAME$");
+            enemies::addNPCButton("merchant", "Shop", UI::uiCfunc_openMerchantShop);
         }
         //twinssummon1
         {
@@ -2783,6 +2992,7 @@ namespace resources {
             damagetext.pC.stoponcollision = false;
             damagetext.pC.weight = 0;
             damagetext.mC.hp = damagetext.mC.maxhp = 1;
+            damagetext.slots = 0;
             enemies::enemies.insert(std::make_pair("damagetext", damagetext));
         }
         //mouse
@@ -2796,6 +3006,7 @@ namespace resources {
             mouse.aC.stats["ms"].floatVal = 2.2;
             mouse.aC.stats["standinganim"].charp = "mouse";
             mouse.aC.stats["walkinganim"].charp = "mousewalk";
+            mouse.aC.stats["stridetime"].floatVal = 8;
             mouse.pC.weight = 0.8;
             mouse.pC.friction = false;
             mouse.mC.hitboxradius = 1.2;
@@ -2803,8 +3014,7 @@ namespace resources {
             mouse.mC.families = { mf_CRITTER };
             mouse.mC.displayName = "mouserrrrrrrr";
             mouse.hpbar = true;
-            mouse.spawntime = globals::dayLength * 0.25;
-            mouse.spawnrange = globals::dayLength * 0.25 / 2.0f;
+            mouse.slots = 0;
             enemies::enemies.insert(std::make_pair("mouse", mouse));
         }
         //eaterofsouls
@@ -2831,6 +3041,7 @@ namespace resources {
             eaterofsouls.randomsize = 0.8;
             eaterofsouls.spawnFunc = enemies::flyingSpawnFunc;
             eaterofsouls.drops = { {"silvercoin",{2, 1, 0.75}}, {"coppercoin",{60, 20, 1}} };
+            eaterofsouls.mC.gore = "eaterofsouls";
             enemies::enemies.insert(std::make_pair("eaterofsouls", eaterofsouls));
         }
         //cave bat
@@ -2862,6 +3073,7 @@ namespace resources {
             cavebat.hpbar = true;
             cavebat.spawnFunc = enemies::flyingSpawnFunc;
             cavebat.drops = { {"silvercoin",{2, 1, 0.75}}, {"coppercoin",{60, 20, 1}} };
+            cavebat.mC.deathSound = &sounds::batdie;
             enemies::enemies.insert(std::make_pair("cavebat", cavebat));
         }
         //jungle bat
@@ -2893,6 +3105,7 @@ namespace resources {
             cavebat.hpbar = true;
             cavebat.spawnFunc = enemies::flyingSpawnFunc;
             cavebat.drops = { {"silvercoin",{2, 1, 0.75}}, {"coppercoin",{60, 20, 1}} };
+            cavebat.mC.deathSound = &sounds::batdie;
             enemies::enemies.insert(std::make_pair("junglebat", cavebat));
         }
         //hell bat
@@ -2924,6 +3137,7 @@ namespace resources {
             cavebat.hpbar = true;
             cavebat.spawnFunc = enemies::flyingSpawnFunc;
             cavebat.drops = {{"silvercoin",{2, 1, 0.75}}, {"coppercoin",{60, 20, 1}} };
+            cavebat.mC.deathSound = &sounds::batdie;
             enemies::enemies.insert(std::make_pair("hellbat", cavebat));
         }
         //demon
@@ -2955,6 +3169,7 @@ namespace resources {
             demon.hpbar = true;
             demon.spawnFunc = enemies::flyingSpawnFunc;
             demon.drops = { {"voodoodoll",{1, 0, 0.1}},{"silvercoin",{2, 1, 0.75}}, {"coppercoin",{60, 20, 1}} };
+            demon.mC.gore = "demon";
             enemies::enemies.insert(std::make_pair("demon", demon));
         }
         //vulture
@@ -2984,6 +3199,7 @@ namespace resources {
             vulture.hpbar = true;
             vulture.spawnFunc = enemies::vultureSpawnFunc;
             vulture.drops = {{"silvercoin",{2, 1, 0.75}}, {"coppercoin",{60, 20, 1}} };
+            vulture.mC.gore = "vulture";
             enemies::enemies.insert(std::make_pair("vulture", vulture));
         }
         //hornet
@@ -3021,7 +3237,7 @@ namespace resources {
         {
             enemyBase antlioncharger = base;
             antlioncharger.aC.ai = ai_ZOMBIE;
-            antlioncharger.pC.size = glm::vec2(4, 2.32);
+            antlioncharger.pC.size = glm::vec2(2, 2.32);
             antlioncharger.pC.friction = false;
             antlioncharger.pC.weight = 1.1;
             antlioncharger.dC.size = glm::vec2(5);
@@ -3041,6 +3257,7 @@ namespace resources {
             antlioncharger.hpbar = true;
             antlioncharger.mC.onPlayerCollision = collisionFs::damagePlayer;
             antlioncharger.drops = { {"silvercoin",{2, 1, 0.75}}, {"coppercoin",{60, 20, 1}} };
+            antlioncharger.mC.gore = "antlion";
             enemies::enemies.insert(std::make_pair("antlioncharger", antlioncharger));
         }
         //darkcaster
@@ -3065,10 +3282,10 @@ namespace resources {
             darkcaster.mC.displayName = "Dark Caster";
             darkcaster.aC.stats["projectile"].charp = "darkcasterprojectile";
             darkcaster.hpbar = true;
-            darkcaster.spawntime = globals::dayLength * 0.75;
-            darkcaster.spawnrange = globals::dayLength * 0.25 / 2.0f;
             darkcaster.mC.onPlayerCollision = collisionFs::damagePlayer;
             darkcaster.drops = { {"silvercoin",{2, 1, 0.75}}, {"coppercoin",{60, 20, 1}}, {"waterspell", {1, 0, 0.5}} };
+            darkcaster.mC.damageSound = &sounds::skeletonhit;
+            darkcaster.mC.gore = "skeleton";
             enemies::enemies.insert(std::make_pair("darkcaster", darkcaster));
         }
         //devourerhead
@@ -3093,11 +3310,10 @@ namespace resources {
             devourer.mC.kbResist = 1;
             devourer.mC.displayName = "Devourer";
             devourer.hpbar = true;
-            devourer.spawntime = globals::dayLength * 0.75;
-            devourer.spawnrange = globals::dayLength * 0.25 / 2.0f;
             devourer.mC.onPlayerCollision = collisionFs::damagePlayer;
             devourer.spawnFunc = enemies::wormSpawnFunc;
             devourer.drops = { {"silvercoin",{2, 1, 0.75}}, {"coppercoin",{60, 20, 1}} };
+            devourer.mC.gore = "devourerhead";
             enemies::enemies.insert(std::make_pair("devourerhead", devourer));
         }
         //devourerbody
@@ -3124,9 +3340,9 @@ namespace resources {
             devourer.mC.knockback = .7;
             devourer.mC.displayName = "Devourer";
             devourer.hpbar = true;
-            devourer.spawntime = globals::dayLength * 0.75;
-            devourer.spawnrange = globals::dayLength * 0.25 / 2.0f;
             devourer.mC.onPlayerCollision = collisionFs::damagePlayer;
+            devourer.mC.gore = "devourerbody";
+            devourer.slots = 0;
             enemies::enemies.insert(std::make_pair("devourerbody", devourer));
         }
         //devourertail
@@ -3150,9 +3366,9 @@ namespace resources {
             devourer.mC.knockback = .7;
             devourer.mC.displayName = "Devourer";
             devourer.hpbar = true;
-            devourer.spawntime = globals::dayLength * 0.75;
-            devourer.spawnrange = globals::dayLength * 0.25 / 2.0f;
             devourer.mC.onPlayerCollision = collisionFs::damagePlayer;
+            devourer.mC.gore = "devourertail";
+            devourer.slots = 0;
             enemies::enemies.insert(std::make_pair("devourertail", devourer));
         }
         //eyeofcthulu
@@ -3176,8 +3392,6 @@ namespace resources {
             eyeofcthulu.mC.knockback = .7;
             eyeofcthulu.mC.displayName = "eyeofcthulu";
             eyeofcthulu.hpbar = true;
-            eyeofcthulu.spawntime = globals::dayLength * 0.75;
-            eyeofcthulu.spawnrange = globals::dayLength * 0.25 / 2.0f;
             eyeofcthulu.mC.onPlayerCollision = collisionFs::damagePlayer;
             eyeofcthulu.pec.tex = "particle:bloodpart";
             eyeofcthulu.pec.amount = 1;
@@ -3202,6 +3416,11 @@ namespace resources {
             eyeofcthulu.drops = { {"demoniteore",{60, 30, 1}}, {"healthpotion", {10, 5, 1}}, {"opticstaff",{1, 0, 0.5}}, {"goldcoin",{1, 0, 0.5}}, {"silvercoin",{60, 20, 1}} };
             eyeofcthulu.bossbar = "bosshead0";
             eyeofcthulu.hpbar = false;
+            eyeofcthulu.mC.gore = "eyeofcthulu";
+            eyeofcthulu.prespawntext = "You feel an evil presence watching you..";
+            eyeofcthulu.spawntext = "The Eye of Cthulu has awoken!";
+            eyeofcthulu.prespawntimer = 60 * 30;
+            eyeofcthulu.slots = 10;
             enemies::enemies.insert(std::make_pair("eyeofcthulu", eyeofcthulu));
         }
         //eaterofworldshead
@@ -3231,11 +3450,11 @@ namespace resources {
             eaterofworlds.mC.displayName = "Eater of worlds";
             eaterofworlds.mC.onDeath = mobFunctions::ondie_eaterofworlds;
             eaterofworlds.hpbar = true;
-            eaterofworlds.spawntime = globals::dayLength * 0.75;
-            eaterofworlds.spawnrange = globals::dayLength * 0.25 / 2.0f;
             eaterofworlds.mC.onPlayerCollision = collisionFs::damagePlayer;
             eaterofworlds.drops = { {"demoniteore",{5, 2, 1}}, {"healthpotion", {1, 0, 0.1}}, {"shadowscales", {2, 1, 0.5}}, {"silvercoin",{4, 2, 1}} };
             eaterofworlds.spawnFunc = enemies::wormSpawnFunc;
+            eaterofworlds.mC.gore = "eaterofworldshead";
+            eaterofworlds.slots = 10;
             enemies::enemies.insert(std::make_pair("eaterofworldshead", eaterofworlds));
         }
         //eaterofworldsbody
@@ -3260,10 +3479,10 @@ namespace resources {
             eaterofworlds.mC.displayName = "Eater of worlds";
             eaterofworlds.mC.onDeath = mobFunctions::ondie_eaterofworlds;
             eaterofworlds.hpbar = true;
-            eaterofworlds.spawntime = globals::dayLength * 0.75;
-            eaterofworlds.spawnrange = globals::dayLength * 0.25 / 2.0f;
             eaterofworlds.drops = { {"demoniteore",{5, 2, 1}}, {"healthpotion", {1, 0, 0.1}}, {"shadowscales", {2, 1, 0.5}}, {"silvercoin",{4, 2, 1}} };
             eaterofworlds.mC.onPlayerCollision = collisionFs::damagePlayer;
+            eaterofworlds.mC.gore = "eaterofworldsbody";
+            eaterofworlds.slots = 0;
             enemies::enemies.insert(std::make_pair("eaterofworldsbody", eaterofworlds));
         }
         //eaterofsoulstail
@@ -3288,10 +3507,10 @@ namespace resources {
             eaterofworlds.mC.displayName = "Eater of worlds";
             eaterofworlds.mC.onDeath = mobFunctions::ondie_eaterofworlds;
             eaterofworlds.hpbar = true;
-            eaterofworlds.spawntime = globals::dayLength * 0.75;
-            eaterofworlds.spawnrange = globals::dayLength * 0.25 / 2.0f;
             eaterofworlds.drops = { {"demoniteore",{5, 2, 1}}, {"healthpotion", {1, 0, 0.1}}, {"shadowscales", {2, 1, 0.5}}, {"silvercoin",{4, 2, 1}} };
             eaterofworlds.mC.onPlayerCollision = collisionFs::damagePlayer;
+            eaterofworlds.mC.gore = "eaterofworldstail";
+            eaterofworlds.slots = 0;
             enemies::enemies.insert(std::make_pair("eaterofworldstail", eaterofworlds));
         }
         //cloud
@@ -3308,6 +3527,7 @@ namespace resources {
             cloud.resizeToSprite = true;
             cloud.behindBlocks = true;
             cloud.possibleSprites = { "cloud1", "cloud2", "cloud3", "cloud4", "cloud5", "cloud6", "cloud7", "cloud8","cloud9","cloud10","treecloud"};
+            cloud.slots = 0;
             enemies::enemies.insert(std::make_pair("cloud", cloud));
         }
         //penguin1
@@ -3321,6 +3541,7 @@ namespace resources {
             penguin1.aC.stats["ms"].floatVal = 0.6;
             penguin1.aC.stats["standinganim"].charp = "pengu1";
             penguin1.aC.stats["walkinganim"].charp = "penguin1walk";
+            penguin1.aC.stats["stridetime"].floatVal = 9;
             penguin1.pC.weight = 0.8;
             penguin1.pC.friction = false;
             penguin1.mC.hitboxradius = 1.2;
@@ -3328,8 +3549,7 @@ namespace resources {
             penguin1.mC.families = { mf_CRITTER };
             penguin1.mC.displayName = "penguin <3";
             penguin1.hpbar = true;
-            penguin1.spawntime = globals::dayLength * 0.25;
-            penguin1.spawnrange = globals::dayLength * 0.25 / 2.0f;
+            penguin1.slots = 0;
             enemies::enemies.insert(std::make_pair("penguin1", penguin1));
         }
         //penguin2
@@ -3343,6 +3563,7 @@ namespace resources {
             penguin1.aC.stats["ms"].floatVal = 0.6;
             penguin1.aC.stats["standinganim"].charp = "pengu2";
             penguin1.aC.stats["walkinganim"].charp = "penguin2walk";
+            penguin1.aC.stats["stridetime"].floatVal = 9;
             penguin1.pC.weight = 0.8;
             penguin1.pC.friction = false;
             penguin1.mC.hitboxradius = 1.2;
@@ -3350,8 +3571,7 @@ namespace resources {
             penguin1.mC.families = { mf_CRITTER };
             penguin1.mC.displayName = "penguin";
             penguin1.hpbar = true;
-            penguin1.spawntime = globals::dayLength * 0.25;
-            penguin1.spawnrange = globals::dayLength * 0.25 / 2.0f;
+            penguin1.slots = 0;
             enemies::enemies.insert(std::make_pair("penguin2", penguin1));
         }
         //penguin3
@@ -3365,6 +3585,7 @@ namespace resources {
             penguin1.aC.stats["ms"].floatVal = 0.6;
             penguin1.aC.stats["standinganim"].charp = "pengu3";
             penguin1.aC.stats["walkinganim"].charp = "penguin3walk";
+            penguin1.aC.stats["stridetime"].floatVal = 9;
             penguin1.pC.weight = 0.8;
             penguin1.pC.friction = false;
             penguin1.mC.hitboxradius = 1.2;
@@ -3372,8 +3593,7 @@ namespace resources {
             penguin1.mC.families = { mf_CRITTER };
             penguin1.mC.displayName = "penguin!";
             penguin1.hpbar = true;
-            penguin1.spawntime = globals::dayLength * 0.25;
-            penguin1.spawnrange = globals::dayLength * 0.25 / 2.0f;
+            penguin1.slots = 0;
             enemies::enemies.insert(std::make_pair("penguin3", penguin1));
         }
         //penguin4
@@ -3387,6 +3607,7 @@ namespace resources {
             penguin1.aC.stats["ms"].floatVal = 0.6;
             penguin1.aC.stats["standinganim"].charp = "pengu4";
             penguin1.aC.stats["walkinganim"].charp = "penguin4walk";
+            penguin1.aC.stats["stridetime"].floatVal = 9;
             penguin1.pC.weight = 0.8;
             penguin1.pC.friction = false;
             penguin1.mC.hitboxradius = 1.2;
@@ -3394,8 +3615,7 @@ namespace resources {
             penguin1.mC.families = { mf_CRITTER };
             penguin1.mC.displayName = "penguin!!";
             penguin1.hpbar = true;
-            penguin1.spawntime = globals::dayLength * 0.25;
-            penguin1.spawnrange = globals::dayLength * 0.25 / 2.0f;
+            penguin1.slots = 0;
             enemies::enemies.insert(std::make_pair("penguin4", penguin1));
         }
         //grasshopper
@@ -3417,6 +3637,7 @@ namespace resources {
             grasshopper.mC.maxhp = grasshopper.mC.hp = 2;
             grasshopper.mC.families = { mf_CRITTER };
             grasshopper.hpbar = true;
+            grasshopper.slots = 0;
             enemies::enemies.insert(std::make_pair("grasshopper", grasshopper));
         }
         //firefly
@@ -3435,6 +3656,7 @@ namespace resources {
             firefly.mC.maxhp = firefly.mC.hp = 2;
             firefly.mC.families = { mf_CRITTER };
             firefly.hpbar = true;
+            firefly.slots = 0;
             enemies::enemies.insert(std::make_pair("firefly", firefly));
         }
         //tombstone
@@ -3450,33 +3672,231 @@ namespace resources {
             tombstone.aC.onupdate = mobFunctions::tombstoneOnUpdate;
             tombstone.mC.maxhp = tombstone.mC.hp = 1;
             tombstone.randomvelangle = 25;
+            tombstone.slots = 0;
             enemies::enemies.insert(std::make_pair("tombstone", tombstone));
         }
-        enemies::addEnemyToBiome("grasshopper", "forest", 0.0003f);
-        enemies::addEnemyToBiome("penguin1", "snow", 0.0003f);
-        enemies::addEnemyToBiome("penguin2", "snow", 0.0003f);
-        enemies::addEnemyToBiome("penguin3", "snow", 0.0003f);
-        enemies::addEnemyToBiome("penguin4", "snow", 0.0003f);
-        enemies::addEnemyToBiome("cloud", "surface", 0.03f);
-        enemies::addEnemyToBiome("bunny", "forest", 0.0003f);
-        enemies::addEnemyToBiome("greenslime", "forest", 0.0003f);
-        enemies::addEnemyToBiome("iceslime", "snow", 0.0003f);
-        enemies::addEnemyToBiome("lavaslime", "underworld", 0.0003f);
-        enemies::addEnemyToBiome("spikedjungleslime", "jungle", 0.0003f);
-        enemies::addEnemyToBiome("spikediceslime", "snow", 0.0003f);
-        enemies::addEnemyToBiome("colorableslime", "underground", 0.0002f);
-        enemies::addEnemyToBiome("zombie", "forest", 0.007f);
-        enemies::addEnemyToBiome("demoneye", "forest", 0.002f);
-        enemies::addEnemyToBiome("eaterofsouls", "corruption", 0.002f);
-        enemies::addEnemyToBiome("star", "surface", 0.0006f);
-        enemies::addEnemyToBiome("mouse", "underground", 0.0003f);
-        enemies::addEnemyToBiome("darkcaster", "underground", 0.0001f);
-        enemies::addEnemyToBiome("cavebat", "underground", 0.001f);
-        enemies::addEnemyToBiome("demon", "underworld", 0.001f);
-        enemies::addEnemyToBiome("hellbat", "underworld", 0.002f);
-        enemies::addEnemyToBiome("hornet", "jungle", 0.001f);
-        enemies::addEnemyToBiome("vulture", "desert", 0.0003f);
-        enemies::addEnemyToBiome("antlioncharger", "desert", 0.0003f);
+        //scorpion
+        {
+            enemyBase scorpion = base;
+            scorpion.aC.ai = ai_BUNNY;
+            scorpion.pC.size = glm::vec2(1.75, 1.375);
+            scorpion.dC.size = glm::vec2(1.75);
+            scorpion.dC.tex = "scorpion";
+            scorpion.aC.onupdate = mobFunctions::bunnyUpdate;
+            scorpion.aC.stats["ms"].floatVal = 0.7;
+            scorpion.aC.stats["walkinganim"].charp = "scorpionwalk";
+            scorpion.aC.stats["stridetime"].floatVal = 8;
+            scorpion.pC.weight = 0.8;
+            scorpion.pC.friction = false;
+            scorpion.mC.hitboxradius = 0.4;
+            scorpion.mC.hp = scorpion.mC.maxhp = 5;
+            scorpion.mC.families = { mf_CRITTER };
+            scorpion.mC.displayName = "Scawwy scowwpion";
+            scorpion.hpbar = true;
+            scorpion.slots = 0;
+            enemies::enemies.insert(std::make_pair("scorpion", scorpion));
+        }
+        //frog
+        {
+            enemyBase frog = base;
+            frog.aC.ai = ai_BUNNY;
+            frog.pC.size = glm::vec2(1.5, 1.125);
+            frog.dC.size = glm::vec2(1.5);
+            frog.dC.tex = "frog";
+            frog.aC.onupdate = mobFunctions::bunnyUpdate;
+            frog.aC.stats["ms"].floatVal = 0.55;
+            frog.aC.stats["standinganim"].charp = "frogidle";
+            frog.aC.stats["walkinganim"].charp = "frogwalk";
+            frog.aC.stats["stridetime"].floatVal = 28;
+            frog.pC.weight = 0.8;
+            frog.pC.friction = false;
+            frog.mC.hitboxradius = 0.4;
+            frog.mC.hp = frog.mC.maxhp = 5;
+            frog.mC.families = { mf_CRITTER };
+            frog.mC.displayName = "Froggster!";
+            frog.hpbar = true;
+            frog.slots = 0;
+            enemies::enemies.insert(std::make_pair("frog", frog));
+        }
+        //grubby
+        {
+            enemyBase grubby = base;
+            grubby.aC.ai = ai_BUNNY;
+            grubby.pC.size = glm::vec2(1, .5);
+            grubby.dC.size = glm::vec2(1);
+            grubby.dC.tex = "grubby";
+            grubby.aC.onupdate = mobFunctions::bunnyUpdate;
+            grubby.aC.stats["ms"].floatVal = 0.2;
+            grubby.aC.stats["walkinganim"].charp = "grubbywalk";
+            grubby.aC.stats["stridetime"].floatVal = 24;
+            grubby.pC.weight = 0.8;
+            grubby.pC.friction = false;
+            grubby.mC.hitboxradius = 0.3;
+            grubby.mC.hp = grubby.mC.maxhp = 5;
+            grubby.mC.families = { mf_CRITTER };
+            grubby.mC.displayName = "Grubby";
+            grubby.hpbar = true;
+            grubby.slots = 0;
+            enemies::enemies.insert(std::make_pair("grubby", grubby));
+        }
+
+        //snail
+        {
+            enemyBase snail = base;
+            snail.aC.ai = ai_BUNNY;
+            snail.pC.size = glm::vec2(1.625, 1);
+            snail.dC.size = glm::vec2(1.625);
+            snail.dC.tex = "snail";
+            snail.aC.onupdate = mobFunctions::snailUpdate;
+            snail.aC.stats["ms"].floatVal = 0.02;
+            snail.aC.stats["walkinganim"].charp = "snailwalk";
+            snail.aC.stats["stuckanim"].charp = "snailstuck";
+            snail.pC.weight = 0.8;
+            snail.pC.friction = false;
+            snail.mC.hitboxradius = 0.3;
+            snail.mC.hp = snail.mC.maxhp = 5;
+            snail.mC.families = { mf_CRITTER };
+            snail.mC.displayName = "take me to snurch ill worship like a ...snail in the shrine of your light ill tell you my snins so you can snarpen your snife";
+            snail.hpbar = true;
+            snail.slots = 0;
+            enemies::enemies.insert(std::make_pair("snail", snail));
+        }
+        //bird
+        {
+            enemyBase bird = base;
+            bird.aC.ai = ai_BUNNY;
+            bird.pC.size = glm::vec2(1.875, 1.125);
+            bird.dC.size = glm::vec2(1.875);
+            bird.dC.tex = "bird";
+            bird.aC.onupdate = mobFunctions::birdUpdate;
+            bird.pC.weight = 0.8;
+            bird.pC.friction = false;
+            bird.mC.hitboxradius = 0.3;
+            bird.mC.hp = bird.mC.maxhp = 5;
+            bird.mC.families = { mf_CRITTER };
+            bird.mC.displayName = "birb";
+            bird.hpbar = true;
+            bird.slots = 0;
+            enemies::enemies.insert(std::make_pair("bird", bird));
+        }
+        //fish
+        {
+            enemyBase goldfish = base;
+            goldfish.aC.ai = ai_BUNNY;
+            goldfish.pC.size = glm::vec2(1.625, 1.375);
+            goldfish.dC.size = glm::vec2(1.625);
+            goldfish.dC.tex = "goldfish";
+            goldfish.dC.hasmat = true;
+            goldfish.aC.onupdate = mobFunctions::goldfishUpdate;
+            goldfish.pC.weight = 0.8;
+            goldfish.pC.friction = false;
+            goldfish.pC.stoponcollision = false;
+            goldfish.pC.bounce = true;
+            goldfish.pC.bounciness = 0.5;
+            goldfish.mC.hitboxradius = 0.3;
+            goldfish.mC.hp = goldfish.mC.maxhp = 5;
+            goldfish.mC.families = { mf_CRITTER };
+            goldfish.mC.displayName = "Goldfish";
+            goldfish.spawnFunc = enemies::liquidSpawnFunc;
+            goldfish.hpbar = true;
+            goldfish.slots = 0;
+            enemies::enemies.insert(std::make_pair("goldfish", goldfish));
+        }
+        //fish
+        {
+            enemyBase jellyfish = base;
+            jellyfish.aC.ai = ai_BUNNY;
+            jellyfish.pC.size = glm::vec2(1.625, 1.875);
+            jellyfish.dC.size = glm::vec2(1.875);
+            jellyfish.dC.tex = "jellyfish";
+            jellyfish.dC.hasmat = true;
+            jellyfish.aC.onupdate = mobFunctions::jellyfishUpdate;
+            jellyfish.pC.weight = 0.8;
+            jellyfish.pC.friction = false;
+            jellyfish.pC.stoponcollision = false;
+            jellyfish.pC.bounce = true;
+            jellyfish.pC.bounciness = 0.2;
+            jellyfish.mC.hitboxradius = 0.3;
+            jellyfish.mC.light = glm::vec3(0.3);
+            jellyfish.mC.hp = jellyfish.mC.maxhp = 5;
+            jellyfish.mC.families = { mf_ENEMY };
+            jellyfish.mC.displayName = "Blue Jellyfish";
+            jellyfish.mC.hitboxradius = 1.3;
+            jellyfish.mC.hp = jellyfish.mC.maxhp = 68;
+            jellyfish.mC.onCollision = { {mf_CRITTER, collisionFs::damage} };
+            jellyfish.mC.families = { mf_ENEMY };
+            jellyfish.mC.damage = 50;
+            jellyfish.mC.defense = 4;
+            jellyfish.mC.knockback = .7;
+            jellyfish.mC.kbResist = .1;
+            jellyfish.hpbar = true;
+            jellyfish.mC.onPlayerCollision = collisionFs::damagePlayer;
+            jellyfish.drops = { {"silvercoin",{4, 2, 1}} };
+            jellyfish.spawnFunc = enemies::liquidSpawnFunc;
+            jellyfish.mC.gore = "bluejellyfish";
+            jellyfish.hpbar = true;
+            jellyfish.slots = 1;
+            enemies::enemies.insert(std::make_pair("jellyfish", jellyfish));
+        }
+        enemies::addEnemyToDay("grasshopper", "forest");
+        enemies::addEnemyToDay("penguin1", "snow");
+        enemies::addEnemyToDay("penguin2", "snow");
+        enemies::addEnemyToDay("penguin3", "snow");
+        enemies::addEnemyToDay("penguin4", "snow");
+        enemies::addEnemyToDay("cloud", "forest");
+        enemies::addEnemyToDay("cloud", "jungle");
+        enemies::addEnemyToDay("cloud", "snow");
+        enemies::addEnemyToDay("cloud", "corruption");
+        enemies::addEnemyToDay("bunny", "forest");
+        enemies::addEnemyToDay("greenslime", "forest");
+        enemies::addEnemyToDay("iceslime", "snow");
+        enemies::addEnemyToUnderground("iceslime", "snow");
+        enemies::addEnemyToCavern("iceslime", "snow");
+        enemies::addEnemyToUnderworld("lavaslime", "forest");
+        enemies::addEnemyToDay("spikedjungleslime", "jungle");
+        enemies::addEnemyToUnderground("spikediceslime", "snow");
+        enemies::addEnemyToCavern("spikediceslime", "snow");
+        enemies::addEnemyToUnderground("colorableslime", "forest");
+        enemies::addEnemyToNight("zombie", "forest");
+        enemies::addEnemyToNight("zombie", "snow");
+        enemies::addEnemyToNight("zombie", "desert");
+        enemies::addEnemyToNight("demoneye", "forest");
+        enemies::addEnemyToNight("demoneye", "snow");
+        enemies::addEnemyToNight("demoneye", "desert");
+        enemies::addEnemyToDay("eaterofsouls", "corruption");
+        enemies::addEnemyToNight("eaterofsouls", "corruption");
+        enemies::addEnemyToNight("star", "forest");
+        enemies::addEnemyToNight("star", "corruption");
+        enemies::addEnemyToNight("star", "jungle");
+        enemies::addEnemyToNight("star", "snow");
+        enemies::addEnemyToUnderground("mouse", "forest");
+        enemies::addEnemyToUnderground("darkcaster", "forest");
+        enemies::addEnemyToUnderground("cavebat", "forest");
+        enemies::addEnemyToUnderworld("demon", "forest");
+        enemies::addEnemyToUnderworld("hellbat", "forest");
+        enemies::addEnemyToUnderground("hornet", "jungle");
+        enemies::addEnemyToDay("vulture", "desert");
+        enemies::addEnemyToUnderground("antlioncharger", "desert");
+        enemies::addEnemyToDay("antlioncharger", "desert");
+        enemies::addEnemyToNight("eyeofcthulu", "forest");
+        enemies::addEnemyToCavern("firefly", "forest");
+
+
+        std::vector<std::string> names = {
+            "micky",
+            "jacky",
+            "guidemaster123",
+            "MIAIJ JAKISON",
+            "HE HE"
+        };
+        map::npcs["guide"] = map::npc(rand() % names.size(), names, "guide", true, true);
+        names = {
+            "shoppster",
+            "amazon.co",
+            "Merchant"
+            "ISELLSTUFF"
+        };
+        map::npcs["merchant"] = map::npc(rand() % names.size(), names, "merchant");
     }
 
     void createEffects()
@@ -3832,6 +4252,12 @@ namespace resources {
         }
         file.close();
         
+        glm::vec4 spritesheet = glm::vec4(globals::spritesheetWH.x, globals::spritesheetWH.y, globals::spritesheetWH.x, globals::spritesheetWH.y);
+        glm::vec4 coords = textures::nametocoords["playerhair"]->coords;
+        for (int i = 0; i < 6; i++) {
+            textures::playerhair.push_back(coords);
+            coords += glm::vec4(20, 0, 20, 0) / spritesheet;
+        }
     }
 
     void loadItems(std::fstream* file)

@@ -16,4 +16,5 @@ namespace particles
 	void emitParticle(glm::vec2 pos, particleEmmiterC* pec = nullptr, int ent = -1);
 	void spawnEffect(std::string effectName, glm::vec2 pos, glm::vec2 dir = glm::vec2(-123,-123));
 	void addEffect(std::string name, effectBase base);
+	void dropGore(glm::vec2 pos, std::string name);
 };

@@ -133,9 +133,11 @@ namespace Layers {
     void setUp()
     {
         nQuads = map::mapX * map::mapY;
+        if (drawnVertices != nullptr) delete[] drawnVertices;
         drawnVertices = new BlockVertex[nDrawnBlocks * 4];
         addLayer("bg", 1.0f);
         addLayer("blocks", 1.0f);
+        if (childParent != nullptr) delete[] drawnVertices;
         childParent = new blockRelationship("blocks");
     }
 
@@ -152,7 +154,7 @@ namespace Layers {
         layers.clear();
     }
 
-    bool placeBlock(Layer* l, glm::vec2 pos, std::string type, glm::vec3 light, int size, std::vector<std::function<bool(BlockConditionArgs)>>* conditions, glm::vec3 setlight, bool update)
+    bool placeBlock(Layer* l, glm::vec2 pos, std::string type, int size, std::vector<std::function<bool(BlockConditionArgs)>>* conditions, glm::vec3 setlight, bool update)
     {
         if (verifyBlock(l, &pos, false)) {
             auto info = &blocks::nameToInfo[type];
@@ -163,7 +165,7 @@ namespace Layers {
                 for (int x2 = -size; x2 < size; x2++) {
                     for (int y2 = -size; y2 < size; y2++) {
                         if (glm::distance(pos + glm::vec2(x2, y2), pos) < size / 2) {
-                            placeBlock(l, pos + glm::vec2(x2, y2), type, light, 1, conditions);
+                            placeBlock(l, pos + glm::vec2(x2, y2), type, 1, conditions);
                         }
                     }
                 }
@@ -181,6 +183,16 @@ namespace Layers {
                     breakBlock(l, newpos, 1, false, true);
                 }
             }
+
+            int wholestate = 0;
+            switch (info->spriteType) {
+            case st_MULTISPRITE:
+                wholestate = (rand() % info->numsprites) * (info->size.x * info->size.y);
+                break;
+            case st_POT:
+                wholestate = (rand() % 2) * 4;
+                break;
+            }
             for (int x = 0; x < info->size.x; x++) {
                 int state = 0;
                 switch (info->spriteType) {
@@ -196,18 +208,23 @@ namespace Layers {
                 case st_STALAGMIT:
                     state = (rand() % 3) * 2;
                     break;
-                case st_SMALLROCK:
-                    state = rand() % 6;
+                case st_MULTISPRITE:
+                    state += x * info->size.y;
                     break;
-                case st_MEDIUMROCK:
-                    state = (rand() % 3) * 2;
+                case st_VINES:
+                    state = (rand() % 5);
+                    break;
+                case st_POT:
+                    state = int(x * info->size.y);
                     break;
                 }
                 for (int y = 0; y < info->size.y; y++) {
                     glm::vec2 newpos = pos + glm::vec2(x, y);
                     breakBlock(l, newpos);
                     int c = vecToInt(newpos);
-                    l->mblocks[c] = { blocks::nameToID.at(type), light, state + y, 1};
+                    l->mblocks[c].id = blocks::nameToID.at(type);
+                    l->mblocks[c].state = wholestate + state + y;
+                    l->mblocks[c].breaking = 1;
                     if (x != 0 || y != 0) {
                         childParent->addSub(newpos, pos, true);
                     }
@@ -253,16 +270,11 @@ namespace Layers {
         }
     }
 
-    bool placeBlock(glm::vec2 pos, std::string type, glm::vec3 light, int size, std::vector<std::function<bool(BlockConditionArgs)>>* conditions, glm::vec3 setlight)
+    bool placeBlock(glm::vec2 pos, std::string type, int size, std::vector<std::function<bool(BlockConditionArgs)>>* conditions, glm::vec3 setlight)
     {
         if (blocks::nameToInfo.count(type.data()) <= 0)  return false;
-
         Layer* l = getLayer(blocks::nameToInfo[type].layer);
-        if (placeBlock(l, pos, type, light, size, conditions, setlight)) {
-            return true;
-        }
-
-        return false;
+        return placeBlock(l, pos, type, size, conditions, setlight);
     }
 
     void breakBlock(Layer* l, glm::vec2 pos, int size, bool dropitem, bool checkforchildren, bool execute, bool particles)
@@ -276,7 +288,9 @@ namespace Layers {
             if (particles) spawnParticlesFromBlock(pos, info);
             
             int c = vecToInt(pos);
-            l->mblocks[c] = { globals::emptyid, {0,0,0}, 0, 4.0f };
+            l->mblocks[c].id = globals::emptyid;
+            l->mblocks[c].state = 0;
+            l->mblocks[c].breaking = 4;
 
             if (execute) info->onBreak(pos, info);
 
@@ -302,13 +316,13 @@ namespace Layers {
         }
     }
 
-    bool damageBlock(Layer* l, glm::vec2 pos, float strength, int size, bool dropitem, itemInfo* iteminfo) {
+    bool damageBlock(Layer* l, glm::vec2 pos, float strength, int size, bool dropitem, itemFamily fam) {
         if (size > 0) {
             if (size > 1) {
                 for (int x2 = -size; x2 < size; x2++) {
                     for (int y2 = -size; y2 < size; y2++) {
                         if (glm::distance(pos + glm::vec2(x2, y2), pos) < size) {
-                            damageBlock(l, pos + glm::vec2(x2, y2), strength, dropitem, iteminfo);
+                            damageBlock(l, pos + glm::vec2(x2, y2), strength, dropitem, fam);
                         }
                     }
                 }
@@ -317,8 +331,8 @@ namespace Layers {
                 int c = vecToInt(pos);
                 auto info = queryBlockInfo(l, pos);
                 if (canDamage(l, pos)) {
-                    if (iteminfo != nullptr) {
-                        if (iteminfo->families.count(info->damagableWith) <= 0) {
+                    if (fam != if_ANY) {
+                        if (fam != info->damagableWith) {
                             return false;
                         }
                     }
@@ -410,72 +424,76 @@ namespace Layers {
 
     void autoSprite(Layer* l, glm::vec2 pos)
     {
-        if (verifyBlock(l, &pos, false)) {
-            int n = 0;
-            auto b = queryBlock(l, pos);
-            switch (blocks::idToInfo[b->id].spriteType) {
-            case st_SINGLE:
-                break;
-            case st_BLOCK:
-                if (queryBlockInfo(l, { pos.x, pos.y + 1 })->updatesBot) {
-                    n += 1;
-                }
-                if (queryBlockInfo(l, { pos.x + 1, pos.y })->updatesLeft) {
-                    n += 2;
-                }
-                if (queryBlockInfo(l, { pos.x, pos.y - 1 })->updatesTop) {
-                    n += 4;
-                }
-                if (queryBlockInfo(l, { pos.x - 1, pos.y })->updatesRight) {
-                    n += 8;
-                }
-                b->state = n;
-                break;
-            case st_WALL:
-                if (queryBlockInfo(l, { pos.x, pos.y + 1 })->updatesBot) {
-                    n += 1;
-                }
-                if (queryBlockInfo(l, { pos.x + 1, pos.y })->updatesLeft) {
-                    n += 2;
-                }
-                if (queryBlockInfo(l, { pos.x, pos.y - 1 })->updatesTop) {
-                    n += 4;
-                }
-                if (queryBlockInfo(l, { pos.x - 1, pos.y })->updatesRight) {
-                    n += 8;
-                }
-                b->state = n;
-                break;
-            case st_TORCH:
-                if (queryBlockInfo(l, { pos.x, pos.y - 1 })->updatesBot) {
-                    n = 0;
-                }else
+        if (!verifyBlock(l, &pos, false)) return;
+        int n = 0;
+        auto b = queryBlock(l, pos);
+        switch (blocks::idToInfo[b->id].spriteType) {
+        case st_SINGLE:
+            break;
+        case st_BLOCK:
+            if (queryBlockInfo(l, { pos.x, pos.y + 1 })->updatesBot) {
+                n += 1;
+            }
+            if (queryBlockInfo(l, { pos.x + 1, pos.y })->updatesLeft) {
+                n += 2;
+            }
+            if (queryBlockInfo(l, { pos.x, pos.y - 1 })->updatesTop) {
+                n += 4;
+            }
+            if (queryBlockInfo(l, { pos.x - 1, pos.y })->updatesRight) {
+                n += 8;
+            }
+            b->state = n;
+            break;
+        case st_WALL:
+            if (queryBlockInfo(l, { pos.x, pos.y + 1 })->updatesBot) {
+                n += 1;
+            }
+            if (queryBlockInfo(l, { pos.x + 1, pos.y })->updatesLeft) {
+                n += 2;
+            }
+            if (queryBlockInfo(l, { pos.x, pos.y - 1 })->updatesTop) {
+                n += 4;
+            }
+            if (queryBlockInfo(l, { pos.x - 1, pos.y })->updatesRight) {
+                n += 8;
+            }
+            b->state = n;
+            break;
+        case st_TORCH:
+            if (queryBlockInfo(l, { pos.x, pos.y - 1 })->updatesBot) {
+                n = 0;
+            }
+            else
                 if (queryBlockInfo(l, { pos.x - 1, pos.y })->updatesLeft) {
                     n = 1;
-                }else
-                if (queryBlockInfo(l, { pos.x + 1, pos.y })->updatesTop) {
-                    n = 2;
-                }else
-                if (queryBlockInfo(l, { pos.x, pos.y + 1 })->updatesRight) {
-                    n = 3;
                 }
-                b->state = n;
-                break;
-            case st_PLATFORM:
-                auto left = queryBlockInfo(l, { pos.x - 1, pos.y });
-                auto right = queryBlockInfo(l, { pos.x + 1, pos.y });
-                b->state = 0;
-                if (left->spriteType == st_PLATFORM) {
-                    if (right->spriteType == st_PLATFORM) {
-                        b->state = 5;
+                else
+                    if (queryBlockInfo(l, { pos.x + 1, pos.y })->updatesTop) {
+                        n = 2;
                     }
-                    else if (right->updatesLeft) {
-                        b->state = 1;
-                    }
-                    else {
-                        b->state = 4;
-                    }
-                }else
+                    else
+                        if (queryBlockInfo(l, { pos.x, pos.y + 1 })->updatesRight) {
+                            n = 3;
+                        }
+            b->state = n;
+            break;
+        case st_PLATFORM: {
+            auto left = queryBlockInfo(l, { pos.x - 1, pos.y });
+            auto right = queryBlockInfo(l, { pos.x + 1, pos.y });
+            b->state = 0;
+            if (left->spriteType == st_PLATFORM) {
+                if (right->spriteType == st_PLATFORM) {
+                    b->state = 5;
+                }
+                else if (right->updatesLeft) {
+                    b->state = 1;
+                }
+                else {
+                    b->state = 4;
+                }
+            }
+            else
                 if (right->spriteType == st_PLATFORM) {
                     if (left->updatesLeft) {
                         b->state = 2;
@@ -490,11 +508,63 @@ namespace Layers {
                 else if (right->updatesLeft) {
                     b->state = 7;
                 }
-               
+            break;
+        }
+        case st_WATER:
+            {
+                bool bot = queryBlockInfo(l, { pos.x, pos.y - 1 })->updatesTop;
+                bool top = queryBlockInfo(l, { pos.x, pos.y + 1 })->updatesBot;
+                bool right = queryBlockInfo(l, { pos.x + 1, pos.y })->updatesLeft;
+                bool left = queryBlockInfo(l, { pos.x - 1, pos.y })->updatesRight;
+                if (!bot && !top && !right && !left) {
+                    b->state = 0;
+                    return;
+                }
+                if (bot && top && !right && left) {
+                    b->state = 1;
+                    return;
+                }
+                if (bot && !top && !right && left) {
+                    b->state = 2;
+                    return;
+                }
+                if (top && !right && !left) {
+                    b->state = 3;
+                    return;
+                }
+                if (!top && !right && !left) {
+                    b->state = 4;
+                    return;
+                }
+                if (bot && !top && right && left) {
+                    b->state = 5;
+                    return;
+                }
+                if (bot && top && right && left) {
+                    b->state = 6;
+                    return;
+                }
+                if (!bot && !top && !right && left) {
+                    b->state = 7;
+                    return;
+                }
+                if (bot && !top && right && !left) {
+                    b->state = 8;
+                    return;
+                }
                 break;
             }
+        case st_VINES:
+        {
+            if (*queryBlockName(l, { pos.x, pos.y - 1 }) == "normalvines" || *queryBlockName(l, { pos.x, pos.y - 1 }) == "junglevines") {
+                b->state = (rand() % 5) + 5;
+            }
+            else {
+                b->state = rand() % 5;
+            }
+            break;
         }
-
+        }
     }
 
     const std::string* queryBlockName(Layer* l, glm::vec2 pos, bool checkForChildren)
@@ -538,10 +608,57 @@ namespace Layers {
         return &blocks::idToInfo[globals::emptyid];
     }
 
+    blocks::BlockInfo* queryBlockInfo(Layer* l, uint32_t c)
+    {
+        if (c < 0 || c > map::mapX * map::mapY) return &blocks::idToInfo[globals::emptyid];
+
+        return &blocks::idToInfo[l->mblocks[c].id];
+    }
+
     blocks::BlockInfo* fastQueryBlockInfo(Layer* l, glm::vec2 pos)
     {
         int c = vecToInt(pos);
         return &blocks::idToInfo[l->mblocks[c].id];
+    }
+
+    bool canLiquidGoThru(Layer* l,glm::vec2 pos)
+    {
+        if (!verifyBlock(l, &pos, false)) return false;
+        int c = vecToInt(pos);
+        return blocks::idToInfo[l->mblocks[c].id].canpassliquid;
+    }
+
+    bool canLiquidGoThru(Layer* l, int c)
+    {
+        if (c < 0 || c > map::mapX * map::mapY - 1) return false;
+        return blocks::idToInfo[l->mblocks[c].id].canpassliquid;
+    }
+
+    void moveBlockTo(Layer* l, glm::vec2 from, glm::vec2 to)
+    {
+        int cfrom = vecToInt(from);
+        int cto = vecToInt(to);
+        l->mblocks[cto] = l->mblocks[cfrom];
+        l->mblocks[cfrom].id = globals::emptyid;
+        l->mblocks[cfrom].state = 0;
+        autoSprite(l, { to.x + 1,to.y });
+        autoSprite(l, { to.x - 1,to.y });
+        autoSprite(l, { to.x,to.y + 1 });
+        autoSprite(l, { to.x,to.y - 1 });
+        autoSprite(l, { from.x + 1,from.y });
+        autoSprite(l, { from.x - 1,from.y });
+        autoSprite(l, { from.x,from.y + 1 });
+        autoSprite(l, { from.x,from.y - 1 });
+    }
+
+    void swapBlocks(Layer* l, glm::vec2 from, glm::vec2 to)
+    {
+        Block tmp;
+        int cfrom = vecToInt(from);
+        int cto = vecToInt(to);
+        tmp = l->mblocks[cfrom];
+        l->mblocks[cfrom] = l->mblocks[cto];
+        l->mblocks[cto] = tmp;
     }
 
     void setLight(Layer* l, glm::vec2 pos, glm::vec3 light)
@@ -597,7 +714,7 @@ namespace Layers {
         int max = 0;
         allBiomes.clear();
         if (biomeCounter.size() == 0) {
-            currentBiome = "none";
+            currentBiome = "forest";
         }
         for (auto& i : Layers::biomeCounter) {
             if (i.second < biomes[i.first].numNeededBlocks) continue;
@@ -610,21 +727,6 @@ namespace Layers {
             }
         }
 
-        if (Player::pos.y > map::surfaceH + map::surfaceScale * 2) {
-            allBiomes.insert("space");
-            currentBiome = "space";
-        }else
-        if (Player::pos.y > map::surfaceH - map::surfaceScale) {
-            allBiomes.insert("surface");
-        }else
-        if (Player::pos.y > map::underworldH) {
-            allBiomes.insert("underground");
-            currentBiome = "underground";
-        }else
-        {
-            allBiomes.insert("underworld");
-            currentBiome = "underworld";
-        }
         biomeCounter.clear();
     }
 
@@ -878,32 +980,7 @@ namespace Layers {
 
     void spawnMobs()
     {
-        for (auto& biome : allBiomes) {
-            for (auto& mob : biomes[biome].mobs) {
-                float chance = mob.second;
-                auto info = &enemies::enemies[mob.first];
-                if (info->mC.families.count(mf_ENEMY) >= 1) {
-                    chance *= Player::enemyChance;
-                }
-                if (info->mC.families.count(mf_CRITTER) >= 1) {
-                    chance *= Player::critterChance;
-                }
-                int min = info->spawntime - info->spawnrange;
-                int max = info->spawntime + info->spawnrange;
-                max %= globals::dayLength + 1;
-                if (min < 0) min = globals::dayLength + min;
-                if (globals::cdayTime < min || globals::cdayTime > max) continue;
-
-                while (chance > 1) {
-                    enemies::spawnEnemy(mob.first, enemies::enemies[mob.first].spawnFunc());
-                    chance--;
-                }
-                if (rand() % int(1 / chance) == 0) {
-                    enemies::spawnEnemy(mob.first, enemies::enemies[mob.first].spawnFunc());
-                    return;
-                }
-            }
-        }
+       
     }
 
     glm::vec2 findEmptySpot()

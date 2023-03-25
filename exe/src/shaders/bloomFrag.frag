@@ -5,20 +5,21 @@ out vec4 FragColor;
 
 uniform float bloom_spread = 1;
 uniform float bloom_ratio = 0.2;
-uniform float bloom_intensity = 1.5;
+uniform float bloom_intensity = 0.7;
 layout (location = 5) uniform sampler2D txrmap;
 
-in vec2 t1;
+const int num = 3;
 
+in vec2 t1;
 void main()
 {
-    /*ivec2 size = textureSize(txrmap, 0);
+    ivec2 size = textureSize(txrmap, 0);
     float uv_x = t1.x * size.x;
     float uv_y = t1.y * size.y;
 
     vec4 sum = vec4(0.0);
-    for (int n = 0; n < 9; ++n) {
-        uv_y = (t1.y * size.y) + (bloom_spread * float(n - 4));
+     for (int num = 0; num < 9; ++num) {
+        uv_y = (t1.y * size.y) + (bloom_spread * float(num - 4));
         vec4 h_sum = vec4(0.0);
         h_sum += texelFetch(txrmap, ivec2(uv_x - (4.0 * bloom_spread), uv_y), 0);
         h_sum += texelFetch(txrmap, ivec2(uv_x - (3.0 * bloom_spread), uv_y), 0);
@@ -33,6 +34,7 @@ void main()
     }
 
     FragColor = ((1-bloom_ratio)*texture(txrmap, t1)) + (sum/9 * bloom_ratio * bloom_intensity);
-    */
-    FragColor = texture(txrmap, t1);
+    FragColor *= 1.15;
+
+    //FragColor = texture(txrmap, t1);
 }

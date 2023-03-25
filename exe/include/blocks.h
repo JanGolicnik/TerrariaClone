@@ -19,6 +19,7 @@ namespace blocks {
 	struct Decor {
 		std::string block;
 		float chance;
+		std::string height;
 		std::set<std::string> ontop;
 		std::set<std::string> onright;
 		std::set<std::string> onleft;
@@ -41,7 +42,7 @@ namespace blocks {
 		bool emitskylight = false;
 		float friction;
 		std::string layer;
-		float minPickaxeStrength = 35;
+		float minPickaxeStrength = 30;
 		std::string damageParticle = "";
 		SpriteType spriteType;
 		glm::vec2 size;
@@ -66,6 +67,8 @@ namespace blocks {
 		itemFamily damagableWith = if_PICKAXE;
 		bool canBreakBelow = true;
 		std::string buff = "nothing";
+		bool canpassliquid = false;
+		int numsprites = 1;
 	};
 
 }
@@ -82,11 +85,14 @@ namespace BFuncs {
 	bool chairOnPlace(BlockFuncArgs);
 	bool saplingOnUpdate(BlockFuncArgs);
 	bool buffBlockOnUpdate(BlockFuncArgs);
-	bool demonAltarOnBreak(BlockFuncArgs);
+	bool shadoworbOnBreak(BlockFuncArgs);
+	bool hellstoneOnBreak(BlockFuncArgs);
+	bool grasssoundOnBreak(BlockFuncArgs);
 }
 
 namespace BRules {
 	void breakSelf(BlockRuleArgs);
+	void breakSelfAndUpdateBelow(BlockRuleArgs);
 	void replaceWith(BlockRuleArgs);
 	void growNormalTree(BlockRuleArgs);
 	void growCorruptTree(BlockRuleArgs);
@@ -106,6 +112,7 @@ namespace BConditions {
 	bool isntempty(BlockConditionArgs);
 	bool issolidbelow(BlockConditionArgs);
 	bool bottle(BlockConditionArgs);
+	bool isempty(BlockConditionArgs);
 }
 
 
@@ -141,11 +148,13 @@ namespace blocks
 	void addParticle(std::string name, particleEmmiterC pec);
 	void addDamagableWith(std::string name, itemFamily fam);
 	void addBuff(std::string name, std::string buff);
+	void canPassLiquid(std::string name);
 	void emitSkyLight(std::string name);
 	void makeUnbreakableBelow(std::string name);
 	void animate(std::string name, glm::vec4 frameoffset, int rate, int numframes);
 	void clean();
 	int addToBuffer(std::string texture, glm::vec2 size, SpriteType st);
-	void addDecor(std::string block, float chance, std::set<std::string> ontop = {}, std::set<std::string> onbot = {}, std::set<std::string> onleft = {}, std::set<std::string> onright = {});
+	void addDecor(std::string block, float chance, std::string height = "any", std::set<std::string> ontop = {}, std::set<std::string> onbot = {}, std::set<std::string> onleft = {}, std::set<std::string> onright = {});
 	float potCoinMod(glm::vec2);
+	void setNextNumSprites(int n);
 };

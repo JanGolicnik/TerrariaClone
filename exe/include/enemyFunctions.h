@@ -54,6 +54,13 @@ namespace mobFunctions
 	void wormCreateBody(args);
 	void wormBodyOnUpdate(args);
 	void eyeofcthuluOnUpdate(args);
+	void eaterofworldsbodyOnUpdate(args);
+	void eaterofworldsHeadOnUpdate(args);
+	void cloudOnUpdate(args);
+	void bladeOfGrassOnUpdate(args);
+	void fireflyOnUpdate(args);
+	void tombstoneOnUpdate(args);
+	void goreOnUpdate(args);
 
 	void ondie_nothing(mobDeathargs);
 	void ondie_waterbolt(mobDeathargs);
@@ -65,6 +72,8 @@ namespace mobFunctions
 	void ondie_snowball(mobDeathargs);
 	void ondie_bee(mobDeathargs);
 	void ondie_impprojectile(mobDeathargs);
+	void ondie_bladeofgrassprojectile(mobDeathargs);
+	void ondie_eaterofworlds(mobDeathargs);
 };
 #undef args
 
@@ -77,6 +86,7 @@ namespace collisionFs {
 	void damagePlayerBurn(mobCWPargs);
 	void terraBladedamage(mobCargs);
 	void volcanoDamage(mobCargs);
+	void bladeofgrassDamage(mobCargs);
 	void moltenPickaxeDamage(mobCargs);
 	void moltenHamaxeDamage(mobCargs);
 }

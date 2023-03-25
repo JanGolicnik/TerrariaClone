@@ -4,6 +4,7 @@
 #include <core.h>
 #include <functional>
 #include <globals.h>
+#include <sounds.h>
 
 struct physicsC {
     std::shared_ptr<glm::vec2> position;
@@ -19,12 +20,14 @@ struct physicsC {
     bool bounce = false;
     bool friction = true;
     float weight = 1;
-    glm::vec2 prevpos;
+    glm::vec2 prevpos = glm::vec2(0);
     float bounciness = 0;
     bool ignorebot = false;
     bool ignoretop = false;
     bool ignoreleft = false;
     bool ignoreright = false;
+    bool affectedByLiquid = true;
+    int isinliquid = -1;
 };
 
 struct drawC {
@@ -124,6 +127,12 @@ struct mobC {
     bool candespawn = true;
     float hitboxradius = 0;
     std::vector<ActiveBuff> buffs;
+    int directDamageTo = -1;
+    bool damageInLava = true;
+    void(*damageSound)() = sounds::normalhit;
+    void(*deathSound)() = sounds::normaldie;
+    std::string gore = "";
+    int slots = 1;
 };
 
 enum itemAnim {
@@ -167,6 +176,7 @@ union uiStat {
     float floatVal;
     bool boolVal = 0;
     int* intValp;
+    unsigned int* uintValp;
     float* floatValp;
     bool* boolValp;
     void* voidp;
@@ -195,7 +205,11 @@ struct uiC {
     std::function<void(uiCfunctionArguments)> onrender;
     std::function<void(uiCfunctionArguments)> onnothover;
     std::function<void(uiCfunctionArguments)> onrightclick;
+    std::function<void(uiCfunctionArguments)> onhold;
+    std::function<void(uiCfunctionArguments)> onenter;
     bool removed = false;
+    bool holding = false;
+    bool hovering = false;
 };
 
 struct textC {
@@ -240,6 +254,8 @@ struct particleEmmiterC {
     float randradius = 0;
     float speedmultiplier = 0;
     int parent = -1;
+    glm::vec3 color = glm::vec3(1);
+    bool matchparticledir = false;
 };
 
 struct projectileBase {
@@ -298,14 +314,16 @@ public:
     SpriteVertex* vertices;
     const int bsize = 1000;
     int renderi = 0;
-    static int mainDrawable;
     static int behindBackground;
+    static int behindBlocks;
+    static int mainDrawable;
     static int front;
 
     void onRegister();
 
-    void Update();
     void UpdateBehindBackground();
+    void UpdateBehindBlocks();
+    void Update();
     void UpdateFront();
 
     static void addComponent(int entity, drawC* dc, bool force = true);

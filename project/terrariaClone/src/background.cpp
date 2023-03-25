@@ -3,149 +3,160 @@
 #include <utils.h>
 #include <globals.h>
 #include <layers.h>
+#include <player.h>
+#include <world.h>
 
 namespace background {
-	std::unordered_map<int, bg> bgs;
-	std::unordered_map<std::string, int> bgNames;
+	
+	struct bgSprite{
+		GLuint tex;
+		glm::vec2 res;
+		glm::vec4 offset;
+		bool repeatY = false;
+	};
+
+	typedef std::array<bgSprite, 7> bg;
+	std::unordered_map<std::string, bg> bgs;
 	float biomeDiff = 0;
 	std::string currBg = "forest";
 	std::string swapTo = "forest";
 	void load()
 	{
 		clear();
-		int id = 0;
 		bg tmp;
-		tmp.res = glm::vec2(1500, 600);
-		tmp.front = utils::LoadTexture("assets/skorno1.png", 4, true, &tmp.res);
-		tmp.mid = utils::LoadTexture("assets/skorno2.png", 4, true);
-		tmp.back = utils::LoadTexture("assets/skorno3.png", 4, true);
-		tmp.mid = utils::LoadTexture("assets/empty.png", 4, true);
-		tmp.back = utils::LoadTexture("assets/empty.png", 4, true);
-		bgs.insert(std::make_pair(id, tmp));
-		bgNames.insert(std::make_pair("forest", id));
-		id++;
+		tmp.fill(bgSprite(-1, glm::vec2(0), glm::vec4(0)));
+		glm::vec2 res(0);
+		tmp[0] = bgSprite(utils::LoadTexture("assets/backgrounds/forest/1.png", 4, false, &res), res, glm::vec4(0, -0.2, 1, 1));
+		tmp[1] = bgSprite(utils::LoadTexture("assets/backgrounds/forest/2.png", 4, false, &res), res, glm::vec4(0, -0.1, 1.5, 1));
+		tmp[2] = bgSprite(utils::LoadTexture("assets/backgrounds/forest/3.png", 4, false, &res), res, glm::vec4(0, -0.2, 2, 1));
+		tmp[3] = bgSprite(utils::LoadTexture("assets/backgrounds/forest/4.png", 4, false, &res), res, glm::vec4(0, 0.75, 2.5, 2));
+		tmp[4] = bgSprite(utils::LoadTexture("assets/backgrounds/forest/5.png", 4, false, &res), res, glm::vec4(0, 2, 3, 3));
+		bgs.insert(std::make_pair("forest", tmp));
 
-		tmp.front = utils::LoadTexture("assets/corruptskorno1.png", 4, true, &tmp.res);
-		tmp.mid = utils::LoadTexture("assets/corruptskorno2.png", 4, true);
-		tmp.back = utils::LoadTexture("assets/corruptskorno3.png", 4, true);
-		tmp.mid = utils::LoadTexture("assets/empty.png", 4, true);
-		tmp.back = utils::LoadTexture("assets/empty.png", 4, true);
-		bgs.insert(std::make_pair(id, tmp));
-		bgNames.insert(std::make_pair("corruption", id));
-		id++;
+		tmp.fill(bgSprite(-1, glm::vec2(0), glm::vec4(0)));
+		tmp[0] = bgSprite(utils::LoadTexture("assets/backgrounds/snow/1.png", 4, false, &res), res, glm::vec4(0, 0.15, 1, 1));
+		tmp[1] = bgSprite(utils::LoadTexture("assets/backgrounds/snow/2.png", 4, false, &res), res, glm::vec4(0, 0.2, 1.5, 1));
+		tmp[2] = bgSprite(utils::LoadTexture("assets/backgrounds/snow/3.png", 4, false, &res), res, glm::vec4(0, 1.15, 2, 1.5));
+		bgs.insert(std::make_pair("snow", tmp));
 
-		tmp.front = utils::LoadTexture("assets/pesekskorno1.png", 4, true, &tmp.res);
-		tmp.mid = utils::LoadTexture("assets/pesekskorno2.png", 4, true);
-		tmp.back = utils::LoadTexture("assets/pesekskorno3.png", 4, true);
-		tmp.mid = utils::LoadTexture("assets/empty.png", 4, true);
-		tmp.back = utils::LoadTexture("assets/empty.png", 4, true);
-		bgs.insert(std::make_pair(id, tmp));
-		bgNames.insert(std::make_pair("desert", id));
-		id++;
+		tmp.fill(bgSprite(-1, glm::vec2(0), glm::vec4(0)));
+		tmp[0] = bgSprite(utils::LoadTexture("assets/backgrounds/desert/1.png", 4, false, &res), res, glm::vec4(0, 0.2, 1, 1));
+		tmp[1] = bgSprite(utils::LoadTexture("assets/backgrounds/desert/2.png", 4, false, &res), res, glm::vec4(0.36, 0.3, 1.5, 1));
+		tmp[2] = bgSprite(utils::LoadTexture("assets/backgrounds/desert/3.png", 4, false, &res), res, glm::vec4(0, 0.1, 2, 1));
+		tmp[3] = bgSprite(utils::LoadTexture("assets/backgrounds/desert/4.png", 4, false, &res), res, glm::vec4(0.5, 0.8, 3, 1));
+		bgs.insert(std::make_pair("desert", tmp));
 
-		tmp.front = utils::LoadTexture("assets/prokletskorno1.png", 4, true, &tmp.res);
-		tmp.mid = utils::LoadTexture("assets/prokletskorno2.png", 4, true);
-		tmp.back = utils::LoadTexture("assets/prokletskorno3.png", 4, true);
-		bgs.insert(std::make_pair(id, tmp));
-		bgNames.insert(std::make_pair("underworld", id));
-		id++;
+		tmp.fill(bgSprite(-1, glm::vec2(0), glm::vec4(0)));
+		tmp[0] = bgSprite(utils::LoadTexture("assets/backgrounds/corruption/1.png", 4, false, &res), res, glm::vec4(0, 0, 1, 1));
+		tmp[1] = bgSprite(utils::LoadTexture("assets/backgrounds/corruption/2.png", 4, false, &res), res, glm::vec4(0.36, 0.1, 1.5, 1));
+		tmp[2] = bgSprite(utils::LoadTexture("assets/backgrounds/corruption/3.png", 4, false, &res), res, glm::vec4(0, 0.3, 1, 1));
+		tmp[3] = bgSprite(utils::LoadTexture("assets/backgrounds/corruption/4.png", 4, false, &res), res, glm::vec4(0.6, 0.8, 1.75, 1.5));
+		tmp[4] = bgSprite(utils::LoadTexture("assets/backgrounds/corruption/5.png", 4, false, &res), res, glm::vec4(0.66, 1.36, 3, 2));
+		bgs.insert(std::make_pair("corruption", tmp));
 
-		tmp.front = utils::LoadTexture("assets/kamenoskorno1.png", 4, true, &tmp.res);
-		tmp.mid = utils::LoadTexture("assets/kamenoskorno2.png", 4, true);
-		tmp.back = utils::LoadTexture("assets/kamenoskorno3.png", 4, true);
-		bgs.insert(std::make_pair(id, tmp));
-		bgNames.insert(std::make_pair("underground", id));
-		id++;
+		tmp.fill(bgSprite(-1, glm::vec2(0), glm::vec4(0)));
+		tmp[0] = bgSprite(utils::LoadTexture("assets/backgrounds/jungle/1.png", 4, false, &res), res, glm::vec4(0, 0.3, 1, 1));
+		tmp[1] = bgSprite(utils::LoadTexture("assets/backgrounds/jungle/2.png", 4, false, &res), res, glm::vec4(0.36, 1.1, 2, 2));
+		tmp[2] = bgSprite(utils::LoadTexture("assets/backgrounds/jungle/3.png", 4, false, &res), res, glm::vec4(0, 1.5, 3, 2.5));
+		bgs.insert(std::make_pair("jungle", tmp));
 
-		tmp.front = utils::LoadTexture("assets/space.png", 4, true, &tmp.res);
-		tmp.mid = utils::LoadTexture("assets/empty.png", 4, true);
-		tmp.back = utils::LoadTexture("assets/empty.png", 4, true);
-		bgs.insert(std::make_pair(id, tmp));
-		bgNames.insert(std::make_pair("space", id));
-		id++;
+		tmp.fill(bgSprite(-1, glm::vec2(0), glm::vec4(0)));
+		tmp[0] = bgSprite(utils::LoadTexture("assets/backgrounds/0.png", 4, false, &res), res, glm::vec4(0,0,0,1));
+		bgs.insert(std::make_pair("surface", tmp));
+
+		tmp.fill(bgSprite(-1, glm::vec2(0), glm::vec4(0)));
+		tmp[0] = bgSprite(utils::LoadTexture("assets/backgrounds/underground/forest/0.png", 4, true, &res), res, glm::vec4(0, 0, 0, 1));
+		bgs.insert(std::make_pair("forestunderground", tmp));
+		bgs.insert(std::make_pair("desertunderground", tmp));
+
+		tmp.fill(bgSprite(-1, glm::vec2(0), glm::vec4(0)));
+		tmp[0] = bgSprite(utils::LoadTexture("assets/backgrounds/underground/corruption/0.png", 4, true, &res), res, glm::vec4(0, 0, 0, 1), true);
+		bgs.insert(std::make_pair("corruptionunderground", tmp));
+
+		tmp.fill(bgSprite(-1, glm::vec2(0), glm::vec4(0)));
+		tmp[0] = bgSprite(utils::LoadTexture("assets/backgrounds/underground/jungle/0.png", 4, true, &res), res, glm::vec4(0, 0, 0, 1), true);
+		bgs.insert(std::make_pair("jungleunderground", tmp));
+
+		tmp.fill(bgSprite(-1, glm::vec2(0), glm::vec4(0)));
+		tmp[0] = bgSprite(utils::LoadTexture("assets/backgrounds/caverns/forest/0.png", 4, true, &res), res, glm::vec4(0, 0, 0, 1), true);
+		bgs.insert(std::make_pair("forestcavern", tmp));
+		bgs.insert(std::make_pair("desertcavern", tmp));
+
+		tmp.fill(bgSprite(-1, glm::vec2(0), glm::vec4(0)));
+		tmp[0] = bgSprite(utils::LoadTexture("assets/backgrounds/caverns/corruption/0.png", 4, true, &res), res, glm::vec4(0, 0, 0, 1), true);
+		bgs.insert(std::make_pair("corruptioncavern", tmp));
+
+		tmp.fill(bgSprite(-1, glm::vec2(0), glm::vec4(0)));
+		tmp[0] = bgSprite(utils::LoadTexture("assets/backgrounds/caverns/jungle/0.png", 4, true, &res), res, glm::vec4(0, 0, 0, 1), true);
+		bgs.insert(std::make_pair("junglecavern", tmp));
+
+		tmp.fill(bgSprite(-1, glm::vec2(0), glm::vec4(0)));
+		tmp[0] = bgSprite(utils::LoadTexture("assets/backgrounds/underworld/0.png", 4, false, &res), res, glm::vec4(0, 0.25, 0, 1));
+		tmp[1] = bgSprite(utils::LoadTexture("assets/backgrounds/underworld/1.png", 4, false, &res), res, glm::vec4(0, 0, 1.5, 1));
+		tmp[2] = bgSprite(utils::LoadTexture("assets/backgrounds/underworld/2.png", 4, false, &res), res, glm::vec4(0, 0.1, 2, 1));
+		tmp[3] = bgSprite(utils::LoadTexture("assets/backgrounds/underworld/3.png", 4, false, &res), res, glm::vec4(0, 0, 3, 1));
+		bgs.insert(std::make_pair("underworld", tmp));
 	}
 
 	void render()
 	{
-		if (background::currBg == background::swapTo) {
-			background::biomeDiff = 0;
+		if (currBg == swapTo) {
+			biomeDiff = 0;
 		}
-		if (background::biomeDiff == 0) {
-			background::swapTo = Layers::currentBiome;
+		if (biomeDiff == 0) {
+			swapTo = Layers::currentBiome;
 		}
-		if (background::biomeDiff < 0.95) {
-			background::biomeDiff += utils::approach(background::biomeDiff, 1, 30);
+		if (biomeDiff < 0.95) {
+			biomeDiff += utils::approach(biomeDiff, 1, 30);
 		}
-		if (background::biomeDiff > 0.95) {
-			background::biomeDiff = 0;
-			background::currBg = background::swapTo;
+		if (biomeDiff > 0.95) {
+			biomeDiff = 0;
+			currBg = swapTo;
 		}
-		background::renderTwo(background::bgNames[Layers::biomes[background::currBg].bg], background::bgNames[Layers::biomes[background::swapTo].bg], background::biomeDiff);
+
+		std::string curr = Layers::biomes[currBg].bg;
+		std::string swap = Layers::biomes[swapTo].bg;
+
+
+		
+		if (Player::pos.y < map::underworldH) {
+			curr = "underworld";
+			swap = "underworld";
+		} else if (Player::pos.y < map::underworldH + (map::surfaceH - map::underworldH) / 2) {
+			curr += "cavern";
+			swap += "cavern";
+		} else if (Player::pos.y < map::surfaceH - map::surfaceScale) {
+			curr += "underground";
+			swap += "underground";
+		}
+
+		renderOne(curr, 1 - biomeDiff);
+		renderOne(swap, biomeDiff);
 	}
 
-	void renderOne(int id)
+	void renderOne(std::string id, float opacity)
 	{
-		auto bg = &bgs[id];
+		bg* b = &bgs[id];
 		glUseProgram(globals::backgroundShaderID);
-		glUniform1i(2, 0);
-		glActiveTexture(GL_TEXTURE0 + 0);
-		glBindTexture(GL_TEXTURE_2D, bg->front);
-		glUniform1i(3, 1);
-		glActiveTexture(GL_TEXTURE0 + 1);
-		glBindTexture(GL_TEXTURE_2D, bg->mid);
-		glUniform1i(4, 2);
-		glActiveTexture(GL_TEXTURE0 + 2);
-		glBindTexture(GL_TEXTURE_2D, bg->back);
-		glUniform2f(5, bg->res.x, bg->res.y);
 
-		glUniform1i(6, 3);
-		glActiveTexture(GL_TEXTURE0 + 3);
-		glBindTexture(GL_TEXTURE_2D, 0);
-		glUniform1i(7, 4);
-		glActiveTexture(GL_TEXTURE0 + 4);
-		glBindTexture(GL_TEXTURE_2D, 0);
-		glUniform1i(8, 5);
-		glActiveTexture(GL_TEXTURE0 + 5);
-		glBindTexture(GL_TEXTURE_2D, 0);
-		glUniform2f(9, 0, 0);
+		glUniform3f(0, globals::dayclr.r, globals::dayclr.g, globals::dayclr.b);
+		glUniform1f(1, opacity);
+		glUniform2f(2, globals::resX, globals::resY);
+		glUniform1f(3, 0.1);
 
-		glUniform3f(10, globals::dayclr.r, globals::dayclr.g, globals::dayclr.b);
-		glUniform1f(11, globals::bgoffset);
-		glUniform1f(12, 0);
-		glBindVertexArray(globals::overlayVA);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	}
+		for (int i = 0; i < b->size(); i++) {
+			glActiveTexture(GL_TEXTURE0 + i);
+			glBindTexture(GL_TEXTURE_2D, b->at(i).tex);
+			GLuint texloc = glGetUniformLocation(globals::backgroundShaderID, std::string("uBgs[" + std::to_string(i) + "].tex").c_str());
+			GLuint resloc = glGetUniformLocation(globals::backgroundShaderID, std::string("uBgs[" + std::to_string(i) + "].res").c_str());
+			GLuint offloc = glGetUniformLocation(globals::backgroundShaderID, std::string("uBgs[" + std::to_string(i) + "].offset").c_str());
+			GLuint repeatloc = glGetUniformLocation(globals::backgroundShaderID, std::string("uBgs[" + std::to_string(i) + "].repeatY").c_str());
+			glUniform1i(texloc, i);
+			glUniform2f(resloc, b->at(i).res.x, b->at(i).res.y);
+			glUniform3f(offloc, b->at(i).offset.x + b->at(i).offset.z * globals::bgoffset, b->at(i).offset.y, b->at(i).offset.w);
+			glUniform1i(repeatloc, b->at(i).repeatY);
+		}
 
-	void renderTwo(int id1, int id2, float mixfactor)
-	{
-		auto bg1 = &bgs[id1];
-		auto bg2 = &bgs[id2];
-		glUseProgram(globals::backgroundShaderID);
-		glUniform1i(2, 0);
-		glActiveTexture(GL_TEXTURE0 + 0);
-		glBindTexture(GL_TEXTURE_2D, bg1->front);
-		glUniform1i(3, 1);
-		glActiveTexture(GL_TEXTURE0 + 1);
-		glBindTexture(GL_TEXTURE_2D, bg1->mid);
-		glUniform1i(4, 2);
-		glActiveTexture(GL_TEXTURE0 + 2);
-		glBindTexture(GL_TEXTURE_2D, bg1->back);
-		glUniform2f(5, bg1->res.x, bg1->res.y);
-
-		glUniform1i(6, 3);
-		glActiveTexture(GL_TEXTURE0 + 3);
-		glBindTexture(GL_TEXTURE_2D, bg2->front);
-		glUniform1i(7, 4);
-		glActiveTexture(GL_TEXTURE0 + 4);
-		glBindTexture(GL_TEXTURE_2D, bg2->mid);
-		glUniform1i(8, 5);
-		glActiveTexture(GL_TEXTURE0 + 5);
-		glBindTexture(GL_TEXTURE_2D, bg2->back);
-		glUniform2f(9, bg2->res.x, bg2->res.y);
-
-		glUniform3f(10, globals::dayclr.r, globals::dayclr.g, globals::dayclr.b);
-		glUniform1f(11, globals::bgoffset);
-		glUniform1f(12, mixfactor);
 		glBindVertexArray(globals::overlayVA);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	}
@@ -153,9 +164,9 @@ namespace background {
 	void clear()
 	{
 		for (auto& i : bgs) {
-			glDeleteTextures(1, &i.second.front);
-			glDeleteTextures(1, &i.second.mid);
-			glDeleteTextures(1, &i.second.back);
+			for (int j = 0; j < i.second.size(); j++) {
+				glDeleteTextures(1, &i.second[j].tex);
+			}
 		}
 		bgs.clear();
 	}

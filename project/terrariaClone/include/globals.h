@@ -83,9 +83,8 @@ namespace globals {
 	extern glm::vec3 textHightlightColor;
 	extern glm::vec3 textColor;
 	extern glm::vec3 itemslotColor;
+	extern glm::vec3 shopitemslotColor;
 	extern glm::vec3 selecteditemslotColor;
-	extern irrklang::ISoundEngine* engine;
-	extern float volume;
 	extern float transparency;
 	extern bool fullscreen;
 
@@ -117,8 +116,8 @@ namespace globals {
 
 	extern bool background;
 
+	glm::vec2 mouseBlockCoordsGlobal(bool round = true, glm::vec2 clampx = glm::vec2(-0.5, 0.5), glm::vec2 clampy = glm::vec2(-0.5, 0.5));
 	glm::vec2 mouseBlockCoords(bool round = true, glm::vec2 clampx = glm::vec2(-0.5, 0.5), glm::vec2 clampy = glm::vec2(-0.5, 0.5));
-	glm::vec2 mouseBlockCoordsZoomed(bool round = true, glm::vec2 clampx = glm::vec2(-0.5, 0.5), glm::vec2 clampy = glm::vec2(-0.5, 0.5));
 	glm::vec2 normMouseCoords();
 	glm::vec2 mouseCoords();
 }

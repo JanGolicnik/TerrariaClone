@@ -28,7 +28,8 @@ namespace Layers {
 
     int nDrawnBlocks;
 
-    BlockVertex *drawnVertices;
+    BlockVertex* drawnVertices;
+    BlockVertex *lightVertices;
     int offsets = 10;
 
     blockRelationship* childParent;
@@ -76,6 +77,7 @@ namespace Layers {
         delete[] drawnVertices;
         nQuads = map::mapX * map::mapY;
         drawnVertices = new BlockVertex[nDrawnBlocks * 4];
+        lightVertices = new BlockVertex[nDrawnBlocks * 4];
     }
 
     void init()
@@ -133,9 +135,13 @@ namespace Layers {
     void setUp()
     {
         nQuads = map::mapX * map::mapY;
+        if (drawnVertices != nullptr) delete[] drawnVertices;
         drawnVertices = new BlockVertex[nDrawnBlocks * 4];
+        if (lightVertices != nullptr) delete[] drawnVertices;
+        lightVertices = new BlockVertex[nDrawnBlocks * 4];
         addLayer("bg", 1.0f);
         addLayer("blocks", 1.0f);
+        if (childParent != nullptr) delete[] drawnVertices;
         childParent = new blockRelationship("blocks");
     }
 
@@ -145,6 +151,8 @@ namespace Layers {
         childParent = nullptr;
         delete drawnVertices;
         drawnVertices = nullptr;
+        delete lightVertices;
+        lightVertices = nullptr;
         for (auto& layer : layers) {
             delete[] layer.mblocks;
             layer.mblocks = nullptr;
@@ -183,8 +191,13 @@ namespace Layers {
             }
 
             int wholestate = 0;
-            if (info->spriteType == st_POT) {
+            switch (info->spriteType) {
+            case st_MULTISPRITE:
+                wholestate = (rand() % info->numsprites) * (info->size.x * info->size.y);
+                break;
+            case st_POT:
                 wholestate = (rand() % 2) * 4;
+                break;
             }
             for (int x = 0; x < info->size.x; x++) {
                 int state = 0;
@@ -201,11 +214,8 @@ namespace Layers {
                 case st_STALAGMIT:
                     state = (rand() % 3) * 2;
                     break;
-                case st_SMALLROCK:
-                    state = rand() % 6;
-                    break;
-                case st_MEDIUMROCK:
-                    state = (rand() % 3) * 2;
+                case st_MULTISPRITE:
+                    state += x * info->size.y;
                     break;
                 case st_VINES:
                     state = (rand() % 5);
@@ -269,13 +279,8 @@ namespace Layers {
     bool placeBlock(glm::vec2 pos, std::string type, int size, std::vector<std::function<bool(BlockConditionArgs)>>* conditions, glm::vec3 setlight)
     {
         if (blocks::nameToInfo.count(type.data()) <= 0)  return false;
-
         Layer* l = getLayer(blocks::nameToInfo[type].layer);
-        if (placeBlock(l, pos, type, size, conditions, setlight)) {
-            return true;
-        }
-
-        return false;
+        return placeBlock(l, pos, type, size, conditions, setlight);
     }
 
     void breakBlock(Layer* l, glm::vec2 pos, int size, bool dropitem, bool checkforchildren, bool execute, bool particles)
@@ -354,6 +359,24 @@ namespace Layers {
         return false;
     }
 
+    void renderLights() {
+        glUseProgram(globals::lightShaderID);
+
+        glUniformMatrix4fv(4, 1, GL_FALSE, glm::value_ptr(camera::trans));
+
+        glActiveTexture(GL_TEXTURE0 + 4);
+        glBindTexture(GL_TEXTURE_2D, globals::tmpFBT);
+        glUniform1i(9, 4);
+
+        glUniform2f(10, globals::resX, globals::resY);
+
+        glBindBuffer(GL_ARRAY_BUFFER, layersVB);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(BlockVertex) * nDrawnBlocks * 4, lightVertices);
+
+        glBindVertexArray(layersVA);
+        glDrawElements(GL_TRIANGLES, nDrawnIndices, GL_UNSIGNED_INT, nullptr);
+    }
+
     void renderLayers()
     {
         glUseProgram(globals::blockShaderID);
@@ -376,6 +399,16 @@ namespace Layers {
         glBindTexture(GL_TEXTURE_2D, globals::broken3Tex);
         glUniform1i(8, 3);
 
+        glActiveTexture(GL_TEXTURE0 + 4);
+        glBindTexture(GL_TEXTURE_2D, globals::tmpFBT);
+        glUniform1i(9, 4);
+
+        glUniform2f(10, globals::resX, globals::resY);
+
+        memset(lightVertices, 0, sizeof(BlockVertex) * 4 * nDrawnBlocks);
+
+        blocks::PremadeBlock emptyblock = blocks::blockBuffer[globals::emptyid][0];
+
         for (auto& l : layers) {
 
             glUniform1f(2, l.mdarkness);
@@ -395,22 +428,29 @@ namespace Layers {
 
                     if (c < 0 || c >= nQuads) continue;
                     blocks::PremadeBlock tmp = blocks::blockBuffer[l.mblocks[c].id][l.mblocks[c].state];
-                    tmp.v0.Position += glm::vec2(pos.x, pos.y);
-                    tmp.v1.Position += glm::vec2(pos.x, pos.y);
-                    tmp.v2.Position += glm::vec2(pos.x, pos.y);
-                    tmp.v3.Position += glm::vec2(pos.x, pos.y);
+                    tmp.v0.Position += pos;
+                    tmp.v1.Position += pos;
+                    tmp.v2.Position += pos;
+                    tmp.v3.Position += pos;
 
-                    tmp.v0.light += l.mblocks[c].light;
-                    tmp.v1.light += l.mblocks[c].light;
-                    tmp.v2.light += l.mblocks[c].light;
-                    tmp.v3.light += l.mblocks[c].light;
+                    tmp.v0.light = tmp.v1.light = tmp.v2.light = tmp.v3.light = glm::vec3(1);
 
-                    tmp.v0.breaking = l.mblocks[c].breaking;
-                    tmp.v1.breaking = l.mblocks[c].breaking;
-                    tmp.v2.breaking = l.mblocks[c].breaking;
-                    tmp.v3.breaking = l.mblocks[c].breaking;
-
+                    tmp.v3.breaking = tmp.v2.breaking = tmp.v1.breaking = tmp.v0.breaking = l.mblocks[c].breaking;
+                    
                     memcpy(drawnVertices + n * 4, &tmp, 4 * sizeof(BlockVertex));
+
+                    tmp.v0.light = l.mblocks[c].light;
+                    tmp.v1.light = l.mblocks[c].light;
+                    tmp.v2.light = l.mblocks[c].light;
+                    tmp.v3.light = l.mblocks[c].light;
+
+                    tmp.v0.Position = emptyblock.v0.Position + pos;
+                    tmp.v1.Position = emptyblock.v1.Position + pos;
+                    tmp.v2.Position = emptyblock.v2.Position + pos;
+                    tmp.v3.Position = emptyblock.v3.Position + pos;
+
+                    memcpy(lightVertices + n * 4, &tmp, 4 * sizeof(BlockVertex));
+
                     n++;
                 }
             }
@@ -609,6 +649,13 @@ namespace Layers {
         return &blocks::idToInfo[globals::emptyid];
     }
 
+    blocks::BlockInfo* queryBlockInfo(Layer* l, uint32_t c)
+    {
+        if (c < 0 || c > map::mapX * map::mapY) return &blocks::idToInfo[globals::emptyid];
+
+        return &blocks::idToInfo[l->mblocks[c].id];
+    }
+
     blocks::BlockInfo* fastQueryBlockInfo(Layer* l, glm::vec2 pos)
     {
         int c = vecToInt(pos);
@@ -653,6 +700,18 @@ namespace Layers {
         tmp = l->mblocks[cfrom];
         l->mblocks[cfrom] = l->mblocks[cto];
         l->mblocks[cto] = tmp;
+    }
+
+    glm::vec3 getLight(glm::vec2 pos, glm::vec3 iffail)
+    {
+        auto l = getLayer("blocks");
+        if (verifyBlock(l, &pos, false)) {
+            int c = vecToInt(round(pos));
+             return l->mblocks[c].light;
+        }
+        else {
+            return iffail;
+        }
     }
 
     void setLight(Layer* l, glm::vec2 pos, glm::vec3 light)
@@ -708,7 +767,7 @@ namespace Layers {
         int max = 0;
         allBiomes.clear();
         if (biomeCounter.size() == 0) {
-            currentBiome = "none";
+            currentBiome = "forest";
         }
         for (auto& i : Layers::biomeCounter) {
             if (i.second < biomes[i.first].numNeededBlocks) continue;
@@ -721,21 +780,6 @@ namespace Layers {
             }
         }
 
-        if (Player::pos.y > map::surfaceH + map::surfaceScale * 2) {
-            allBiomes.insert("space");
-            currentBiome = "space";
-        }else
-        if (Player::pos.y > map::surfaceH - map::surfaceScale) {
-            allBiomes.insert("surface");
-        }else
-        if (Player::pos.y > map::underworldH) {
-            allBiomes.insert("underground");
-            currentBiome = "underground";
-        }else
-        {
-            allBiomes.insert("underworld");
-            currentBiome = "underworld";
-        }
         biomeCounter.clear();
     }
 
@@ -765,6 +809,7 @@ namespace Layers {
                 }
             }
 
+            if(info->onUpdate)
             if (!info->onUpdate(pos, info)) return;
 
             for (auto& rule : info->rules) {
@@ -833,18 +878,19 @@ namespace Layers {
 
     bool verifyBlock(Layer* l, glm::vec2* pos, bool checkForChildren)
     {
-        if (pos->x >= 0 && pos->x < map::mapX && pos->y >= 0 && pos->y < map::mapY && l != nullptr) {
-            if (checkForChildren) {
-                if (l->mname == "blocks") {
-                    if (childParent->isSub(*pos)) {
-                        int c = vecToInt(*pos);
-                        *pos = childParent->subs[c];
-                    }
+        if (l == nullptr) return false;
+        if (pos->x < 0 || pos->x >= map::mapX) return false;
+        if (pos->y < 0 || pos->y > map::mapY) return false;
+
+        if (checkForChildren) {
+            if (l->mname == "blocks") {
+                if (childParent->isSub(*pos)) {
+                    int c = vecToInt(*pos);
+                    *pos = childParent->subs[c];
                 }
             }
-            return true;
         }
-        return false;
+        return true;
     }
 
     bool doBlockFunction(glm::vec2 pos)
@@ -872,13 +918,18 @@ namespace Layers {
         int endx = startx + blocksOnScreen.x + 30;
         int endy = starty + blocksOnScreen.y + 30;
 
+        int daylightstarty = starty;
+        if (daylightstarty < map::surfaceH - map::surfaceScale) {
+            daylightstarty = map::surfaceH - map::surfaceScale;
+        }
+
         startx = glm::clamp(startx, 1, map::mapX-1);
         starty = glm::clamp(starty, 1, map::mapY-1);
         endx = glm::clamp(endx, 1, map::mapX-1);
         endy = glm::clamp(endy, 1, map::mapY-1);
 
         for (int x = startx; x < endx; x++) {
-            for (int y = starty; y < endy; y++) {
+            for (int y = daylightstarty; y < endy; y++) {
                 int c = vecToInt({ x,y });
                 if (blocks::idToInfo[bg->mblocks[c].id].emitskylight) {
                     keepLightAbove(bs, { x,y }, globals::dayclr);
@@ -889,19 +940,25 @@ namespace Layers {
         for (int x = startx; x < endx; x++) {
             for (int y = starty; y < endy; y++) {
                 int c = vecToInt({ x,y });
+
                 blocks::BlockInfo* info = fastQueryBlockInfo(bs, { x,y });
+
                 glm::vec3 currL = info->light;
                 currL += fastQueryBlock(bs, { x - 1, y })->light;
                 currL += fastQueryBlock(bs, { x + 1, y })->light;
                 currL += fastQueryBlock(bs, { x, y - 1 })->light;
                 currL += fastQueryBlock(bs, { x, y + 1 })->light;
-                if(lights.count(c) >= 1)
-                currL += lights[c];
-                currL = (currL / glm::vec3(4)) * 0.995f;
+
+                if(lights.count(c) >= 1) currL += lights[c];
+                   
+                float permissivness = 1;
+                if (info->collidable)permissivness = 0.95;
+                currL = (currL / glm::vec3(4)) * permissivness;
+
                 currL += glm::vec3(globals::cheaterlight);
+
                 fastSetLight(bg, { x, y }, currL);
                 fastSetLight(bs, { x, y }, currL);
-
             }
         }
         lights.clear();
@@ -989,32 +1046,7 @@ namespace Layers {
 
     void spawnMobs()
     {
-        for (auto& biome : allBiomes) {
-            for (auto& mob : biomes[biome].mobs) {
-                float chance = mob.second;
-                auto info = &enemies::enemies[mob.first];
-                if (info->mC.families.count(mf_ENEMY) >= 1) {
-                    chance *= Player::enemyChance;
-                }
-                if (info->mC.families.count(mf_CRITTER) >= 1) {
-                    chance *= Player::critterChance;
-                }
-                int min = info->spawntime - info->spawnrange;
-                int max = info->spawntime + info->spawnrange;
-                max %= globals::dayLength + 1;
-                if (min < 0) min = globals::dayLength + min;
-                if (globals::cdayTime < min || globals::cdayTime > max) continue;
-
-                while (chance > 1) {
-                    enemies::spawnEnemy(mob.first, enemies::enemies[mob.first].spawnFunc());
-                    chance--;
-                }
-                if (rand() % int(1 / chance) == 0) {
-                    enemies::spawnEnemy(mob.first, enemies::enemies[mob.first].spawnFunc());
-                    return;
-                }
-            }
-        }
+       
     }
 
     glm::vec2 findEmptySpot()

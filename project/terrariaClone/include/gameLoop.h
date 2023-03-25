@@ -11,6 +11,7 @@ namespace gameLoop {
 	extern int crafting;
 	extern int cursoritem;
 	extern int chestInvC;
+	extern int npcInvC;
 	extern int equipmentC;
 	extern int hpbarC;
 	extern int breathbar;
@@ -36,4 +37,6 @@ namespace gameLoop {
 
 	void toggleSettings();
 	void openMenu(int menu);
+
+	void toast(std::string text);
 }

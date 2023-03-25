@@ -7,6 +7,7 @@ int uiSystem::body;
 int drawSystem::mainDrawable;
 int drawSystem::behindBackground;
 int drawSystem::front;
+int drawSystem::behindBlocks;
 
 int main() {
     game::init();

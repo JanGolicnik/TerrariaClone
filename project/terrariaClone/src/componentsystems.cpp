@@ -23,6 +23,7 @@
 #include <game.h>
 #include <input.h>
 #include <liquids.h>
+#include <enemies.h>
 
 void physicsSystem::Update()
 {
@@ -68,8 +69,10 @@ void physicsSystem::Update()
                     if (lastinliquid != i.isinliquid) {
                         if (i.isinliquid == 0) {
                             particles::spawnEffect("watersplash", *i.position - i.size / glm::vec2(2));
+                            sounds::watersplash();
                         }else if (i.isinliquid == 0) {
                             particles::spawnEffect("lavasplash", *i.position - i.size / glm::vec2(2));
+                            sounds::lavasplash();
                         }
                     }
                     if (level > 8)viscosity = 1.8;
@@ -98,7 +101,9 @@ void physicsSystem::Update()
                             c = { cent.x - i.size.x * 0.5f + 0.025f, cent.y - i.size.y / 2.0f + vec.y};
                             float ratio = 1.0f / points.x;
                             for (int j = 0; j < points.x + 1; j++) {
-                                if (Layers::queryBlockInfo(b, c)->collidableTop) {
+                                auto botinfo = Layers::queryBlockInfo(b, c);
+                                if(!(i.wantstoskip && botinfo->skippable))
+                                if (botinfo->collidableTop) {
                                     botblock = Layers::queryBlock(b, c)->id;
                                     if (i.stoponcollision) i.position->y = round(c.y) + i.size.y / 2.0f + 0.5f;
                                     vec.y = 0;
@@ -375,6 +380,9 @@ void drawSystem::addComponent(int entity, drawC* dc, bool force)
         ECS::getComponent<drawC>(dc->parent)->children.push_back(entity);
     }
 
+    if (dc->position == nullptr) {
+        dc->position = std::make_shared<glm::vec2>(glm::vec2(0));
+    }
     if (force)
         ECS::addComponent<drawC>(entity, *dc);
     else
@@ -384,11 +392,13 @@ void drawSystem::addComponent(int entity, drawC* dc, bool force)
 void drawSystem::deleteComponent(int entity)
 {
     auto p = ECS::getComponent<drawC>(entity);
+    if (p == nullptr) return;
     for (auto i : p->children) {
         ECS::queueDeletion(i);
     }
     if (ECS::entityExists(p->parent)) {
         auto par = ECS::getComponent<drawC>(p->parent);
+        if(par != nullptr)
         for (int i = 0; i < par->children.size(); i++) {
             if (par->children[i] == entity) {
                 par->children.erase(par->children.begin() + i);
@@ -407,12 +417,7 @@ void drawSystem::updateChildren(drawC* parent, ComponentArray<drawC>* arr)
         if (!p->hidden) {
             glm::vec3 light = p->color;
             if (p->autolight) {
-                if (blocks != nullptr) {
-                    light *= Layers::queryBlock(blocks, *p->position)->light;
-                }
-                else {
-                    light *= globals::dayclr;
-                }
+                //light *= Layers::getLight(*p->position, globals::dayclr);
             }
             glm::vec4 color(light.r, light.g, light.b, p->opacity);
             if (p->spriteCoords != glm::vec4(-1, -1, -1, -1)) {
@@ -568,7 +573,7 @@ void aiSystem::Update()
 
         if (p->onclick) {
             if (input::pressed(k_SECONDARY)) {
-                glm::vec2 mc = globals::mouseBlockCoordsZoomed(false);
+                glm::vec2 mc = globals::mouseBlockCoords(false);
                 if (phys->position->x - phys->size.x / 2.0f < mc.x &&
                     phys->position->x + phys->size.x / 2.0f > mc.x &&
                     phys->position->y + phys->size.y / 2.0f > mc.y &&
@@ -607,7 +612,7 @@ void toolSystem::Update()
                 ECS::queueDeletion(arr->componentToEntity[i]);
             }
             else {
-                draw->hidden = false;
+                draw->hidden = false; 
                 draw->hasmat = false;
                 switch (p->animType) {
                 case ia_DEFAULT: {
@@ -616,10 +621,10 @@ void toolSystem::Update()
                         draw->flipX = true;
                     }
                     float percentlifespan = ((p->maxframes - p->frames) / p->maxframes);
-                    float rotangle = 120;
+                    float rotangle = 105;
                     rotangle -= percentlifespan * 150;
                     *(phys->position) = Player::pos + glm::vec2(phys->size.x / 3 * Player::dir, phys->size.y / 2);
-                    *phys->position += glm::vec2(cos(rotangle * PI / 180) * Player::dir, sin(rotangle * PI / 180));
+                    *phys->position += glm::vec2(cos(rotangle * PI / 180) * Player::dir * 0.9f, sin(rotangle * PI / 180) * 0.9f);
                     draw->hasmat = true;
                     float angle = Player::dir * (-135.0f * percentlifespan + 90);
                     draw->mat = glm::translate(glm::mat4(1.0f), glm::vec3(Player::dir * -phys->size.x / 2, -phys->size.y / 2, 0));
@@ -636,7 +641,7 @@ void toolSystem::Update()
                     draw->hasmat = true;
 
                     *(phys->position) = Player::pos;
-                    glm::vec2 vec = globals::mouseBlockCoordsZoomed(false) - (*phys->position);
+                    glm::vec2 vec = globals::mouseBlockCoords(false) - (*phys->position);
                     float angle = int(utils::angleOfVector(vec) - 180) % 360;
                     phys->position->x += cos(angle * PI / 180.0f) * 2;
                     phys->position->y += sin(angle * PI / 180.0f) * 2;
@@ -675,16 +680,10 @@ void toolSystem::makeTool(int ent, glm::vec2 pos, std::string item, float usespe
     tmp.maxframes = usespeed;
     tmp.neki = false;
 
-    mobC mc;
-    mc.damage = items::getStat(item, "damage").valueFloat * damagemult;
-    mc.families = { mf_WEAPON };
-    mc.knockback = items::getStat(item, "knockback").valueFloat;
-    mc.hp = 10;
-    mc.onCollision = { {mf_ENEMY, info->onhit}, {mf_CRITTER, collisionFs::damage} };
+   
 
     auto spos = std::make_shared<glm::vec2>(pos);
     glm::vec2 size = glm::vec2(1.3) * glm::vec2(info->sizeMod);
-    mc.hitboxradius = 1.3 * info->sizeMod;
 
     drawC dc;
     dc.position = spos;
@@ -697,7 +696,20 @@ void toolSystem::makeTool(int ent, glm::vec2 pos, std::string item, float usespe
     drawSystem::addComponent(ent, &dc);
     ECS::addComponent<physicsC>(ent, { spos, {}, size, true, false, false, false, false });
     ECS::addComponent<toolC>(ent, tmp);
-    ECS::addComponent<mobC>(ent, mc);
+
+    float damage = items::getStat(item, "damage", { .valueFloat = 0 }).valueFloat;
+    if (damage != 0) {
+        mobC mc;
+        mc.damage = damage * damagemult;
+        mc.families = { mf_WEAPON };
+        mc.knockback = items::getStat(item, "knockback").valueFloat;
+        mc.hp = 10;
+        mc.onCollision = { {mf_ENEMY, info->onhit}, {mf_CRITTER, collisionFs::damage} };
+        mc.destroydecor = true;
+        mc.hitboxradius = 1.3 * info->sizeMod;
+        ECS::addComponent<mobC>(ent, mc);
+    }
+
     if (info->emmiter.rate != 0) {
         particles::emitParticle(glm::vec2(0, 0), &info->emmiter, ent);
     }
@@ -706,7 +718,7 @@ void toolSystem::makeTool(int ent, glm::vec2 pos, std::string item, float usespe
 
 void droppedItemSystem::Update()
 {
-    glm::vec2 mc = globals::mouseBlockCoordsZoomed(false);
+    glm::vec2 mc = globals::mouseBlockCoords(false);
     auto arr = static_cast<ComponentArray<droppedItemC>*>(componentArray.get());
     auto sys = ECS::getSystem<physicsSystem>();
     auto drawsys = ECS::getSystem<drawSystem>();
@@ -741,6 +753,7 @@ void droppedItemSystem::Update()
             ECS::queueDeletion(arr->componentToEntity[i]);
         }
 
+        phys->dontcollide = false;
         if (p->timer > 0) continue;
         if (!Player::dead) {
             if (!UI::hotbar->hasRoomFor(p->name) && !UI::inventory->hasRoomFor(p->name)) continue;
@@ -749,15 +762,15 @@ void droppedItemSystem::Update()
             if (dist < 1.2f) {
                 int prevAmount = p->amount;
                 p->amount = Player::pickUp(p->name, p->amount);
+                if (prevAmount != p->amount) {
+                    sounds::pickup();
+                }
             }
             if (dist < Player::pickupRange) {
                 phys->dontcollide = true;
                 phys->isstatic = false;
                 phys->vel += utils::approach(phys->vel, glm::normalize(playerpos - *phys->position) * glm::vec2(1.0f), 1);
                 phys->vel = glm::clamp(phys->vel, -1.0f, 1.0f);
-            }
-            else {
-                phys->dontcollide = false;
             }
         }
         if (p->amount == 0) {
@@ -855,31 +868,47 @@ void uiSystem::updateChildren(uiC* parent, ComponentArray<uiC>* arr, glm::vec2 m
 
         if (p->interactable && !p->hidden && !p->removed) {
             if (mc.x > draw->position->x - draw->size.x / 2 && mc.x <  draw->position->x + draw->size.x / 2 && mc.y >  draw->position->y - draw->size.y / 2 && mc.y < draw->position->y + draw->size.y / 2) {
-                if (input::held(k_PRIMARY) && p->holding) {
+                if (input::held(k_PRIMARY) && p->holdingtime > 0) {
                     if (p->onhold) {
                         p->onhold(p, draw, parent->children.at(i), arr);
                     }
+                    p->holdingtime++;
+                }else
+                    if (input::held(k_SECONDARY) && p->holdingtime > 0) {
+                    if (p->onrighthold) {
+                        p->onrighthold(p, draw, parent->children.at(i), arr);
+                    }
+                    p->holdingtime++;
                 }
                 else {
-                    p->holding = false;
+                    p->holdingtime = -1;
                 }
 
                 if (mouseClicked) {
-                    p->holding = true;
-                    p->onclick(p, draw, parent->children.at(i), arr);
-                    if (!p->propagateClick) {
-                        mouseClicked = false;
+                    p->holdingtime = 1;
+                    if (p->onclick) {
+                        p->onclick(p, draw, parent->children.at(i), arr);
+                        if (!p->propagateClick) {
+                            mouseClicked = false;
+                        }
                     }
                 }
                 else if (mouseRightClicked) {
+                    p->holdingtime = 1;
                     p->onrightclick(p, draw, parent->children.at(i), arr);
                     if (!p->propagateClick) {
                         mouseRightClicked = false;
                     }
                 }
                 else {
-                    p->onhover(p, draw, parent->children.at(i), arr);
-                    p->hovering = true;
+                    if (p->hovering) {
+                        p->onhover(p, draw, parent->children.at(i), arr);
+                    }
+                    else {
+                        if(p->onenter)
+                        p->onenter(p, draw, parent->children.at(i), arr);
+                        p->hovering = true;
+                    }
                 }
             }
             else {
@@ -903,7 +932,7 @@ void uiSystem::Update()
     auto arr = static_cast<ComponentArray<uiC>*>(componentArray.get());
 
     auto bodyC = ECS::getComponent<uiC>(body);
-    glm::vec2 mc = globals::mouseBlockCoords(false);
+    glm::vec2 mc = globals::mouseBlockCoordsGlobal(false);
     updateChildren(bodyC, arr, mc);
     
     mouseClicked = false;
@@ -975,7 +1004,7 @@ void mobSystem::Update()
             }
 
             if (p->displayName != "") {
-                glm::vec2 mc = globals::mouseBlockCoordsZoomed(false);
+                glm::vec2 mc = globals::mouseBlockCoords(false);
                 if (glm::distance(mc, *phys1->position) < p->hitboxradius) {
                     std::string text = p->displayName + " (" + std::to_string(p->hp) + "/" + std::to_string(p->maxhp) + ")";
                     UI::setTStat(ECS::getComponent<uiC>(gameLoop::zoomedcursoritem), "text", text);
@@ -1002,9 +1031,13 @@ void mobSystem::Update()
             if (p->onDeath) {
                 p->onDeath(p, phys1, arr->componentToEntity[i]);
             }
+            if (p->gore != "") {
+                particles::dropGore(*phys1->position, p->gore);
+            }
             if (p->hpbar != -1) {
                 UI::deleteElement(p->hpbar);
             }
+            enemies::currslots -= p->slots;
             ECS::queueDeletion(arr->componentToEntity[i]);
         }
     }

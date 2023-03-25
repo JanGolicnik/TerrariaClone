@@ -3,11 +3,21 @@
 #include <core.h>
 #include <componentsystems.h>
 
+#include <enemies.h>
 #include <mutex>
 #include <thread>
 
 namespace map
 {
+	struct npc {
+		int currName;
+		std::vector<std::string> names;
+		std::string base = "guide";
+		bool canspawn = false;
+		bool living = false;
+		int current = -1;
+	};
+
 	extern std::string name;
 	extern std::string tmpname;
 
@@ -33,15 +43,13 @@ namespace map
 
 	extern std::thread worldgenthread;
 
-	extern std::string guideName;
-	extern int guideEnt;
-	extern std::vector<std::string> guidenames;
-
 	extern int moonphase;
 	extern std::array<std::string, 8> moonphases;
 
 	extern int shadoworbsbroken;
 
+	extern std::unordered_map<std::string, npc> npcs;
+	
 	void growBlock(glm::vec2 pos, std::string block, int depth, int chance, std::set<std::string>ignore = {});
 	void clear();
 	void generateTest();
@@ -78,5 +86,13 @@ namespace map
 	void makeHell();
 
 	void spawnDebugSetup(glm::vec2 pos);
+
+	void liquidHole(glm::vec2 pos, std::string liquid, glm::vec2 size, bool half, bool breakwall);
+	void placeLiquids();
+
+	void resetNPCS();
+	void spawnLivingNPCS();
+	void saveNPCS(std::ofstream* file);
+	void loadNPCS(std::ifstream* file);
 };
 

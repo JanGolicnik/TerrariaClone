@@ -6,17 +6,32 @@
 #include <game.h>
 #include <textures.h>
 #include <utils.h>
+#include <player.h>
+#include <world.h>
+#include <liquids.h>
 
 namespace enemies {
     std::unordered_map<std::string, enemyBase>enemies;
     std::unordered_map<std::string, npc>npcs;
 
-    int spawnEnemy(std::string name, glm::vec2 pos, glm::vec2 vel)
+    int currslots = 0;
+
+    struct queuedEnemy {
+        std::string name;
+        glm::vec2 pos;
+    };
+    std::vector<std::pair<queuedEnemy, int>> tospawn;
+
+    int spawnEnemy(std::string name, glm::vec2 pos, bool usesslots, glm::vec2 vel)
     {
         if (game::currScene != GAME) return -1;
-        auto ppos = std::make_shared<glm::vec2>(pos);
-        int e = ECS::newEntity();
         enemyBase base = enemies[name];
+
+        if (base.prespawntimer > 0) {
+            tospawn.push_back(std::make_pair(queuedEnemy( name, pos ), base.prespawntimer));
+            //if spawntext pokaz spawntext
+            return -1;
+        }
 
         float randsize = ((rand() % 1000) / 500.0f - 1) * base.randomsize;
         float randomred = ((rand() % 1000) / 500.0f - 1) * base.randomcolor;
@@ -46,6 +61,7 @@ namespace enemies {
             base.dC.parent = game::drawSys->behindBlocks;
         }
 
+        auto ppos = std::make_shared<glm::vec2>(pos);
         base.pC.position = ppos;
         if (vel != glm::vec2(-13245, 123432)) {
             base.pC.vel = vel;
@@ -62,8 +78,10 @@ namespace enemies {
             }
         }
         for (int i = 0; i < base.childrenBases.size(); i++) {
-            base.mC.children.push_back(spawnEnemy(base.childrenBases[i], pos, vel));
+            base.mC.children.push_back(spawnEnemy(base.childrenBases[i], pos, true, vel));
         }
+
+        int e = ECS::newEntity();
         if (base.mC.displayName != "") {
             if (base.bossbar != "") {
                 base.mC.hpbar = ECS::newEntity();
@@ -81,9 +99,106 @@ namespace enemies {
         if (base.pec.lifespan != 0) {
             ECS::queueComponent<particleEmmiterC>(e, base.pec);
         }
+
+        if (usesslots) {
+            currslots += base.slots;
+        }
         
         return e;
     }
+
+    void doQueues()
+    {
+        for (int i = 0; i < tospawn.size(); i++) {
+            if (tospawn[i].second <= 0) {
+                spawnEnemy(tospawn[i].first.name, tospawn[i].first.pos);
+                tospawn.erase(tospawn.begin() + i);
+                i--;
+            }
+            tospawn[i].second--;
+        }
+    }
+
+    void spawnNPCS()
+    {
+        const auto info = &Layers::biomes[Layers::currentBiome];
+
+        auto mobs = &info->underworldmobs;
+        auto spawns = info->underworldspawns;
+
+        //ceje podzemlo cene pa glede na cs dneva
+        if (Player::pos.y > map::surfaceH + map::surfaceScale * 2) {
+            mobs = &info->daymobs;
+            spawns = info->dayspawns;
+        }
+        else if (Player::pos.y > map::surfaceH - map::surfaceScale) {
+            if (globals::cdayTime > globals::dayLength / 2) {
+                mobs = &info->nightmobs;
+                spawns = info->nightspawns;
+            }
+            else {
+                mobs = &info->daymobs;
+                spawns = info->dayspawns;
+            }
+        }
+        else if (Player::pos.y > map::underworldH + (map::surfaceH - map::underworldH) / 2.0f) {
+            mobs = &info->undergroundmobs;
+            spawns = info->undergroundspawns;
+        }
+        else if (Player::pos.y > map::underworldH) {
+            mobs = &info->cavernmobs;
+            spawns = info->cavernspawns;
+        }
+
+        if(Player::spawnCap)
+        if (currslots >= spawns.second) return;
+
+        float mult = 1;
+        if (currslots <= spawns.second * 0.2) {
+            mult = 0.6;
+        }
+        else if (currslots <= spawns.second * 0.4) {
+            mult = 0.7;
+        }
+        else if (currslots <= spawns.second * 0.6) {
+            mult = 0.8;
+        }
+        else if (currslots <= spawns.second * 0.8) {
+            mult = 0.9;
+        }
+
+        if(spawns.first != 0)
+        if (rand() % int(spawns.first*mult*Player::enemyChance) != 0) return;
+        
+        float max = 0;
+        std::string maxname = "";
+        
+        std::vector<std::string> candidates;
+        
+        for (auto& mob : *mobs) {
+            float chance = mob.second;
+            
+            if (chance > max) {
+                max = chance;
+                maxname = mob.first;
+            }
+
+            auto info = &enemies::enemies[mob.first];
+            while (chance > 1) {
+                candidates.push_back(mob.first);
+                chance--;
+            }
+            if ((rand() % 10000) < chance * 10000 == 0) {
+                candidates.push_back(mob.first);
+            }
+        }
+        
+        if (candidates.size() > 0) {
+            maxname = candidates[rand() % candidates.size()];
+        }   
+        enemies::spawnEnemy(maxname, enemies::enemies[maxname].spawnFunc(), true);
+    }
+
     glm::vec2 fallenStarSpawnFunc() {
         int startx = -camera::pos.x - Layers::blocksOnScreen.x / 2 - 40;
         int y = -camera::pos.y + Layers::blocksOnScreen.y / 2 + 15;
@@ -209,9 +324,52 @@ namespace enemies {
         return glm::vec2(-camera::pos.x + rand()%(int)Layers::blocksOnScreen.x - Layers::blocksOnScreen.x/2,
             -camera::pos.y + rand() % (int)Layers::blocksOnScreen.y - Layers::blocksOnScreen.y / 2);
     }
-    void addEnemyToBiome(std::string enemy, std::string biome, float spawnchance)
+    glm::vec2 liquidSpawnFunc()
     {
-        Layers::biomes[biome].mobs.insert(std::make_pair(enemy, spawnchance));
+        int startx = -camera::pos.x - Layers::blocksOnScreen.x / 2 - 30;
+        int starty = -camera::pos.y - Layers::blocksOnScreen.y / 2 - 15;
+        auto bs = Layers::getLayer("blocks");
+        std::vector<glm::vec2> candidates;
+        //sky light
+        for (int x = startx; x < startx + 25; x++) {
+            for (int y = starty; y < starty + Layers::blocksOnScreen.y + 30; y++) {
+                if (liquids::at({x,y}) != 0) {
+                    candidates.push_back({ x,y });
+                }
+            }
+        }
+
+        for (int x = startx + Layers::blocksOnScreen.x + 35; x < startx + Layers::blocksOnScreen.x + 55; x++) {
+            for (int y = starty; y < starty + Layers::blocksOnScreen.y + 30; y++) {
+                if (liquids::at({ x,y }) != 0) {
+                    candidates.push_back({ x,y });
+                }
+            }
+        }
+        if (candidates.size() == 0) {
+            return glm::vec2(-10200, -12000);
+        }
+        return candidates[rand() % candidates.size()];
+    }
+    void addEnemyToDay(std::string enemy, std::string biome, float spawnchance)
+    {
+        Layers::biomes[biome].daymobs.insert(std::make_pair(enemy, spawnchance));
+    }
+    void addEnemyToNight(std::string enemy, std::string biome, float spawnchance)
+    {
+        Layers::biomes[biome].nightmobs.insert(std::make_pair(enemy, spawnchance));
+    }
+    void addEnemyToUnderground(std::string enemy, std::string biome, float spawnchance)
+    {
+        Layers::biomes[biome].undergroundmobs.insert(std::make_pair(enemy, spawnchance));
+    }
+    void addEnemyToCavern(std::string enemy, std::string biome, float spawnchance)
+    {
+        Layers::biomes[biome].cavernmobs.insert(std::make_pair(enemy, spawnchance));
+    }
+    void addEnemyToUnderworld(std::string enemy, std::string biome, float spawnchance)
+    {
+        Layers::biomes[biome].underworldmobs.insert(std::make_pair(enemy, spawnchance));
     }
     void addNPCDialogue(std::string npc, std::string dialogue)
     {
@@ -221,4 +379,5 @@ namespace enemies {
     {
         npcs[npc].buttons.insert(std::make_pair(buttontext, func));
     }
+
 }

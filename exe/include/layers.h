@@ -48,11 +48,22 @@ struct Chest {
 struct Biome {
 	int numNeededBlocks;
 	std::string bg;
-	std::unordered_map<std::string, float> mobs;
+	std::pair<int, int> dayspawns = std::make_pair(600, 5);
+	std::pair<int, int> nightspawns = std::make_pair(600, 5);
+	std::pair<int, int> undergroundspawns = std::make_pair(600, 5);
+	std::pair<int, int> cavernspawns = std::make_pair(600, 5);
+	std::pair<int, int> underworldspawns = std::make_pair(600, 5);
+	std::unordered_map<std::string, float> daymobs;
+	std::unordered_map<std::string, float> nightmobs;
+	std::unordered_map<std::string, float> undergroundmobs;
+	std::unordered_map<std::string, float> cavernmobs;
+	std::unordered_map<std::string, float> underworldmobs;
 };
 
 namespace Layers
 {
+	extern BlockVertex* drawnVertices;
+
 	extern glm::vec2 blocksOnScreen;
 	extern int nQuads;
 	extern int nDrawnIndices;
@@ -66,7 +77,8 @@ namespace Layers
 
 	extern std::string currentBiome;
 	extern std::set<std::string> allBiomes;
-
+	extern GLuint layersVA;
+	extern GLuint layersVB;
 
 	extern std::unordered_map<std::string, Biome> biomes;
 	extern std::unordered_map<std::string, int> biomeCounter;
@@ -85,14 +97,19 @@ namespace Layers
 	Layer* getLayer(std::string_view l);
 
 	void fastPlaceBlock(glm::vec2 pos, std::string type, Layer* layer = nullptr, int size = 1);
-	bool placeBlock(Layer* l, glm::vec2 pos, std::string type, glm::vec3 light = glm::vec3(0.0f), int size = 1, std::vector<std::function<bool(BlockConditionArgs)>>* conditions = nullptr, glm::vec3 setlight = glm::vec3(0.0f), bool update = true);
-	bool placeBlock(glm::vec2 pos, std::string type, glm::vec3 light = glm::vec3(0.0f), int size = 1, std::vector<std::function<bool(BlockConditionArgs)>>* conditions = nullptr, glm::vec3 setlight = glm::vec3(0.0f));
+	bool placeBlock(Layer* l, glm::vec2 pos, std::string type, int size = 1, std::vector<std::function<bool(BlockConditionArgs)>>* conditions = nullptr, glm::vec3 setlight = glm::vec3(0.0f), bool update = true);
+	bool placeBlock(glm::vec2 pos, std::string type, int size = 1, std::vector<std::function<bool(BlockConditionArgs)>>* conditions = nullptr, glm::vec3 setlight = glm::vec3(0.0f));
 	void breakBlock(Layer* l, glm::vec2 pos, int size = 1, bool dropitem = false, bool checkforchildren = false, bool execute = true, bool particles = false);
 	const std::string* queryBlockName(Layer* l, glm::vec2 pos, bool checkForChildren = true);
 	Block* queryBlock(Layer* l, glm::vec2 pos, bool checkForChildren = true);
 	Block* fastQueryBlock(Layer* l, glm::vec2 pos);
 	blocks::BlockInfo* queryBlockInfo(Layer* l, glm::vec2 pos, bool checkForChildren = true);
+	blocks::BlockInfo* queryBlockInfo(Layer* l, uint32_t c);
 	blocks::BlockInfo* fastQueryBlockInfo(Layer* l, glm::vec2 pos);
+	bool canLiquidGoThru(Layer* l, glm::vec2 pos);
+	bool canLiquidGoThru(Layer* l, int c);
+	void moveBlockTo(Layer* l, glm::vec2 from, glm::vec2 to);
+	void swapBlocks(Layer* l, glm::vec2 from, glm::vec2 to);
 
 	void setLight(Layer* l, glm::vec2 pos, glm::vec3 light);
 	void fastSetLight(Layer* l, glm::vec2 pos, glm::vec3 light);
@@ -102,7 +119,7 @@ namespace Layers
 	void updateOnScreen();
 	void updateBlock(Layer* l, glm::vec2 pos);
 	bool evaluateCondition(BlockRuleCond* cond, glm::vec2 pos);
-	bool damageBlock(Layer* l, glm::vec2 pos, float strength, int size = 1, bool dropitem = true, itemInfo* iteminfo = nullptr);
+	bool damageBlock(Layer* l, glm::vec2 pos, float strength, int size = 1, bool dropitem = true, itemFamily fam = if_ANY);
 
 	void renderLayers();
 

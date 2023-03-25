@@ -31,9 +31,7 @@ namespace Player
     extern GLuint playerVA;
     extern GLuint playerIB;
 
-    extern bool ignorebot;
-
-    extern int anim;
+    extern bool wantstoskip;
 
     extern float craftingDist;
 
@@ -72,13 +70,14 @@ namespace Player
     extern float currsummons;
 
     extern int heartcrystals;
+    extern int manacrystals;
 
     extern std::array<ActiveBuff, 20> buffs;
     extern int manaregentimer;
     extern float regeneration;
 
     extern float enemyChance;
-    extern float critterChance;
+    extern bool spawnCap;
 
     extern float meeleDamage;
     extern float thorns;
@@ -87,13 +86,26 @@ namespace Player
 
     extern std::string activeSetBonus;
 
-    extern float hue;
-
     extern float breathtimer;
 
     extern bool dead;
 
     extern std::string timeToRespawn;
+
+    extern int hairid;
+
+    extern std::string headarmor;
+    extern std::string bodyarmor;
+    extern std::string legsarmor;
+
+    extern hsv hairclr_hsv;
+    extern hsv shirtclr_hsv;
+    extern hsv skinclr_hsv;
+    extern hsv pantsclr_hsv;
+    extern hsv eyeclr_hsv;
+    extern hsv shoeclr_hsv;
+
+    extern bool isinwater;
 
     void create();
     void update();
@@ -102,6 +114,7 @@ namespace Player
     void calculateStats();
     bool save();
     bool load();
+    playerData loadToData(std::string name);
     void jump();
     void stop();
 
@@ -124,5 +137,14 @@ namespace Player
     int pickUp(std::string  item, int num);
 
     void dropCoins();
+    
+    void setupBodyparts();
+
+    void renderAs(glm::vec2 pos, float size, playerData* data);
+
+    void cycleHair(uiC* p);
+
+    bool hasEnoughCoins(int price);
+    bool takeCoinsIfEnough(int price);
 };
 
