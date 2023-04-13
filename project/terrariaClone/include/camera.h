@@ -17,12 +17,8 @@ namespace camera
 	extern float accel;
 	extern glm::vec2 limits;
 
-	extern std::vector<cameraShake> shakes;
-
 	void updateTowardsPlayer();
 	void updateNormal();
-
-	void shake(float strength, int duration);
 
 };
 

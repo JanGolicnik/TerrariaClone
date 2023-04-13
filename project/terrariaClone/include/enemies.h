@@ -1,7 +1,20 @@
 #pragma once
 
 #include <core.h>
-#include <componentsystems.h>
+#include <uiSystem.h>
+#include <mobSystem.h>
+#include <aiSystem.h>
+#include <drawSystem.h>
+#include <physicsSystem.h>
+#include <particleEmmiterSystem.h>
+
+struct projectileBase {
+	physicsC pc;
+	mobC mc;
+	aiC ac;
+	drawC dc;
+	particleEmmiterC pec;
+};
 
 namespace enemies {
 	glm::vec2 fallenStarSpawnFunc();
@@ -27,6 +40,8 @@ struct enemyBase {
 	bool hpbar;
 	bool resizeToSprite = false;
 	bool behindBlocks = false;
+	bool hasmob = true;
+	bool hasphys = true;
 	float randomsize = 0;
 	float randomcolor = 0;
 	float randomvelangle = 0;
@@ -50,21 +65,22 @@ struct npc {
 
 namespace enemies
 {
+	extern std::unordered_map<std::string, projectileBase> projectiles;
 	extern std::unordered_map<std::string, enemyBase>enemies;
 	extern std::unordered_map<std::string, npc>npcs;
 
 	extern int currslots;
 
-	int spawnEnemy(std::string name, glm::vec2 pos, bool usesslots = false, glm::vec2 vel = glm::vec2(-13245, 123432));
+	int spawnEnemy(std::string name, glm::vec2 pos, bool usesslots = false, glm::vec2 vel = glm::vec2(-13245, 123432), int drawparent = -1);
 	void addNPCDialogue(std::string npc, std::string dialogue);
 	void addNPCButton(std::string npc, std::string buttontext,  void(*func)(uiC*));
 	void doQueues();
 	void spawnNPCS();
 
-	void addEnemyToDay(std::string enemy, std::string biome, float spawnchance = 1);
-	void addEnemyToNight(std::string enemy, std::string biome, float spawnchance = 1);
-	void addEnemyToUnderground(std::string enemy, std::string biome, float spawnchance = 1);
-	void addEnemyToCavern(std::string enemy, std::string biome, float spawnchance = 1);
-	void addEnemyToUnderworld(std::string enemy, std::string biome, float spawnchance = 1);
+	void addEnemyToDay(std::string enemy, std::string biome, int spawnchance = 1);
+	void addEnemyToNight(std::string enemy, std::string biome, int spawnchance = 1);
+	void addEnemyToUnderground(std::string enemy, std::string biome, int spawnchance = 1);
+	void addEnemyToCavern(std::string enemy, std::string biome, int spawnchance = 1);
+	void addEnemyToUnderworld(std::string enemy, std::string biome, int spawnchance = 1);
 };
 

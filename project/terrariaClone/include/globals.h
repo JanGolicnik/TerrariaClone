@@ -1,17 +1,12 @@
 #pragma once
 
 #include <core.h>
-#include <irrKlang/irrKlang.h>
 
 namespace globals {
 	extern float gravity;
 	extern float friction;
 	extern int iframes;
-	extern int resX;
-	extern int resY;
-	extern float zoom;
 
-	extern GLFWwindow* window;
 	extern GLFWcursor* cursor;
 
 	extern GLuint blockShaderID;
@@ -40,14 +35,7 @@ namespace globals {
 	extern const int dayLength;
 	extern float cdayTime;
 
-	extern GLuint mainFB;
-	extern GLuint mainFBT;
-	extern GLuint tmpFB;
-	extern GLuint tmpFBT;
-
 	extern glm::vec2 spritesheetWH;
-
-	extern bool doslimemerger;
 
 	extern float blockPlaceSpeed;
 
@@ -67,13 +55,6 @@ namespace globals {
 
 	extern const int blocksizepx;
 
-	extern const OverlayVertex overlayVert[4];
-	extern const int32_t overlayEl[6];
-
-	extern uint32_t overlayVA;
-	extern uint32_t overlayVB;
-	extern uint32_t overlayIB;
-
 	extern float cheaterlight;
 
 	extern float bgoffset;
@@ -85,8 +66,7 @@ namespace globals {
 	extern glm::vec3 itemslotColor;
 	extern glm::vec3 shopitemslotColor;
 	extern glm::vec3 selecteditemslotColor;
-	extern float transparency;
-	extern bool fullscreen;
+	extern glm::vec3 playerBackColor;
 
 	extern unsigned long long time;
 
@@ -116,8 +96,4 @@ namespace globals {
 
 	extern bool background;
 
-	glm::vec2 mouseBlockCoordsGlobal(bool round = true, glm::vec2 clampx = glm::vec2(-0.5, 0.5), glm::vec2 clampy = glm::vec2(-0.5, 0.5));
-	glm::vec2 mouseBlockCoords(bool round = true, glm::vec2 clampx = glm::vec2(-0.5, 0.5), glm::vec2 clampy = glm::vec2(-0.5, 0.5));
-	glm::vec2 normMouseCoords();
-	glm::vec2 mouseCoords();
 }

@@ -23,7 +23,7 @@ namespace text {
     {
         //load text from file
         {
-            std::ifstream file("assets/fonts/aaad.fnt", std::ios::in);
+            std::ifstream file("assets/fonts/based.fnt", std::ios::in);
             if (file.is_open()) {
                 std::string s;
                 while (file >> s) {
@@ -126,7 +126,7 @@ namespace text {
                 file.close();
             }
         }
-        texture = utils::LoadTexture("assets/fonts/aaad_0.png", 1);
+        texture = utils::LoadTexture("assets/fonts/based_0.png", 4);
     }
 	int widthOfText(const std::string* text, float size)
 	{

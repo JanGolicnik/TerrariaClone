@@ -6,7 +6,6 @@
 #include <animations.h>
 #include <globals.h>
 #include <game.h>
-#include <componentSystems.h>
 #include <particles.h>
 #include <input.h>
 #include <ui.h>
@@ -15,6 +14,8 @@
 #include <buffs.h>
 #include <world.h>
 #include <sounds.h>
+#include <Window.h>
+#include <droppedItemSystem.h>
 
 #define args aiC* p, int entity, physicsC* phys, ComponentArray<aiC>* arr, aiAction* action, int ctime
 
@@ -40,7 +41,7 @@ namespace mobFunctions {
 		if (phys->collidebot) {
 			p->actions.push_back({ 16, slimeJump, 1, ctime });
 			auto draw = ECS::getComponent<drawC>(entity);
-			auto jumpanim = game::aiSys->getStat(p, "jumpanim", {.charp = nullptr})->charp;
+			auto jumpanim = game::aiSys->getStat(p, "jumpanim", { .charp = nullptr })->charp;
 			if (jumpanim != nullptr) {
 				animations::watchAnim(jumpanim, &draw->anim);
 			}
@@ -50,8 +51,8 @@ namespace mobFunctions {
 	{
 		particles::spawnEffect("bombexplosion", *phys->position);
 		glm::vec2 pos = round(*phys->position);
-		Layers::damageBlock(Layers::getLayer("blocks"), pos, 100, 7, true);
-		Layers::damageBlock(Layers::getLayer("bg"), pos, 100, 5, true);
+		Layers::damageBlock(&Layers::blocks, pos, 100, 7, true);
+		Layers::damageBlock(&Layers::walls, pos, 100, 5, true);
 		auto mC = ECS::getComponent<mobC>(entity);
 		mC->hitboxradius = 11;
 		mC->killin = 1;
@@ -129,6 +130,7 @@ namespace mobFunctions {
 	}
 	void terrabladeprojectileOnUpdate(args)
 	{
+		if(phys->vel != glm::vec2(0))
 		ECS::getComponent<particleEmmiterC>(entity)->dir = glm::normalize(phys->vel);
 		int rotoffset = game::aiSys->getStat(p, "rotoffset")->intVal;
 		auto draw = ECS::getComponent<drawC>(entity);
@@ -168,7 +170,7 @@ namespace mobFunctions {
 	void guideOnUpdate(args)
 	{
 		if (glm::distance(*phys->position, Player::pos) > 30) return;
-		auto bs = Layers::getLayer("blocks");
+		auto bs = &Layers::blocks;
 		auto draw = ECS::getComponent<drawC>(entity);
 		phys->stoponcollision = true;
 		phys->weight = 1;
@@ -176,7 +178,8 @@ namespace mobFunctions {
 		if (p->state == 0) {
 			animations::removeAnim(&draw->anim);
 			if (rand() % 100 == 0) {
-				animations::watchAnim("guidewalk", &draw->anim, true);
+				auto walkanim = game::aiSys->getStat(p, "walkanim", { .charp = nullptr })->charp;
+				if (walkanim != nullptr) animations::watchAnim(walkanim, &draw->anim, true);
 				if (rand() % 2 == 0) {
 					draw->flipX = true;
 					p->state = 1;
@@ -190,7 +193,7 @@ namespace mobFunctions {
 			}
 		}
 		else {
-			if (rand() % 140 == 0) {
+			if (rand() % 120 == 0) {
 				if (p->state == 1) {
 					draw->flipX = true;
 				}
@@ -237,7 +240,7 @@ namespace mobFunctions {
 			}
 		}
 
-		
+
 
 
 	}
@@ -268,7 +271,7 @@ namespace mobFunctions {
 			dir = utils::sign(Player::pos.x - phys->position->x);
 		}
 		else {
-			if (phys->collideleft) dir = 1; else if(phys->collideright) dir = -1;
+			if (phys->collideleft) dir = 1; else if (phys->collideright) dir = -1;
 		}
 
 		phys->vel.x *= dir;
@@ -287,7 +290,7 @@ namespace mobFunctions {
 
 	void zombieOnUpdate(args)
 	{
-		auto bs = Layers::getLayer("blocks");
+		auto bs = &Layers::blocks;
 		auto draw = ECS::getComponent<drawC>(entity);
 		const char* walk = game::aiSys->getStat(p, "walkanim", { .charp = nullptr })->charp;
 		if (walk != nullptr) {
@@ -319,7 +322,7 @@ namespace mobFunctions {
 		bool goUp = true;
 
 		if (*triedgettingtoplayer == 8) {
-			*triedgettingtoplayer = -(rand()%200 + 300);
+			*triedgettingtoplayer = -(rand() % 200 + 300);
 		}
 		float ms = game::aiSys->getStat(p, "ms", { .floatVal = 0.1 })->floatVal;
 		phys->vel.x += utils::approach(phys->vel.x, dir * ms, 40);
@@ -419,10 +422,11 @@ namespace mobFunctions {
 	void demoneyeOnUpdate(args)
 	{
 		phys->vel += utils::approach(phys->vel, glm::normalize((Player::pos - *phys->position)) * glm::vec2(0.6), 50);
+		if(phys->position->y > map::surfaceH - map::surfaceScale)
 		if (globals::cdayTime > 0 && globals::cdayTime < 1800) {
 			phys->vel = -phys->vel;
 		}
-		
+
 		auto draw = ECS::getComponent<drawC>(entity);
 		float a = int(utils::angleOfVector(phys->vel)) % 360;
 		draw->hasmat = true;
@@ -438,6 +442,8 @@ namespace mobFunctions {
 
 	void bunnyUpdate(args) {
 		auto draw = ECS::getComponent<drawC>(entity);
+		auto counter = game::aiSys->getStat(p, "counter", { .intVal = 0 });
+
 		if (p->state == 0) {
 			auto standinganim = game::aiSys->getStat(p, "standinganim", { .charp = nullptr })->charp;
 			if (standinganim != nullptr) {
@@ -448,6 +454,7 @@ namespace mobFunctions {
 				if (walkinganim != nullptr) {
 					animations::watchAnim(walkinganim, &draw->anim);
 				}
+				counter->intVal = game::aiSys->getStat(p, "stridetime", { .floatVal = 8 })->floatVal * ((rand() % 5) + 1);
 				if (rand() % 2 == 0) {
 					draw->flipX = true;
 					p->state = 1;
@@ -456,39 +463,610 @@ namespace mobFunctions {
 				else {
 					draw->flipX = false;
 					p->state = 2;
-					phys->vel.x = -0.03;
+					phys->vel.x = -0.03 * game::aiSys->getStat(p, "ms", { .floatVal = 1 })->floatVal;
 				}
 			}
 		}
-		if (rand() % 40 == 0) {
-			if (p->state == 1) {
-				draw->flipX = true;
+
+		if (p->state == 1 || p->state == 2) {
+			if (counter->intVal <= 0) {
+				p->state = 0;
+				phys->vel.x = 0;
+				animations::removeAnim(&draw->anim);
 			}
-			else {
-				draw->flipX = false;
-			}
-			p->state = 0;
-			phys->vel.x = 0;
-			animations::removeAnim(&draw->anim);
+			counter->intVal--;
 		}
 
 		phys->stoponcollision = true;
 		if (phys->vel.x < 0) {
-			if (!Layers::queryBlockInfo(Layers::getLayer("blocks"), *phys->position + glm::vec2(-1 * (phys->size.x / 2.0f + 0.5), phys->size.y / 2.0f))->collidableRight)
-				if (Layers::queryBlockInfo(Layers::getLayer("blocks"), *phys->position + glm::vec2(-1 * (phys->size.x / 2.0f + 0.5), -phys->size.y / 2.0f))->collidableRight) {
+			if (!Layers::queryBlockInfo(&Layers::blocks, *phys->position + glm::vec2(-1 * (phys->size.x / 2.0f + 0.5), phys->size.y / 2.0f))->collidableRight)
+				if (Layers::queryBlockInfo(&Layers::blocks, *phys->position + glm::vec2(-1 * (phys->size.x / 2.0f + 0.5), -phys->size.y / 2.0f))->collidableRight) {
 					phys->position->y += 0.25;
 					phys->vel.y = 0;
 					phys->stoponcollision = false;
 				}
 		}
 		else if (phys->vel.x > 0) {
-			if (!Layers::queryBlockInfo(Layers::getLayer("blocks"), *phys->position + glm::vec2((phys->size.x / 2.0f + 0.5), phys->size.y / 2.0f))->collidableLeft)
-				if (Layers::queryBlockInfo(Layers::getLayer("blocks"), *phys->position + glm::vec2((phys->size.x / 2.0f + 0.5), -phys->size.y / 2.0f))->collidableLeft) {
+			if (!Layers::queryBlockInfo(&Layers::blocks, *phys->position + glm::vec2((phys->size.x / 2.0f + 0.5), phys->size.y / 2.0f))->collidableLeft)
+				if (Layers::queryBlockInfo(&Layers::blocks, *phys->position + glm::vec2((phys->size.x / 2.0f + 0.5), -phys->size.y / 2.0f))->collidableLeft) {
 					phys->position->y += 0.25;
 					phys->vel.y = 0;
 					phys->stoponcollision = false;
 				}
 		}
+	}
+
+	void snailUpdate(args) {
+
+		auto draw = ECS::getComponent<drawC>(entity);
+		auto side = game::aiSys->getStat(p, "side", { .intVal = -1 });
+		if (phys->prevpos == *phys->position) {
+			auto stuckanim = game::aiSys->getStat(p, "stuckanim", { .charp = nullptr })->charp;
+			animations::watchAnim(stuckanim, &draw->anim, -1);
+			side->intVal = -1;
+		}
+
+		auto bs = &Layers::blocks;
+		int dir = game::aiSys->getStat(p, "dir", { .intVal = rand() % 2 })->intVal;
+		float ms = game::aiSys->getStat(p, "ms", { .floatVal = 1 })->floatVal;
+		auto targetrot = game::aiSys->getStat(p, "rot", { .floatVal = 0 });
+		auto currot = game::aiSys->getStat(p, "crot", { .floatVal = 0 });
+		auto counter = game::aiSys->getStat(p, "counter", { .floatVal = 0 });
+
+		//side -1 v zraku 0 spodi 1 levo 2 got 3 desno
+		if (side->intVal == -1) {
+			phys->dontcollide = false;
+			phys->weight = 0.8;
+			if (phys->collidebot) {
+				side->intVal = 0;
+			}
+			else return;
+		}
+		else {
+			auto walkinganim = game::aiSys->getStat(p, "walkinganim", { .charp = nullptr })->charp;
+			if (walkinganim != nullptr) {
+				animations::watchAnim(walkinganim, &draw->anim, -1);
+			}
+			currot->floatVal += utils::approach(currot->floatVal, targetrot->floatVal, 3);
+			draw->mat = glm::rotate(glm::mat4(1), currot->floatVal * (float)PI / 180.0f, glm::vec3(0, 0, 1));
+		}
+
+		phys->dontcollide = true;
+
+		glm::vec2 frontblok = glm::vec2(0);
+		glm::vec2 botblok = glm::vec2(0);
+		int rotation = 0;
+
+		switch (side->intVal) {
+		case 0:
+			frontblok = glm::vec2(-1, 0);
+			botblok = glm::vec2(0, -1);
+			rotation = 0;
+			break;
+		case 1:
+			frontblok = glm::vec2(0, 1);
+			botblok = glm::vec2(-1, 0);
+			rotation = 90;
+			break;
+		case 2:
+			frontblok = glm::vec2(1, 0);
+			botblok = glm::vec2(0, 1);
+			rotation = 180;
+			break;
+		case 3:
+			frontblok = glm::vec2(0, -1);
+			botblok = glm::vec2(1, 0);
+			rotation = 270;
+			break;
+		}
+
+		glm::vec2 back = frontblok;
+		back *= -0.4;
+		back *= glm::vec2(phys->size.y, phys->size.y);
+
+		frontblok *= draw->size / glm::vec2(3);
+		frontblok *= 0.9;
+
+
+		draw->hasmat = true;
+
+		int rotdir = 1;
+		if (dir == 0) {
+			frontblok *= -1;
+			back *= -1;
+			rotdir = -1;
+			draw->flipX = true;
+		}
+
+		if (counter->floatVal > 0) {
+			phys->vel = frontblok * ms;
+			counter->floatVal -= 0.5f;
+			return;
+		}
+
+		phys->weight = 0;
+		if (Layers::queryBlockInfo(bs, *phys->position + back + botblok)->collidable == false) {
+			if (Layers::queryBlockInfo(bs, *phys->position + back - frontblok + botblok)->collidable == true) {
+				side->intVal -= rotdir;
+				targetrot->floatVal += 90 * rotdir;
+				counter->floatVal = phys->size.y / ms;
+			}
+			else {
+				side->intVal = -1;
+				targetrot->floatVal = 0;
+				return;
+			}
+		}
+		else if (Layers::queryBlockInfo(bs, *phys->position + frontblok)->collidable) {
+			side->intVal += rotdir;
+			targetrot->floatVal -= 90 * rotdir;
+		}
+		else if (Layers::queryBlockInfo(bs, *phys->position + frontblok + botblok)->collidable == true) {
+			phys->vel = frontblok * ms;
+		}
+
+		if (side->intVal > 3) side->intVal = 0;
+		if (side->intVal < 0) side->intVal = 3;
+	}
+
+	void birdUpdate(args)
+	{
+		if (p->state == 0) {
+			if (glm::distance(Player::pos, *phys->position) < 10) {
+				auto dir = game::aiSys->getStat(p, "dir");
+				auto draw = ECS::getComponent<drawC>(entity);
+				phys->weight = 0;
+				dir->intVal = utils::sign(phys->position->x - Player::pos.x);
+				if (dir->intVal > 0) draw->flipX = true;
+				animations::watchAnim("birdfly", &draw->anim, -1);
+				p->state = 1;
+			}
+			else if (Layers::queryBlockInfo(&Layers::blocks, *phys->position + glm::vec2(0, -1))->collidableTop == false) {
+				auto dir = game::aiSys->getStat(p, "dir");
+				auto draw = ECS::getComponent<drawC>(entity);
+				phys->weight = 0;
+				dir->intVal = (rand() % 2) == 1 ? 1 : -1;
+				if (dir->intVal > 0) draw->flipX = true;
+				animations::watchAnim("birdfly", &draw->anim, -1);
+				p->state = 1;
+			}
+			return;
+		}
+
+
+		float nearest = 0;
+		while (Layers::queryBlockInfo(&Layers::blocks, *phys->position + glm::vec2(0, -nearest))->collidable == false && nearest < 25) {
+			nearest++;
+		}
+		phys->vel.x += utils::approach(phys->vel.x, .35f * game::aiSys->getStat(p, "dir")->intVal, 5);
+		phys->vel.y += utils::approach(phys->vel.y, (20 - nearest) / 20.0f, 60);
+	}
+
+	void goldfishUpdate(args)
+	{
+		auto draw = ECS::getComponent<drawC>(entity);
+		if (phys->isinliquid == -1) {
+			phys->weight = 0.8;
+			animations::watchAnim("goldfishonground", &draw->anim, -1);
+			if (phys->collidebot) {
+				phys->vel.y = 0.3 + (rand() & 10) / 90.0f;
+				phys->vel.x = ((rand() % 100) / 50.0f - 1) * 0.2;
+			}
+		}
+		else {
+			animations::watchAnim("goldfishswim", &draw->anim, -1);
+			auto dir = game::aiSys->getStat(p, "dir", { .intVal = (rand() % 2) == 0 ? 1 : -1 });
+			int prefheight = game::aiSys->getStat(p, "prefheight", { .intVal = rand() % 4 + 2 })->intVal;
+			phys->weight = 0;
+			int numbelow = 0;
+			while (numbelow < prefheight + 3 && Layers::queryBlockInfo(&Layers::blocks, *phys->position + glm::vec2(0, -numbelow))->collidable == false) {
+				numbelow++;
+			}
+			float speed = (prefheight - numbelow) / prefheight;
+			phys->vel.y += utils::approach(phys->vel.y, speed * 0.05, 120);
+
+
+			phys->vel.x += utils::approach(phys->vel.x, 0.1 * dir->intVal, 100);
+
+			if (rand() % 200 == 0 || phys->collideleft || phys->collideright) {
+				dir->intVal *= -1;
+			}
+		}
+
+
+		float a = int(utils::angleOfVector(phys->vel)) % 360;
+		if (a > 30 && a <= 90) a = 30;
+		if (a > 90 && a < 150) a = 150;
+		draw->flipY = phys->vel.x > 0;
+		draw->mat = glm::rotate(glm::mat4(1.0f), float(a * PI / 180.0f), glm::vec3(0, 0, 1));
+	}
+
+	void jellyfishUpdate(args)
+	{
+		auto draw = ECS::getComponent<drawC>(entity);
+		float a = int(utils::angleOfVector(phys->vel)) % 360;
+		draw->mat = glm::rotate(glm::mat4(1.0f), float((a + 90)* PI / 180.0f), glm::vec3(0, 0, 1));
+
+		if (phys->isinliquid == -1) {
+			phys->weight = 0.8;  return;
+		}
+		phys->weight = 0;
+		phys->vel += utils::approach(phys->vel, glm::vec2(0), 60);
+		if (Player::isinwater) {
+			if (rand() % 300 == 0) {
+				animations::watchAnim("jellyfishboost", &draw->anim, 1);
+				int a = int(utils::angleOfVector(*phys->position - Player::pos)) % 360;
+				phys->vel = utils::rotateVecByAngle(glm::vec2(0.2, 0), a);
+			}
+		}
+		else {
+			if (rand() % 300 == 0) {
+				animations::watchAnim("jellyfishboost", &draw->anim, 1);
+				int a = rand() % 359;
+				phys->vel = utils::rotateVecByAngle(glm::vec2(0.2, 0), a);
+			}
+		}
+	}
+	
+	void walloffleshUpdate(args)
+	{
+		int dir = game::aiSys->getStat(p, "dir", { .intVal = -1 })->intVal;
+		auto mob = ECS::getComponent<mobC>(entity);
+		float percent = mob->hp / (float)mob->maxhp;
+		float ms = 0.1 + (1 - percent) * 0.15;
+		phys->position->x += ms * dir;
+		float targety = Player::pos.y;
+		if (Player::pos.y > map::underworldH) targety = map::underworldH;
+		phys->position->y += utils::approach(phys->position->y, targety, 120);
+		auto draw = ECS::getComponent<drawC>(entity);
+		animations::watchAnim("walloffleshmouth", &draw->anim, -1);
+		draw->hasmat = dir == 1 ? Player::pos.x > phys->position->x : Player::pos.x < phys->position->x;
+		int a = (int)utils::angleOfVector(Player::pos - *phys->position) % 360;
+		a += 180 * (dir == 1);
+		draw->mat = glm::rotate(glm::mat4(1.0f), a * (float)PI / 180.0f, glm::vec3(0, 0, 1));
+		if (phys->position->x > map::mapX || phys->position->x < 0) ECS::deleteEntity(entity);
+
+		aiStat* armstat = game::aiSys->getStat(p, "arm", { .intVal = -1 });
+		if (dir == 1 ? Player::pos.x < phys->position->x - 5 : Player::pos.x > phys->position->x + 5) {
+			if (armstat->intVal == -1) {
+				int arm = enemies::spawnEnemy("wallofflesharm", *phys->position);
+				int link = enemies::spawnEnemy("link", *phys->position);
+				auto armac = ECS::getComponent<aiC>(arm);
+				armac->stats["parent"].intVal = entity;
+				auto linkac = ECS::getComponent<aiC>(link);
+				linkac->stats["end"].intVal = arm;
+				linkac->stats["start"].intVal = entity;
+				linkac->onupdate = mobFunctions::linkUpdateEnt;
+				armstat->intVal = arm;
+			}
+		}
+		else {
+			ECS::queueDeletion(armstat->intVal);
+			armstat->intVal = -1;
+		}
+
+		if (glm::distance(*phys->position, Player::pos) < 300) {
+			Player::addBuff("horrified", 1);
+		}
+	}
+
+	void walloffleshCreateBody(args)
+	{
+		int dir = 1;
+		if (phys->position->x > map::mapX / 2) {
+			dir = -1;
+		}
+		p->stats["dir"].intVal = dir;
+
+		bool flip = dir == 1;
+		auto draw = ECS::getComponent<drawC>(entity);
+		draw->flipX = flip;
+		int eye = enemies::spawnEnemy("wallofflesheye", *phys->position + glm::vec2(0, 20));
+		auto ai = ECS::getComponent<aiC>(eye);
+		draw = ECS::getComponent<drawC>(eye);
+		ai->stats["parent"].intVal = entity;
+		ai->stats["offset"].vec2Val = glm::vec2(0, 20);
+		ai->stats["dir"].intVal = dir;
+		draw->flipX = flip;
+		animations::watchAnim("wallofflesheye", &draw->anim);
+		eye = enemies::spawnEnemy("wallofflesheye", *phys->position + glm::vec2(0, -20));
+		ai = ECS::getComponent<aiC>(eye);
+		draw = ECS::getComponent<drawC>(eye);
+		ai->stats["dir"].intVal = dir;
+		ai->stats["parent"].intVal = entity;
+		ai->stats["offset"].vec2Val = glm::vec2(0, -20);
+		draw->flipX = flip;
+		animations::watchAnim("wallofflesheye", &ECS::getComponent<drawC>(eye)->anim);
+		int numbodyparts = 15;
+		for (int i = 0; i < numbodyparts; i++) {
+			glm::vec2 pos = *phys->position + glm::vec2(4 * -dir, 8.2 * ((numbodyparts / 2) - i));
+			int body = enemies::spawnEnemy("walloffleshbody", pos, false, glm::vec2(-13245, 123432), drawSystem::behindBlocks);
+			ai = ECS::getComponent<aiC>(body);
+			draw = ECS::getComponent<drawC>(body);
+			ai->stats["parent"].intVal = entity;
+			ai->stats["offset"].vec2Val = glm::vec2(4 * -dir, 8.4 * ((numbodyparts / 2) - i));
+			draw->flipX = flip;
+			animations::watchAnim("walloffleshbody", &draw->anim);
+
+			int hungry = enemies::spawnEnemy("thehungry", pos);
+			int link = enemies::spawnEnemy("link", glm::vec2(0));
+			drawC* hungrydc = ECS::getComponent<drawC>(hungry);
+			aiC* hungryac = ECS::getComponent<aiC>(hungry);
+			hungryac->stats["parent"].intVal = body;
+			hungryac->stats["wof"].intVal = entity;
+			animations::watchAnim("thehungryattached", &hungrydc->anim);
+			aiC* linkac = ECS::getComponent<aiC>(link);
+			linkac->onupdate = mobFunctions::linkUpdateEnt;
+			linkac->stats["end"].intVal = hungry;
+			linkac->stats["start"].intVal = body;
+		}
+	}
+
+	void walloffleshbodyUpdate(args)
+	{
+		int parent = game::aiSys->getStat(p, "parent", { .intVal = -1 })->intVal;
+		if (parent == -1) {
+			ECS::queueDeletion(entity);
+			return;
+		}
+		auto parentPhys = ECS::getComponent<physicsC>(parent);
+		if (parentPhys == nullptr) {
+			ECS::queueDeletion(entity);
+			return;
+		}
+		glm::vec2 offset = game::aiSys->getStat(p, "offset", { .vec2Val = glm::vec2(0, 0) })->vec2Val;
+		*ECS::getComponent<drawC>(entity)->position = *parentPhys->position + offset;
+
+	}
+
+	void wallofflesheyeShoot(args)
+	{
+		int e = ECS::newEntity();
+
+		int dir = game::aiSys->getStat(p, "dir", { .intVal = 1 })->intVal;
+		if (dir == -1 ? Player::pos.x > phys->position->x : Player::pos.x < phys->position->x) {
+			return;
+		}
+
+		glm::vec2 targetvec = Player::pos - *phys->position;
+
+		projectileBase projectile = enemies::projectiles["wallofflesheyelaser"];
+		projectile.dc.parent = globals::projectileLayer;
+		projectile.pc.prevpos = phys->prevpos;
+		auto ppos = std::make_shared<glm::vec2>(*phys->position);
+		projectile.dc.position = ppos;
+		projectile.pc.position = ppos;
+		projectile.pc.vel = glm::normalize(targetvec) * glm::vec2(1.2);
+
+		drawSystem::addComponent(e, &projectile.dc, false);
+		ECS::queueComponent<physicsC>(e, projectile.pc);
+		ECS::queueComponent<mobC>(e, projectile.mc);
+		ECS::queueComponent<aiC>(e, projectile.ac);
+		ECS::queueComponent<particleEmmiterC>(e, projectile.pec);
+
+		auto mob = ECS::getComponent<mobC>(entity);
+		p->actions[0].timer = (mob->hp / (float)mob->maxhp) * 120 + 10;
+	}
+
+	void linkUpdateRef(args)
+	{
+		glm::vec2* end = game::aiSys->getStat(p, "end", { .vec2Valp = nullptr })->vec2Valp;
+		glm::vec2 *start = game::aiSys->getStat(p, "start", { .vec2Valp = nullptr })->vec2Valp;
+		if (end == nullptr || start == nullptr) {
+			ECS::getComponent<mobC>(entity)->hp = 0;
+			return;
+		}
+		auto draw = ECS::getComponent<drawC>(entity);
+		int a = (int)utils::angleOfVector(*end - *start) % 360;
+		draw->mat = glm::rotate(glm::mat4(1.0f), a * (float)PI / 180, glm::vec3(0, 0, 1));
+		glm::vec2 vec = *end - *start;
+		
+		auto mob = ECS::getComponent<drawC>(entity);
+		int nparts = ceil(glm::length(vec) / draw->size.x);
+		if (nparts < 0 || nparts > 100) {
+			for (int i = 0; i < mob->children.size(); i++) {
+				ECS::queueDeletion(mob->children[i]);
+			}
+			mob->children.clear();
+			return;
+		}
+		while(mob->children.size() < nparts) {
+			int ent = ECS::newEntity();
+			drawC draw2 = *draw;
+			draw2.position = std::make_shared<glm::vec2>(*draw->position);
+			draw2.children.clear();
+			draw2.hasmat = true;
+			ECS::queueComponent<drawC>(ent, draw2);
+			mob->children.push_back(ent);
+		}
+		while (mob->children.size() > nparts) {
+			ECS::queueDeletion(mob->children[mob->children.size()-1]);
+			mob->children.pop_back();
+		}
+		for (int i = 0; i < mob->children.size(); i++) {
+			auto cdraw = ECS::getComponent<drawC>(mob->children[i]);
+			cdraw->mat = draw->mat;
+			*cdraw->position = *start + vec * glm::vec2(i / (float)nparts);
+		}
+	}
+
+
+	void linkUpdateEnt(args)
+	{
+		int endent = game::aiSys->getStat(p, "end", { .intVal = -1 })->intVal;
+		int startent = game::aiSys->getStat(p, "start", { .intVal = -1 })->intVal;
+		if (endent == -1 || startent == -1) {
+			ECS::getComponent<mobC>(entity)->hp = 0;
+			return;
+		}
+		drawC* enddc = ECS::getComponent<drawC>(endent);
+		drawC* startdc = ECS::getComponent<drawC>(startent);
+		if (enddc == nullptr || startdc == nullptr) {
+			ECS::getComponent<mobC>(entity)->hp = 0;
+			return;
+		}
+		glm::vec2 end = *enddc->position;
+		glm::vec2 start= *startdc->position;
+		auto draw = ECS::getComponent<drawC>(entity);
+		int a = (int)utils::angleOfVector(end - start) % 360;
+		draw->mat = glm::rotate(glm::mat4(1.0f), a * (float)PI / 180, glm::vec3(0, 0, 1));
+		glm::vec2 vec = end - start;
+
+		auto mob = ECS::getComponent<drawC>(entity);
+		int nparts = ceil(glm::length(vec) / draw->size.x);
+		if (nparts < 0 || nparts > 100) {
+			for (int i = 0; i < mob->children.size(); i++) {
+				ECS::queueDeletion(mob->children[i]);
+			}
+			mob->children.clear();
+			return;
+		}
+		while (mob->children.size() < nparts) {
+			int ent = ECS::newEntity();
+			drawC draw2 = *draw;
+			draw2.position = std::make_shared<glm::vec2>(*draw->position);
+			draw2.children.clear();
+			draw2.hasmat = true;
+			ECS::queueComponent<drawC>(ent, draw2);
+			mob->children.push_back(ent);
+		}
+		while (mob->children.size() > nparts) {
+			ECS::queueDeletion(mob->children[mob->children.size() - 1]);
+			mob->children.pop_back();
+		}
+		for (int i = 0; i < mob->children.size(); i++) {
+			auto cdraw = ECS::getComponent<drawC>(mob->children[i]);
+			cdraw->mat = draw->mat;
+			*cdraw->position = start + vec * glm::vec2(i / (float)nparts);
+		}
+	}
+
+	void thehungryOnUpdate(args)
+	{
+		auto mob = ECS::getComponent<mobC>(entity);
+		int wof = game::aiSys->getStat(p, "wof", { .intVal = -1 })->intVal;
+		int parent = game::aiSys->getStat(p, "parent", { .intVal = -1 })->intVal;
+		auto wofphys = ECS::getComponent<physicsC>(wof);
+		auto parentdraw = ECS::getComponent<drawC>(parent);
+		if (wof == -1 || wofphys == nullptr || parent == -1 || parentdraw == nullptr) { mob->hp = 0; return; }
+		
+		aiStat* target = game::aiSys->getStat(p, "target", { .vec2Val = *phys->position});
+
+		if (p->state == 0) {
+			if (glm::distance(*phys->position, target->vec2Val) < 5) {
+				glm::vec2 randvec(((rand() % 1000) / 500.0f) - 1, ((rand() % 1000) / 500.0f) - 1);
+				randvec *= 5;
+				target->vec2Val = Player::pos + randvec;
+				p->state = 1;
+			}
+		}
+		else if (p->state == 1) {
+			if (glm::distance(*phys->position, target->vec2Val) < 5) {
+				float randlen = ((rand() % 1000) / 1000.0f) / 2.0f;
+				float randangle =( rand() % 60) - 30;
+				glm::vec2 vec = Player::pos - *wofphys->position;
+				vec *= randlen;
+				utils::rotateVecByAngle(&vec, randangle);
+				target->vec2Val = *wofphys->position + vec;
+				p->state = 0;
+			}
+		}
+
+		phys->vel += utils::approach(phys->vel, glm::normalize(target->vec2Val - *phys->position) * glm::vec2(1), 100);
+		auto draw = ECS::getComponent<drawC>(entity);
+		float a = int(utils::angleOfVector(*phys->position - *parentdraw->position)) % 360;
+		draw->mat = glm::rotate(glm::mat4(1.0f), a * (float)PI / 180.0f, glm::vec3(0, 0, 1));
+	}
+
+	void wallofflesharmOnUpdate(args)
+	{
+		auto draw = ECS::getComponent<drawC>(entity);
+		if (glm::distance(*draw->position, Player::pos) < 4) {
+			int parent = game::aiSys->getStat(p, "parent", { .intVal = -1 })->intVal;
+			physicsC* parentphys = ECS::getComponent<physicsC>(parent);
+			if (parent == -1 || parentphys == nullptr) {
+				ECS::queueDeletion(entity);
+				return;
+			}
+			physicsC* playerphys = ECS::getComponent<physicsC>(Player::entity);
+			playerphys->stoponcollision = false;
+			glm::vec2 vec = glm::normalize(*parentphys->position - Player::pos);
+			playerphys->vel = vec;
+			if (globals::time % 60 == 0) {
+				Player::hp -= 50;
+				std::cout << "damaged plr bc he was retard " << 50 << "\n";
+			}
+			*draw->position = *playerphys->position;
+			return;
+		}
+		glm::vec2 vec = glm::normalize(Player::pos - *draw->position) * glm::vec2(0.8);
+		*draw->position += vec;
+		int a = (int)utils::angleOfVector(vec) % 360;
+		draw->mat = glm::rotate(glm::mat4(1.0f), a * (float)PI / 180.0f, glm::vec3(0, 0, 1));
+	
+		
+	}
+
+	void voodoodollOnUpdate(args)
+	{
+		if (phys->isinliquid == 1) {
+			if (phys->position->y < map::underworldH) {
+				if (map::npcs["guide"].current != -1) {
+					ECS::getComponent<mobC>(map::npcs["guide"].current)->hp = 0;
+					glm::vec2 spawnpos = (Player::pos.x < map::mapX / 2)
+						? glm::vec2((Player::pos.x - 120), Player::pos.y)
+						: glm::vec2((Player::pos.x + 120), Player::pos.y);
+					enemies::spawnEnemy("walloffflesh", spawnpos, true);
+				}
+			}
+		}
+	}
+
+	void muramasaprojectileUpdate(args)
+	{
+		const float lifespan = 15;
+		int dir = game::aiSys->getStat(p, "dir", { .intVal = 0 })->intVal;
+		utils::rotateVecByAngle(&phys->vel, dir);
+		auto draw = ECS::getComponent<drawC>(entity);
+		float a = int(utils::angleOfVector(phys->vel)) % 360;
+		draw->mat = glm::rotate(glm::mat4(1.0f), float((a + 90) * PI / 180.0f), glm::vec3(0, 0, 1));
+		mobC* mC = ECS::getComponent<mobC>(entity);
+		float percent = (mC->killin / lifespan) * 180;
+		draw->opacity = sin(percent * PI / 180.0f);
+		draw->color = glm::vec3(sin(percent * PI / 180.0f) + 1);
+
+	}
+
+	void wallofflesheyeUpdate(args)
+	{
+		int parent = game::aiSys->getStat(p, "parent", { .intVal = -1 })->intVal;
+		if (parent == -1) {
+			ECS::getComponent<mobC>(entity)->hp = 0;
+			return;
+		}
+		auto parentPhys = ECS::getComponent<physicsC>(parent);
+		if (parentPhys == nullptr) {
+			ECS::getComponent<mobC>(entity)->hp = 0;
+			return;
+		}
+		glm::vec2 offset = game::aiSys->getStat(p, "offset", { .vec2Val = glm::vec2(0, 0) })->vec2Val;
+		*phys->position = *parentPhys->position + offset;
+
+		auto draw = ECS::getComponent<drawC>(entity);
+		int dir = game::aiSys->getStat(p, "dir", { .intVal = 1 })->intVal;
+		draw->hasmat = dir == 1 ? Player::pos.x > phys->position->x : Player::pos.x < phys->position->x;
+		int a = (int)utils::angleOfVector(Player::pos - *phys->position) % 360;
+		a += 180 * (dir == 1);
+		draw->mat = glm::rotate(glm::mat4(1.0f), a * (float)PI / 180.0f, glm::vec3(0, 0, 1));
+
+		auto parentmob = ECS::getComponent<mobC>(parent);
+		if (parentmob == nullptr) {
+			ECS::queueDeletion(entity);
+			return;
+		}
+		auto mob = ECS::getComponent<mobC>(entity);
+		if (parentmob->hp < mob->hp) mob->hp = parentmob->hp; else
+			if (mob->hp < parentmob->hp) parentmob->hp = mob->hp;
 	}
 
 	void arrowUpdate(args)
@@ -511,7 +1089,6 @@ namespace mobFunctions {
 				p->state = 1;
 			}
 		}
-
 	}
 
 	void bulletUpdate(args)
@@ -734,7 +1311,7 @@ namespace mobFunctions {
 				//shoot
 				{
 					int e = ECS::newEntity();
-					projectileBase projectile = items::projectiles["miniretinalaser"];
+					projectileBase projectile = enemies::projectiles["miniretinalaser"];
 					projectile.dc.parent = globals::projectileLayer;
 					projectile.pc.prevpos = phys->prevpos;
 					auto ppos = std::make_shared<glm::vec2>(*phys->position);
@@ -814,7 +1391,7 @@ namespace mobFunctions {
 				//shoot
 				{
 					int e = ECS::newEntity();
-					projectileBase projectile = items::projectiles["impfireball"];
+					projectileBase projectile = enemies::projectiles["impfireball"];
 					projectile.dc.parent = globals::projectileLayer;
 					projectile.pc.prevpos = phys->prevpos;
 					auto ppos = std::make_shared<glm::vec2>(*phys->position);
@@ -863,7 +1440,8 @@ namespace mobFunctions {
 
 	void guideOnClick(args)
 	{
-		gameLoop::openDialogue("guide");
+		auto menu = game::aiSys->getStat(p, "npcmenu", { .charp = nullptr })->charp;
+		if(menu != nullptr)gameLoop::openDialogue(menu);
 	}
 
 	void slimeFireProjectile(args)
@@ -879,7 +1457,7 @@ namespace mobFunctions {
 			targetvec.x = -sin(randangle * PI / 180.0f);
 			targetvec.y =  cos(randangle * PI / 180.0f);
 			
-			projectileBase projectile = items::projectiles[proj];
+			projectileBase projectile = enemies::projectiles[proj];
 			projectile.dc.parent = globals::projectileLayer;
 			projectile.pc.prevpos = phys->prevpos;
 			auto ppos = std::make_shared<glm::vec2>(*phys->position);
@@ -907,7 +1485,7 @@ namespace mobFunctions {
 			glm::vec2* target = &game::aiSys->getStat(p, "target", { .vec2Val = glm::vec2(0) })->vec2Val;
 			phys->vel += utils::approach(phys->vel, glm::normalize((Player::pos + *target - *phys->position)) * glm::vec2(0.6), 180);
 
-			if ((glm::distance(*phys->position, Player::pos + *target) < 5) || Layers::queryBlockInfo(Layers::getLayer("blocks"), Player::pos + *target)->notReplacable) {
+			if ((glm::distance(*phys->position, Player::pos + *target) < 5) || Layers::queryBlockInfo(&Layers::blocks, Player::pos + *target)->notReplacable) {
 				*target = glm::vec2((rand() % 1000) - 500, (rand() % 1000) - 500);
 				*target = glm::normalize(*target) * glm::vec2(15);
 			}
@@ -933,7 +1511,7 @@ namespace mobFunctions {
 
 
 		if (glm::distance(*phys->position, Player::pos) > 50) {
-			if (Layers::queryBlockInfo(Layers::getLayer("blocks"), *phys->position + glm::vec2(0, 1))->collidableBot) {
+			if (Layers::queryBlockInfo(&Layers::blocks, *phys->position + glm::vec2(0, 1))->collidableBot) {
 				p->state = 1;
 				const char* hangingtex = game::aiSys->getStat(p, "hangingtex", { .charp = nullptr })->charp;
 				if (hangingtex != nullptr) {
@@ -972,7 +1550,7 @@ namespace mobFunctions {
 
 			glm::vec2* target = &game::aiSys->getStat(p, "target", { .vec2Val = glm::vec2(0) })->vec2Val;
 			phys->vel += utils::approach(phys->vel, glm::normalize((Player::pos + *target - *phys->position)) * glm::vec2(0.6), 120);
-			if ((glm::distance(*phys->position, Player::pos + *target) < 5) || Layers::queryBlockInfo(Layers::getLayer("blocks"), Player::pos + *target)->notReplacable) {
+			if ((glm::distance(*phys->position, Player::pos + *target) < 5) || Layers::queryBlockInfo(&Layers::blocks, Player::pos + *target)->notReplacable) {
 				*target = glm::vec2(((rand() % 1000)/500.0f) - 1, ((rand() % 1000) / 500.0f) - 1);
 				*target *= game::aiSys->getStat(p, "followrange", {.floatVal = 6})->floatVal;
 			}
@@ -992,7 +1570,7 @@ namespace mobFunctions {
 
 			glm::vec2 targetvec = Player::pos - *phys->position;
 
-projectileBase projectile = items::projectiles["demonscythe"];
+projectileBase projectile = enemies::projectiles["demonscythe"];
 projectile.dc.parent = globals::projectileLayer;
 projectile.pc.prevpos = phys->prevpos;
 auto ppos = std::make_shared<glm::vec2>(*phys->position);
@@ -1015,7 +1593,7 @@ ECS::queueComponent<particleEmmiterC>(e, projectile.pec);
 
 		glm::vec2 targetvec = Player::pos - *phys->position;
 
-		projectileBase projectile = items::projectiles["hornetsting"];
+		projectileBase projectile = enemies::projectiles["hornetsting"];
 		projectile.dc.parent = globals::projectileLayer;
 		projectile.pc.prevpos = phys->prevpos;
 		auto ppos = std::make_shared<glm::vec2>(*phys->position);
@@ -1086,7 +1664,7 @@ ECS::queueComponent<particleEmmiterC>(e, projectile.pec);
 	void casterTeleport(args)
 	{
 		std::vector<glm::vec2> candidates;
-		auto bs = Layers::getLayer("blocks");
+		auto bs = &Layers::blocks;
 		for (int x = Player::pos.x - 20; x < Player::pos.x + 40; x++) {
 			for (int y = Player::pos.y - 20; y < Player::pos.y + 40; y++) {
 				if (!Layers::queryBlockInfo(bs, { x,y })->notReplacable) continue;
@@ -1112,7 +1690,7 @@ ECS::queueComponent<particleEmmiterC>(e, projectile.pec);
 
 		glm::vec2 targetvec = glm::normalize(Player::pos - *phys->position);
 
-		projectileBase projectile = items::projectiles[proj];
+		projectileBase projectile = enemies::projectiles[proj];
 		projectile.dc.parent = globals::projectileLayer;
 		projectile.pc.prevpos = phys->prevpos;
 		auto ppos = std::make_shared<glm::vec2>(*phys->position);
@@ -1131,7 +1709,7 @@ ECS::queueComponent<particleEmmiterC>(e, projectile.pec);
 	void wormHeadOnUpdate(args)
 	{
 		auto target = &game::aiSys->getStat(p, "target", { .vec2Val = glm::vec2(0, 0) })->vec2Val;
-		if (Layers::queryBlockInfo(Layers::getLayer("blocks"), *phys->position)->notReplacable) {
+		if (Layers::queryBlockInfo(&Layers::blocks, *phys->position)->notReplacable) {
 			phys->vel += utils::approach(phys->vel, glm::normalize(Player::pos + *target - *phys->position), 200);
 		}
 		else {
@@ -1323,7 +1901,7 @@ ECS::queueComponent<particleEmmiterC>(e, projectile.pec);
 		bool offscreen = glm::distance(Player::pos, *phys->position) > 45;
 		
 		if(p->state != 2){
-			if (offscreen || Layers::queryBlockInfo(Layers::getLayer("blocks"), *phys->position)->notReplacable) {
+			if (offscreen || Layers::queryBlockInfo(&Layers::blocks, *phys->position)->notReplacable) {
 				phys->vel += utils::approach(phys->vel, glm::normalize(Player::pos + *target - *phys->position) * glm::vec2(1.5f), 120);
 			}
 			else {
@@ -1441,7 +2019,7 @@ ECS::queueComponent<particleEmmiterC>(e, projectile.pec);
 		draw->hasmat = true;
 		draw->mat = glm::rotate(draw->mat, float(length * PI / 180.0f), glm::vec3(0, 0, 1));
 
-		auto bs = Layers::getLayer("blocks");
+		auto bs = &Layers::blocks;
 		if (Layers::queryBlockInfo(bs, *phys->position + glm::vec2(1, -1))->notReplacable) return;
 		if (Layers::queryBlockInfo(bs, round(*phys->position) + glm::vec2(-1, -1))->notReplacable) return;
 		if (!Layers::queryBlockInfo(bs, round(*phys->position) + glm::vec2(-1, -2))->notReplacable) return;
@@ -1459,11 +2037,12 @@ ECS::queueComponent<particleEmmiterC>(e, projectile.pec);
 		}
 		draw->hasmat = true;
 		draw->mat = glm::rotate(draw->mat, float(length * PI / 180.0f), glm::vec3(0, 0, 1));
-		draw->opacity += utils::approach(draw->opacity, 0, 500);
+		draw->opacity = pow(draw->opacity, 1.02);
 		if (draw->opacity < 0.05) {
 			ECS::queueDeletion(entity);
 		}
 	}
+
 
 	void eaterofworldsbodyOnUpdate(args)
 	{
@@ -1505,7 +2084,7 @@ ECS::queueComponent<particleEmmiterC>(e, projectile.pec);
 		auto draw = ECS::getComponent<drawC>(entity);
 		draw->hasmat = true;
 		
-		glm::vec2 moveVector = globals::mouseBlockCoords(false) - *phys->position;
+		glm::vec2 moveVector = Window::mouseBlockCoords(false) - *phys->position;
 		if (p->state == 0 && (input::held(k_PRIMARY) || input::pressed(k_PRIMARY))) {
 			float a = int(utils::angleOfVector(phys->vel) + 90) % 360;
 			draw->mat = glm::rotate(glm::mat4(1.0f), float(a * PI / 180.0f), glm::vec3(0, 0, 1));
@@ -1559,6 +2138,13 @@ ECS::queueComponent<particleEmmiterC>(e, projectile.pec);
 			Layers::addLight(*(phys->position), light);
 	}
 
+
+
+	void ondie_npc(mobDeathargs)
+	{
+		auto ai = ECS::getComponent<aiC>(ent);
+		map::npcs[game::aiSys->getStat(ai, "npcname", { .charp = "guide" })->charp].current = -1;
+	}
 
 	void ondie_nothing(mobDeathargs) {
 
@@ -1789,6 +2375,10 @@ ECS::queueComponent<particleEmmiterC>(e, projectile.pec);
 		parentdraw->tex = "eaterofworldstail";
 		parentdraw->size = glm::vec2(5);
 	}
+	void ondie_thehungry(mobDeathargs)
+	{
+		enemies::spawnEnemy("thehungryflying", *phys->position);
+	}
 	void ondie_snowball(mobDeathargs)
 	{
 		int waterexplosion = ECS::newEntity();
@@ -1929,12 +2519,14 @@ void collisionFs::damagePlayerBurn(mobCWPargs)
 
 void collisionFs::terraBladedamage(mobCargs)
 {
+	if (p2->iframes > 0) return;
 	damage(p1, p2, phys1, phys2, p1_i, p2_i, arr);
 	particles::spawnEffect("terrabladedamage", *phys2->position);
 }
 
 void collisionFs::volcanoDamage(mobCargs)
 {
+	if (p2->iframes > 0) return;
 	damage(p1, p2, phys1, phys2, p1_i, p2_i, arr);
 	if (rand() % 2 == 0) {
 		p2->buffs.push_back({ "onfire", 180, globals::time });
@@ -1943,6 +2535,7 @@ void collisionFs::volcanoDamage(mobCargs)
 
 void collisionFs::bladeofgrassDamage(mobCargs)
 {
+	if (p2->iframes > 0) return;
 	damage(p1, p2, phys1, phys2, p1_i, p2_i, arr);
 	if (rand() % 2 == 0) {
 		p2->buffs.push_back({ "poisoned", 180, globals::time });
@@ -1951,6 +2544,7 @@ void collisionFs::bladeofgrassDamage(mobCargs)
 
 void collisionFs::moltenPickaxeDamage(mobCargs)
 {
+	if (p2->iframes > 0) return;
 	damage(p1, p2, phys1, phys2, p1_i, p2_i, arr);
 	if (rand() % 10 == 0) {
 		p2->buffs.push_back({ "onfire", 180, globals::time });
@@ -1959,8 +2553,38 @@ void collisionFs::moltenPickaxeDamage(mobCargs)
 
 void collisionFs::moltenHamaxeDamage(mobCargs)
 {
+	if (p2->iframes > 0) return;
 	damage(p1, p2, phys1, phys2, p1_i, p2_i, arr);
 	if (rand() % 5 == 0) {
 		p2->buffs.push_back({ "onfire", 180, globals::time });
 	}
+}
+
+void collisionFs::muramasaDamage(mobCargs)
+{
+	if (p2->iframes > 0) return;
+
+	damage(p1, p2, phys1, phys2, p1_i, p2_i, arr);
+
+	projectileBase projectile = enemies::projectiles["muramasaprojectile"];
+	glm::vec2 pos = *phys2->position;
+	pos += utils::rotateVecByAngle(glm::vec2(4, 0), rand() % 360);
+
+	auto ppos = std::make_shared<glm::vec2>(pos);
+	projectile.pc.position = ppos;
+	projectile.pc.prevpos = *projectile.pc.position;
+	projectile.dc.position = projectile.pc.position;
+	projectile.dc.parent = game::drawSys->mainDrawable;
+	projectile.pc.vel = glm::normalize(*phys2->position - pos) * glm::vec2(8 / 15.0f);
+	int dir = rand() % 2 == 0 ? 1 : -1;
+	dir *= rand() % 20 + 20;
+	utils::rotateVecByAngle(&projectile.pc.vel, dir);
+	projectile.ac.stats["dir"].intVal = -dir/(float)projectile.mc.killin;
+
+	int e = ECS::newEntity();
+	drawSystem::addComponent(e, &projectile.dc, false);
+	ECS::queueComponent<physicsC>(e, projectile.pc);
+	ECS::queueComponent<mobC>(e, projectile.mc);
+	ECS::queueComponent<aiC>(e, projectile.ac);
+	ECS::queueComponent<particleEmmiterC>(e, projectile.pec);
 }

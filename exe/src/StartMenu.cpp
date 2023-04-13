@@ -14,6 +14,8 @@
 #include <background.h>
 #include <utils.h>
 #include <world.h>
+#include <resources.h>
+#include <Window.h>
 
 namespace StartMenu {
     int logo;
@@ -44,10 +46,23 @@ namespace StartMenu {
     int sun;
     int moon;
 
+    int playerdisplay; 
+
     int worldsizedisplay;
 
-    std::vector<std::string> availableWorlds;
-    std::vector<std::string> availablePlayers;
+
+    bool shouldRefreshPlayers = false;
+    int playerPage = 0;
+    std::string playerPageText = "";
+
+    bool shouldRefreshWorlds = false;
+    int worldPage = 0;
+    std::string worldPageText = "";
+
+    std::vector <playerData> playerDataBuffer;
+    std::vector<std::pair<glm::vec2, int>> renderPlayerQueue;
+
+    std::vector<worldData> worldDataBuffer;
 
     void init()
     {
@@ -142,7 +157,7 @@ namespace StartMenu {
 
 
 
-        ref.floatValp = &globals::zoom;
+        ref.floatValp = &Window::zoom;
         max.floatVal = 5.0f;
         textSize; textSize.floatVal = 1.0f; 
         roundAt.floatVal = 0.04f;
@@ -169,16 +184,18 @@ namespace StartMenu {
         func; func.funcp = openMenu;
         UI::addElement(ECS::newEntity(), ui_BUTTON, { 0, -150 }, { 200, 200 }, videoContainer, { {"func", func}, {"textSize", {.floatVal = fontsize}}, {"fitText", fitText}, {"padding", padding}, {"menu", menu} }, { {"tex", "empty"}, {"text", "Back"} }, true, anchorMID);
 
+        UI::addElement(ECS::newEntity(), ui_TOGGLE, { 0, 275 }, { 0, 0 }, videoContainer, { {"ref", {.boolValp = &Window::bloom}}, {"textSize", {.floatVal = fontsize}} }, { {"label", "Bloom"} }, true);
+        
         uiStat min; min.floatVal = 0.5f;
         max.floatVal = 1.0f;
-        ref.floatValp = &globals::transparency;
+        ref.floatValp = &Window::transparency;
         UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { 0, 150 }, { 333,333 / 11 }, videoContainer, { {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", "magik"} }, true);
 
         func; func.funcp = UI::uiCfunc_toggleFullscreen;
         UI::addElement(ECS::newEntity(), ui_BUTTON, { 0, 50 }, { 200, 200 }, videoContainer, { {"func", func},{"textSize", {.floatVal = fontsize}}, {"fitText", fitText}, {"padding", padding}, {"menu", menu} }, { {"tex", "empty"}, {"text", "Toggle fullscreen"} }, true, anchorMID);
 
         func; func.funcp = UI::uiCfunc_nextResolution;
-        UI::addElement(ECS::newEntity(), ui_BUTTON, { 0, -50 }, { 200, 200 }, videoContainer, { {"func", func}, {"textSize", {.floatVal = fontsize}}, {"fitText", fitText}, {"padding", padding}, {"menu", menu}, {"textp", {.stringp = &game::currResText }} }, { {"tex", "empty"}, {"text", ""} }, true, anchorMID);
+        UI::addElement(ECS::newEntity(), ui_BUTTON, { 0, -50 }, { 200, 200 }, videoContainer, { {"func", func}, {"textSize", {.floatVal = fontsize}}, {"fitText", fitText}, {"padding", padding}, {"menu", menu}, {"textp", {.stringp = &Window::currResText }} }, { {"tex", "empty"}, {"text", ""} }, true, anchorMID);
         //-----------------------------------video------------------------------------------
 
         //-----------------------------------cursor------------------------------------------
@@ -243,12 +260,9 @@ namespace StartMenu {
         int margin = 15;
 
       
-        int container = ECS::newEntity();
-        UI::addElement(container, ui_CONTAINER, { 0, 0 }, { 0, 0 }, keybindingsContainer, { {"padding", {.floatVal = 1} } }, {}, true, anchorNONE);
-        UI::Elements::text(container, { 0, -450 }, true, anchorTOP, "Controls", fontsize, true);
 
         fontsize /= 1.3;
-        container = ECS::newEntity();
+        int container = ECS::newEntity();
         UI::addElement(container, ui_CONTAINER, { 0, 0 }, { 0, 0 }, keybindingsContainer, { {"padding", {.floatVal = 2.5} }, {"opacity", {.floatVal = 0.8}} }, {}, true, anchorNONE);
         int container2 = ECS::newEntity();
         UI::addElement(container2, ui_CONTAINER, { 0, 0 }, { 0, 0 }, container, { {"padding", {.floatVal = 1} }, {"colorp", {.vec3p = &globals::backcolor2}}, {"opacity", {.floatVal = 0.8}} }, {}, true, anchorNONE);
@@ -277,6 +291,10 @@ namespace StartMenu {
         func; func.funcp = openMenu;
         UI::addElement(ECS::newEntity(), ui_BUTTON, { 0, 150 }, { 600, 50 }, keybindingsContainer, { {"borderhover", {.boolVal = true}},  {"textonhover", {.boolVal = false}},{"func", func}, {"textSize", {.floatVal = fontsize}}, {"menu", menu} }, { {"tex", "empty"}, {"text", "Back"} }, true, anchorBOT);
 
+        container = ECS::newEntity();
+        UI::addElement(container, ui_CONTAINER, { 0, 0 }, { 0, 0 }, keybindingsContainer, { {"padding", {.floatVal = 1} } }, {}, true, anchorNONE);
+        UI::Elements::text(container, { 0, 550 }, true, anchorMID, "Controls", fontsize, true);
+
 
         //-----------------------------------keybindings------------------------------------------
 
@@ -286,6 +304,15 @@ namespace StartMenu {
         UI::addElement(playersContainer, ui_EMPTY, { 0,0 }, { 0,0 }, playerSelectContainer);
 
         refreshPlayers();
+
+        UI::Elements::text(playerSelectContainer, { 0, 210 }, true, anchorBOT, & playerPageText, globals::fontSize * 1.1, true);
+
+        padding.floatVal = 40;
+        func.funcp = nextPlayerPage;
+        UI::addElement(ECS::newEntity(), ui_BUTTON, { 175, 200 }, { 88, 88 }, playerSelectContainer, { {"lightenonhover", {.boolVal = true}},{"func", func} }, { {"tex", "buttonright"} }, true, anchorBOT);
+
+        func.funcp = prevPlayerPage;
+        UI::addElement(ECS::newEntity(), ui_BUTTON, { -175, 200 }, { 88, 88 }, playerSelectContainer, { {"lightenonhover", {.boolVal = true}},{"func", func} }, { {"tex", "buttonleft"} }, true, anchorBOT);
 
         padding.floatVal = 40;
         func.funcp = openMenu;
@@ -305,27 +332,150 @@ namespace StartMenu {
 
         ref; ref.stringp = &Player::name;
         func.funcp = UI::uiCfunc_captureInput;
-        UI::addElement(ECS::newEntity(), ui_BUTTON, { 0, 50 }, { 700,40 }, container,
+        UI::addElement(ECS::newEntity(), ui_BUTTON, { 0, 400 }, { 700,40 }, container,
             { { "borderhover", {.boolVal = true} }, { "textonhover", {.boolVal = false} }, { "func", func }, { "ref", ref }, { "textSize", {.floatVal = fontsize} }, { "menu", menu }, {"capturinglength",{.intVal = 24}} },
             { {"tex", "empty"}, {"text", "Enter name"} }, true, anchorMID);
 
+        int hsvx = 400;
+        int hsvy = 300;
+        int hsvy2 = hsvy - 200 - 250;
+
+        UI::Elements::text(container, { hsvx, hsvy2 }, true, anchorMID, "Eye", fontsize, true);
+
         max.floatVal = 360;
         min.floatVal = 0;
-        ref.floatValp = &Player::hue;
+        ref.floatValp = &Player::eyeclr_hsv.r;
         roundAt.intVal = 0.1;
-        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { 150, -125 }, { 333,333 / 11 }, container, { {"textSize", {.floatVal = 0}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "sliderrainbow"},{"label", ""} }, true);
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { hsvx, hsvy2 - 50 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}}, {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "sliderrainbow"},{"label", ""} }, true);
 
-        container2 = ECS::newEntity();
-        UI::addElement(container2, ui_CONTAINER, { 0, 0 }, { 0, 0 }, container, { {"padding", {.floatVal = 0.5} }, {"opacity", {.floatVal = 0.96}} }, {}, true, anchorNONE);
+        max.floatVal = 1;
+        min.floatVal = 0;
+        ref.floatValp = &Player::eyeclr_hsv.g;
+        roundAt.intVal = 0.01;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { hsvx, hsvy2 - 100 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}},{"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
 
-        UI::Elements::display(container2, { -175, -125 }, { 100, 100 }, true, anchorMID, "player", true, false, false, nullptr, false, & Player::hue);
+        max.floatVal = 1;
+        min.floatVal = 0;
+        ref.floatValp = &Player::eyeclr_hsv.b;
+        roundAt.intVal = 0.01;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { hsvx, hsvy2 - 150 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}}, {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
+
+
+        UI::Elements::text(container, { -hsvx, hsvy2 }, true, anchorMID, "Skin", fontsize, true);
+
+        max.floatVal = 360;
+        min.floatVal = 0;
+        ref.floatValp = &Player::skinclr_hsv.r;
+        roundAt.intVal = 0.1;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { -hsvx,  hsvy2 - 50 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}}, {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "sliderrainbow"},{"label", ""} }, true);
+
+        max.floatVal = 1;
+        min.floatVal = 0;
+        ref.floatValp = &Player::skinclr_hsv.g;
+        roundAt.intVal = 0.01;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { -hsvx, hsvy2 - 100 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}},{"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
+
+        max.floatVal = 1;
+        min.floatVal = 0;
+        ref.floatValp = &Player::skinclr_hsv.b;
+        roundAt.intVal = 0.01;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { -hsvx, hsvy2 - 150 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}}, {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
+
+        UI::Elements::text(container, { 0, hsvy2 }, true, anchorMID, "Shoes", fontsize, true);
+
+        max.floatVal = 360;
+        min.floatVal = 0;
+        ref.floatValp = &Player::shoeclr_hsv.r;
+        roundAt.intVal = 0.1;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { 0,  hsvy2 - 50 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}}, {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "sliderrainbow"},{"label", ""} }, true);
+
+        max.floatVal = 1;
+        min.floatVal = 0;
+        ref.floatValp = &Player::shoeclr_hsv.g;
+        roundAt.intVal = 0.01;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { 0, hsvy2 - 100 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}},{"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
+
+        max.floatVal = 1;
+        min.floatVal = 0;
+        ref.floatValp = &Player::shoeclr_hsv.b;
+        roundAt.intVal = 0.01;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { 0, hsvy2 - 150 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}}, {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
+
+
+        UI::Elements::text(container, { -hsvx,hsvy }, true, anchorMID, "Hair", fontsize, true);
+
+        max.floatVal = 360;
+        min.floatVal = 0;
+        ref.floatValp = &Player::hairclr_hsv.r;
+        roundAt.intVal = 0.1;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { -hsvx, hsvy-50 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}}, {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "sliderrainbow"},{"label", ""} }, true);
+
+        max.floatVal = 1;
+        min.floatVal = 0;
+        ref.floatValp = &Player::hairclr_hsv.g;
+        roundAt.intVal = 0.01;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { -hsvx, hsvy-100 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}},{"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
+
+        max.floatVal = 1;
+        min.floatVal = 0;
+        ref.floatValp = &Player::hairclr_hsv.b;
+        roundAt.intVal = 0.01;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { -hsvx, hsvy-150 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}}, {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
+
+
+        UI::Elements::text(container, { 0,hsvy }, true, anchorMID, "Shirt", fontsize, true);
+
+        max.floatVal = 360;
+        min.floatVal = 0;
+        ref.floatValp = &Player::shirtclr_hsv.r;
+        roundAt.intVal = 0.1;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { 0, hsvy - 50 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}},{"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "sliderrainbow"},{"label", ""} }, true);
+
+        max.floatVal = 1;
+        min.floatVal = 0;
+        ref.floatValp = &Player::shirtclr_hsv.g;
+        roundAt.intVal = 0.01;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { 0, hsvy - 100 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}},{"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
+
+        max.floatVal = 1;
+        min.floatVal = 0;
+        ref.floatValp = &Player::shirtclr_hsv.b;
+        roundAt.intVal = 0.01;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { 0,  hsvy - 150 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}}, {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
+
+        UI::Elements::text(container, { hsvx,hsvy }, true, anchorMID, "Pants", fontsize, true);
+
+        max.floatVal = 360;
+        min.floatVal = 0;
+        ref.floatValp = &Player::pantsclr_hsv.r;
+        roundAt.intVal = 0.1;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { hsvx, hsvy - 50 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}}, {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "sliderrainbow"},{"label", ""} }, true);
+
+        max.floatVal = 1;
+        min.floatVal = 0;
+        ref.floatValp = &Player::pantsclr_hsv.g;
+        roundAt.intVal = 0.01;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { hsvx, hsvy - 100 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}},{"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
+
+        max.floatVal = 1;
+        min.floatVal = 0;
+        ref.floatValp = &Player::pantsclr_hsv.b;
+        roundAt.intVal = 0.01;
+        UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { hsvx,  hsvy - 150 }, { 333,333 / 11 }, container, { {"showval", {.boolVal = false}}, {"textSize", {.floatVal = fontsize}}, {"ref", ref}, {"max", max}, {"min", min}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
+
+        menu.intVal = playerSelectContainer;
+        func; func.funcp = Player::cycleHair;
+        UI::addElement(ECS::newEntity(), ui_BUTTON, { 0, hsvy2 - 225}, { 100, 50 }, container, { {"textonhover", {.boolVal = false}}, {"func", func}, {"textSize", {.floatVal = fontsize * 0.75f}} }, { {"tex", "empty"}, {"text", "Cycle hair"} }, true, anchorMID);
+
+        playerdisplay = ECS::newEntity();
+        UI::addElement(playerdisplay, ui_BACK, { 0,0}, { 150, 150 }, container, { {"opacity", {.floatVal = 0.97}} }, {}, true, anchorMID);
 
         menu.intVal = playerSelectContainer;
         func; func.funcp = openMenu;
-        UI::addElement(ECS::newEntity(), ui_BUTTON, { -195, -350 }, { 270, 50 }, playerCreateContainer, { {"borderhover", {.boolVal = true}},  {"textonhover", {.boolVal = false}},{"func", func}, {"textSize", {.floatVal = fontsize}}, {"menu", menu} }, { {"tex", "empty"}, {"text", "Back"} }, true, anchorMID);
+        UI::addElement(ECS::newEntity(), ui_BUTTON, { -195, hsvy2 - 350 }, { 270, 50 }, playerCreateContainer, { {"borderhover", {.boolVal = true}},  {"textonhover", {.boolVal = false}},{"func", func}, {"textSize", {.floatVal = fontsize}}, {"menu", menu} }, { {"tex", "empty"}, {"text", "Back"} }, true, anchorMID);
 
         func; func.funcp = UI::uiCfunc_createPlayer;
-        UI::addElement(ECS::newEntity(), ui_BUTTON, { 195, -350 }, { 270, 50 }, playerCreateContainer, { {"borderhover", {.boolVal = true}},  {"textonhover", {.boolVal = false}},{"func", func}, {"textSize", {.floatVal = fontsize}}, {"menu", menu} }, { {"tex", "empty"}, {"text", "Create"} }, true, anchorMID);
+        UI::addElement(ECS::newEntity(), ui_BUTTON, { 195, hsvy2 - 350 }, { 270, 50 }, playerCreateContainer, { {"borderhover", {.boolVal = true}},  {"textonhover", {.boolVal = false}},{"func", func}, {"textSize", {.floatVal = fontsize}}, {"menu", menu} }, { {"tex", "empty"}, {"text", "Create"} }, true, anchorMID);
 
         //-----------------------------------playercreate----------------------------------------
         
@@ -333,6 +483,16 @@ namespace StartMenu {
         //-----------------------------------worldselect-----------------------------------------
         
         refreshWorlds();
+
+        UI::Elements::text(worldSelectContainer, { 0, 210 }, true, anchorBOT, & worldPageText, globals::fontSize * 1.1, true);
+
+        padding.floatVal = 40;
+        func.funcp = nextWorldPage;
+        UI::addElement(ECS::newEntity(), ui_BUTTON, { 175, 200 }, { 88, 88 }, worldSelectContainer, { {"lightenonhover", {.boolVal = true}},{"func", func} }, { {"tex", "buttonright"} }, true, anchorBOT);
+
+        func.funcp = prevWorldPage;
+        UI::addElement(ECS::newEntity(), ui_BUTTON, { -175, 200 }, { 88, 88 }, worldSelectContainer, { {"lightenonhover", {.boolVal = true}},{"func", func} }, { {"tex", "buttonleft"} }, true, anchorBOT);
+
 
         func.funcp = openMenu;
         menu.intVal = playerSelectContainer;
@@ -364,7 +524,7 @@ namespace StartMenu {
 
         max; max.intVal = 5000;
         roundAt; roundAt.intVal = 50;
-        textSize; textSize.floatVal = 1.0f;
+        textSize; textSize.floatVal = globals::fontSize * 0.9;
         ref.intValp = &map::mapX;
         UI::Elements::text(container, { 200, -100 }, true, anchorMID, "World Width:", fontsize, true);
         UI::addElement(ECS::newEntity(), ui_DRAGINT, { 200, -150 }, { 300,30 }, container, { {"textSize", textSize}, {"ref", ref}, {"min", {.intVal = 10}}, {"max", max}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", ""} }, true);
@@ -388,7 +548,7 @@ namespace StartMenu {
         //-----------------------------------worldcreate----------------------------------------
 
         //-----------------------------------loadingscreen----------------------------------------
-        progressText = UI::Elements::text(container, { 0, 0 }, true, anchorMID, "", globals::fontSize * 3.75f, true);
+        progressText = UI::Elements::text(loadingScreen, { 0, 0 }, true, anchorMID, "", globals::fontSize * 3.75f, true);
         //-----------------------------------loadingscreen----------------------------------------
 
         cursor = ECS::newEntity();
@@ -406,6 +566,9 @@ namespace StartMenu {
         dc.position = std::make_shared<glm::vec2>(glm::vec2(0, 0));
         dc.tex = "moon";
         game::drawSys->addComponent(moon, &dc);
+
+        UI::hideChildren(ECS::getComponent<uiC>(uiSystem::body), true);
+        openMenu(mainSelectContainer);
     }
 
 	void run()
@@ -469,34 +632,51 @@ namespace StartMenu {
                 ECS::getComponent<uiC>(worldsizedisplay)->textStats["tex"] = "worldcreationlarge";
             }
 
-            glBindFramebuffer(GL_FRAMEBUFFER, globals::tmpFB);
-            glClearColor(globals::dayclr.r, globals::dayclr.g, globals::dayclr.b, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
-
-            game::updateSunAndMoon(sun, moon);
-
-            game::drawSys->UpdateBehindBackground();
-            background::renderOne(background::bgNames["forest"]);
-
+            updateSunAndMoon();
 
             game::uiSys->Update();
+
+            if (shouldRefreshPlayers) {
+                refreshPlayers();
+                if (ECS::getComponent<uiC>(playerSelectContainer)->hidden == false)
+                    openMenu(playerSelectContainer);
+                else
+                    playerPage = 0;
+                shouldRefreshPlayers = false;
+                renderPlayerQueue.clear();
+            }
+
+            if (shouldRefreshWorlds) {
+                refreshWorlds();
+                if (ECS::getComponent<uiC>(worldSelectContainer)->hidden == false)
+                    openMenu(worldSelectContainer);
+                else
+                    worldPage = 0;
+                shouldRefreshWorlds = false;
+            }
+
+            Window::bindTemporaryBuffer(glm::vec4(globals::dayclr, 1.0f));
+            game::drawSys->UpdateBehindBackground();
+            background::renderOne("forest");
             game::drawSys->Update();
-
-            game::drawMain();
-
-            glBindFramebuffer(GL_FRAMEBUFFER, globals::tmpFB);
-            glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
-
+            Window::drawMain();
+            Window::bindTemporaryBuffer();
             game::drawSys->UpdateFront();
 
-            game::drawOverlays();
+            for (int i = 0; i < renderPlayerQueue.size(); i++) {
+                Player::renderAs(renderPlayerQueue[i].first, 1, &playerDataBuffer[renderPlayerQueue[i].second]);
+            }
+            renderPlayerQueue.clear();
 
-            globals::bgoffset+= 0.0002;
+            if (!ECS::getComponent<uiC>(playerdisplay)->hidden) {
+                Player::pos = glm::vec2(0, 0);
+                Player::render();
+            }
 
-            glfwSwapBuffers(globals::window);
+            Window::drawOverlays();
+            Window::swapBuffers();
+
             ltime = ctime;
-
             
             std::lock_guard<std::mutex> lock(map::worldGenProgress_mutex);
             if (map::worldGenProgress != "") {
@@ -509,90 +689,200 @@ namespace StartMenu {
                 map::worldGenProgress = "";
                 openMenu(worldSelectContainer);
             }
+            globals::bgoffset += 0.0002;
         }
 	}
 
 	void handleInput()
 	{
+        if (input::shift) {
+            if (input::rpressed(GLFW_KEY_R)) {
+                resources::loadAssets(true, true, true);
+            }
+        }
         if (input::pressed(k_PRIMARY)) {
             uiSystem::mouseClicked = true;
         }
-        if (input::rpressed(GLFW_KEY_P)) {
-            StartMenu::refreshWorlds();
-            ECS::print();
-        }
 	}
+    void nextPlayerPage(uiC* p)
+    {
+        playerPage++;
+        shouldRefreshPlayers = true;
+    }
+    void prevPlayerPage(uiC* p)
+    {
+        playerPage--;
+        shouldRefreshPlayers = true;
+    }
+    void nextWorldPage(uiC* p)
+    {
+        worldPage++;
+        shouldRefreshWorlds = true;
+    }
+    void prevWorldPage(uiC* p)
+    {
+        worldPage--;
+        shouldRefreshWorlds = true;
+    }
     void openMenu(uiC* p)
     {
         UI::captureInput(nullptr, false);
         Player::name.clear();
         UI::hideChildren(ECS::getComponent<uiC>(uiSystem::body), true);
-        UI::hideChildren(ECS::getComponent<uiC>(UI::getStat(p, "menu")->intVal), false);
+        UI::hideChildren(ECS::getComponent<uiC>(UI::getStat(p, "menu")->intVal), false, true);
         ECS::getComponent<uiC>(logo)->hidden = false;
     }
 
     void openMenu(int menu)
     {
         UI::captureInput(nullptr, false);
-        map::name.clear();
-        map::seed.clear();
         Player::name.clear();
         UI::hideChildren(ECS::getComponent<uiC>(uiSystem::body), true);
-        UI::hideChildren(ECS::getComponent<uiC>(menu), false);
+        UI::hideChildren(ECS::getComponent<uiC>(menu), false, true);
         ECS::getComponent<uiC>(logo)->hidden = false;
+        game::savesettings();
     }
 
     void refreshWorlds()
     {
-        uiStat textSize; textSize.floatVal = globals::fontSize * 2;
-        uiStat func; func.funcp = UI::uiCfunc_loadSpecificWorld;
-        uiStat fitText; fitText.boolVal = true;
-        uiStat padding;  padding.floatVal = 40;
+        int numonpage = ceil((Window::res.y - 350) / 90.0f);
         UI::deleteElement(worldsContainer, false);
         ECS::commitQueues();
         std::filesystem::path current_path = std::filesystem::current_path();
         std::filesystem::path target_path = current_path / "worlds";
-        int y = -100;
+        int y = -200;
         int i = 0;
-        availableWorlds.clear();
+
+        int nworlds = 0;
         for (const auto& entry : std::filesystem::directory_iterator(target_path)) {
             std::string filename = entry.path().filename().string();
             if (filename.substr(filename.length() - 4, 4) == ".bak") {
+                nworlds++;
+            }
+        }
+
+        int npages = ceil(nworlds / (float)numonpage);
+        if (worldPage <= 0) worldPage = 1;
+        if (worldPage > npages) {
+            worldPage = npages;
+        }
+        int showoffset = worldPage * numonpage;
+
+        worldPageText = "Page: " + std::to_string(worldPage);
+
+        worldDataBuffer.clear();
+        for (const auto& entry : std::filesystem::directory_iterator(target_path)) {
+            std::string filename = entry.path().filename().string();
+            if (filename.substr(filename.length() - 4, 4) == ".bak") {
+                if (showoffset <= 0) break;
+                if (showoffset > numonpage) { showoffset--; continue; }
+                showoffset--;
                 std::string world = filename.substr(0, filename.length() - 4);
-                availableWorlds.push_back(world);
+                worldDataBuffer.push_back(map::loadToData(world));
                 uiStat worldIndex; worldIndex.intVal = i;
-                UI::addElement(ECS::newEntity(), ui_BUTTON, { 0, y }, { 200, 200 }, worldsContainer, { {"func", func}, {"textSize", textSize}, {"fitText", fitText}, {"padding", padding}, {"index", worldIndex} }, { {"tex", "tooltip"}, {"text", world} }, true, anchorTOP);
+                UI::Elements::worldSelector(worldsContainer, { 0,y }, true, anchorTOP, worldDataBuffer.size()-1);
                 i++;
                 y -= 200;
             }
         }
-        ECS::commitQueues();
     }
 
     void refreshPlayers()
     {
-        uiStat textSize; textSize.floatVal = globals::fontSize * 2;
-        uiStat func; func.funcp = UI::uiCfunc_loadSpecificPlayer;
-        uiStat fitText; fitText.boolVal = true;
-        uiStat padding;  padding.floatVal = 40;
-        uiStat menu;  menu.intVal = worldSelectContainer;
+        //(screen - (zgori plc + spodi uni gumbki)) / 195
+        int numonpage = ceil((Window::res.y - 350) / 90.0f);
         UI::deleteElement(playersContainer, false);
         ECS::commitQueues();
         std::filesystem::path current_path = std::filesystem::current_path();
         std::filesystem::path target_path = current_path / "players";
-        int y = -100;
+        int y = -200;
         int i = 0;
-        availablePlayers.clear();
+
+        int nplayers = 0;
         for (const auto& entry : std::filesystem::directory_iterator(target_path)) {
             std::string filename = entry.path().filename().string();
             if (filename.substr(filename.length() - 4, 4) == ".bak") {
-                std::string world = filename.substr(0, filename.length() - 4);
-                availablePlayers.push_back(world);
-                uiStat playerIndex; playerIndex.intVal = i;
-                UI::addElement(ECS::newEntity(),  ui_BUTTON, { 0, y }, { 200, 200 }, playersContainer, { {"func", func}, {"textSize", textSize}, {"fitText", fitText}, {"padding", padding}, {"index", playerIndex}, {"menu", menu} }, { {"tex", "tooltip"}, {"text", world} }, true, anchorTOP);
-                i++;
-                y -= 200;
+                nplayers++;
             }
+        }
+
+        int npages = ceil(nplayers / (float)numonpage);
+        if (playerPage <= 0) playerPage = 1;
+        if (playerPage > npages) {
+            playerPage = npages;
+        }
+        int showoffset = playerPage * numonpage;
+
+        playerPageText = "Page: " + std::to_string(playerPage);
+
+        playerDataBuffer.clear();
+        for (const auto& entry : std::filesystem::directory_iterator(target_path)) {
+            std::string filename = entry.path().filename().string();
+            if (filename.substr(filename.length() - 4, 4) == ".bak") {
+                if (showoffset <= 0) break;
+                if (showoffset > numonpage) { showoffset--; continue; }
+                showoffset--;
+                std::string name = filename.substr(0, filename.length() - 4);
+                playerDataBuffer.push_back(Player::loadToData(name));
+
+                UI::Elements::playerSelector(playersContainer, {0,y}, true, anchorTOP, playerDataBuffer.size()-1);
+                i++;
+                y -= 195;
+            }
+        }
+    }
+
+    void updateSunAndMoon()
+    {
+        auto sundraw = ECS::getComponent<drawC>(sun);
+        auto moondraw = ECS::getComponent<drawC>(moon);
+        moondraw->tex = map::moonphases[map::moonphase % map::moonphases.size()];
+
+        float a = int(utils::angleOfVector(glm::normalize(glm::vec2(0, -Layers::blocksOnScreen.y / 2.0f) - *sundraw->position)) - 90) % 360;
+        sundraw->mat = glm::rotate(glm::mat4(1.0f), float(a * PI / 180.0f), glm::vec3(0, 0, 1));
+        a = int(utils::angleOfVector(glm::normalize(glm::vec2(0, Layers::blocksOnScreen.y / 2.0f) - *sundraw->position)) - 90) % 360;
+        moondraw->mat = glm::rotate(glm::mat4(1.0f), float(a * PI / 180.0f), glm::vec3(0, 0, 1));
+
+        if (input::held(k_PRIMARY)) {
+            glm::vec2 mc = Window::mouseBlockCoordsGlobal(false);
+            if (glm::distance(mc, *sundraw->position) < 5) {
+                globals::cdayTime = (sundraw->position->x) / Layers::blocksOnScreen.x + 0.5f;
+                globals::cdayTime *= 1800;
+                *sundraw->position = mc;
+                return;
+            }
+            if (glm::distance(mc, *moondraw->position) < 5) {
+                globals::cdayTime = (moondraw->position->x) / Layers::blocksOnScreen.x + 0.5f;
+                globals::cdayTime = globals::cdayTime * 1800 + 1800;
+                *moondraw->position = mc;
+                return;
+            }
+        }
+
+
+        //hocmo tko da k je cs 0 da je ig na levi polovici ekrana, pr 900 je na sredini zgorne tretine, pr 1800 pa na desni polovici
+        if (globals::cdayTime > 0 && globals::cdayTime < globals::dayLength / 2) {
+            glm::vec2 target(0);
+            float percent = globals::cdayTime / globals::dayLength * 2;
+            target.x = percent * Layers::blocksOnScreen.x - Layers::blocksOnScreen.x / 2.0f;
+            target.y = sin(percent * PI) * Layers::blocksOnScreen.y / 3.0f;
+            *sundraw->position = target;
+        }
+        else {
+            *sundraw->position = glm::vec2(-123, -123);
+        }
+
+        if (globals::cdayTime > globals::dayLength / 2 && globals::cdayTime < globals::dayLength) {
+            glm::vec2 target(0);
+            float percent = (globals::cdayTime - globals::dayLength / 2) / globals::dayLength * 2;
+            target.x = percent * Layers::blocksOnScreen.x - Layers::blocksOnScreen.x / 2.0f;
+            target.y = sin(percent * PI) * Layers::blocksOnScreen.y / 3.0f;
+            *moondraw->position = target;
+
+
+        }
+        else {
+            *moondraw->position = glm::vec2(-123, -123);
         }
     }
 }

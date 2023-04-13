@@ -1,7 +1,6 @@
 #pragma once
 
 #include <core.h>
-#include <componentsystems.h>
 
 namespace gameLoop {
 
@@ -39,4 +38,6 @@ namespace gameLoop {
 	void openMenu(int menu);
 
 	void toast(std::string text);
+
+	void updateSunAndMoon();
 }

@@ -1,10 +1,10 @@
 ﻿#pragma once
 #include <core.h>
-#include <componentsystems.h>
 #include <items.h>
+#include <particleEmmiterSystem.h>
 
 #define BlockFuncArgs glm::vec2 pos, blocks::BlockInfo* info
-#define BlockConditionArgs Layer* l, Layer* bg, Layer* bs, glm::vec2 pos, blocks::BlockInfo* info
+#define BlockConditionArgs Layer* l, glm::vec2 pos, blocks::BlockInfo* info
 
 struct Layer;
 
@@ -42,7 +42,7 @@ namespace blocks {
 		bool updatesRight;
 		bool emitskylight = false;
 		float friction;
-		std::string layer;
+		LayerENUM layer;
 		float minPickaxeStrength = 30;
 		std::string damageParticle = "";
 		SpriteType spriteType;
@@ -119,7 +119,6 @@ namespace BConditions {
 
 namespace blocks
 {
-	
 	extern std::unordered_map<std::string, BlockInfo> nameToInfo;
 	extern std::unordered_map<int, BlockInfo> idToInfo;
 	extern std::unordered_map<int, std::string> idToName;
@@ -129,12 +128,12 @@ namespace blocks
 	extern std::vector<Decor> decorations;
 
 	void addBlock(std::string name, std::string texture, bool collidable,
-		bool solid, std::string itemname, std::string layer, bool updates = true,
+		bool solid, std::string itemname, LayerENUM layer, bool updates = true,
 		SpriteType spriteType = st_SINGLE, glm::vec2 size = glm::vec2(1.0f),
 		float friction = 1,
 		std::vector<std::function<bool(BlockConditionArgs)>> placeConditions = { BConditions::isreplacable, BConditions::connected },
 		bool updateLeft = true, bool updateTop = true, bool updateBot = true, bool updateRight = true);
-	void addRule(std::string name, std::vector<BlockRuleCond> conditions, std::function<void(BlockRuleArgs)> func, const char* block = "empty", const char* layer = "empty", bool exBool = false);
+	void addRule(std::string name, std::vector<BlockRuleCond> conditions, std::function<void(BlockRuleArgs)> func, const char* block = "empty", LayerENUM layer = BLOCKS, bool exBool = false);
 	void addFunction(std::string name, std::function<bool(BlockFuncArgs)> func);
 	void addOnPlace(std::string name, std::function<bool(BlockFuncArgs)> func);
 	void addOnBreak(std::string name, std::function<bool(BlockFuncArgs)> func);

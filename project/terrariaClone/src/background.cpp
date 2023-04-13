@@ -5,6 +5,7 @@
 #include <layers.h>
 #include <player.h>
 #include <world.h>
+#include <Window.h>
 
 namespace background {
 	
@@ -141,7 +142,7 @@ namespace background {
 
 		glUniform3f(0, globals::dayclr.r, globals::dayclr.g, globals::dayclr.b);
 		glUniform1f(1, opacity);
-		glUniform2f(2, globals::resX, globals::resY);
+		glUniform2f(2, Window::res.x, Window::res.y);
 		glUniform1f(3, 0.1);
 
 		for (int i = 0; i < b->size(); i++) {
@@ -157,7 +158,7 @@ namespace background {
 			glUniform1i(repeatloc, b->at(i).repeatY);
 		}
 
-		glBindVertexArray(globals::overlayVA);
+		glBindVertexArray(Window::overlayVA);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	}
 

@@ -18,13 +18,14 @@ trunk { 24,176,32,168 } {1,1}
 trunkbase1 { 24,184,32,176 } {1,1}
 trunkbase2 { 16,184,24,176 } {1,1}
 trunkbase3 { 32,184,40,176 } {1,1}
-leaves { 8,168,48,128 } {7,7}
+leaves { 8,168,48,128 } {5,5}
 invempty { 448, 496, 496, 448 } {1,1}
 torch  { 16, 258, 25, 248 } {1,1}
 err { 0, 500, 2, 488 } {1,1}
 woodenbow { 56, 56, 72, 40 } {1,1}
 arrow { 72, 48, 88, 39 } {1,1}
 flamingarrow {72, 56, 88, 49} {1,1}
+demonicarrow {72, 64, 88, 57} {1,1}
 bomb { 88, 56, 104, 40 } {1,1}
 minishark { 8, 68, 36, 58 } {1,1}
 waterspell { 8, 104, 24, 88 } {1,1}
@@ -106,7 +107,7 @@ bottlecloud {632, 464, 642, 451} {1,1}
 hermesboots {648, 464, 666, 449} {1,1}
 manaband {672, 464, 686, 454} {1,1}
 lens {688, 464, 696, 453} {1,1}
-copperbar {576, 476, 592, 464} {1,1}
+copperbar {576, 476, 591, 464} {1,1}
 shackle {592, 476, 603, 464} {1,1}
 mahoganywooditem {608, 475, 620, 464} {1,1}
 ebonwooditem {624, 475, 636, 464} {1,1}
@@ -146,21 +147,21 @@ borealtrunk {104, 176, 112, 168} {1,1}
 borealtrunkbase1 {104, 184, 112, 176} {1,1}
 borealtrunkbase2 {96, 184, 104, 176} {1,1}
 borealtrunkbase3 {112, 184, 120, 176} {1,1}
-borealleaves {88, 168, 128, 128} {7,7}
+borealleaves {88, 168, 128, 128} {5,5}
 borealtrunktop {120, 176, 128, 168} {1,1}
 borealsapling {168, 184, 176, 176} {1,1}
 corrupttrunk {24, 232, 32, 224} {1,1}
 corrupttrunkbase1 {24, 240, 32, 232} {1,1}
 corrupttrunkbase2 {16, 240, 24, 232} {1,1}
 corrupttrunkbase3 {32, 240, 40, 232} {1,1}
-corruptleaves {8, 224, 48, 184} {7,7}
+corruptleaves {8, 224, 48, 184} {5,5}
 corrupttrunktop {40, 232, 48, 224} {1,1}
 corruptsapling {88, 240, 96, 232} {1,1}
 mahoganytrunk {104, 232, 112, 224} {1,1}
 mahoganytrunkbase1 {104, 240, 112, 232} {1,1}
 mahoganytrunkbase2 {96, 240, 104, 232} {1,1}
 mahoganytrunkbase3 {112, 240, 120, 232} {1,1}
-mahoganyleaves {88, 224, 128, 184} {7,7}
+mahoganyleaves {88, 224, 128, 184} {5,5}
 mahoganytrunktop {120, 232, 128, 224} {1,1}
 mahoganysapling {168, 240, 176, 232} {1,1}
 cactustop {128, 280, 136, 272} {1,1}
@@ -400,6 +401,7 @@ onfirebuff {408, 576, 424, 560} {1,1}
 potionsicknessbuff {424, 576, 440, 560} {1,1}
 chilledbuff {392, 608, 408, 592} {1,1}
 poisonedbuff {408, 608, 424, 592} {1,1}
+horrifiedbuff {424, 608, 440, 592} {1,1}
 obsidianitem {552, 520, 560, 512} {1,1}
 obsidian {232, 512, 240, 504} {1,1}
 hellforge {72, 328, 80, 320} {1,1}
@@ -457,6 +459,7 @@ bossbar {48, 888, 306, 864} {1,1}
 bosshp {48, 864, 49, 851} {1,1}
 bosshead0 {56, 864, 69, 850} {1,1}
 bosshead1 {72, 864, 84, 849} {1,1}
+bosshead2 {88, 864, 103, 849} {1,1}
 radial {40, 848, 96, 792} {1,1}
 eaterofworldshead {744, 290, 767, 256} {1,1}
 eaterofworldsbody {768, 286, 791, 262} {1,1}
@@ -566,6 +569,51 @@ mediumdesert {168, 632, 176, 624} {1,1}
 bigdesert {160, 696, 168, 688} {1,1}
 mediumjungle {208, 648, 216, 640} {1,1}
 bigjungle {160, 648, 168, 640} {1,1}
+merchant {664, 104, 681, 80} {1,1}
+merchantwalk {688, 104, 705, 80} {1,1}
+plrgoldarmor {779, 24, 799, 0} {1,1}
+plrgoldarmorlegswalk {0, 584, 20, 560} {1,1}
+plrsilverarmor {779, 96, 799, 72} {1,1}
+plrsilverarmorlegswalk {20, 584, 40, 560} {1,1}
+plrironarmor {779, 168, 799, 144} {1,1}
+plrironarmorlegswalk {40, 584, 60, 560} {1,1}
+plrcopperarmor {779, 248, 799, 224} {1,1}
+plrcopperarmorlegswalk {60, 584, 80, 560} {1,1}
+plrcactusarmor {779, 328, 799, 304} {1,1}
+plrcactusarmorlegswalk {100, 584, 120, 560} {1,1}
+plrmoltenarmor {779, 408, 799, 384} {1,1}
+plrmoltenarmorlegswalk {80, 584, 100, 560} {1,1}
+plreyewhite {0, 24, 20, 0} {1,1}
+plreyecolor {20, 24, 40, 0} {1,1}
+plrhands {45, 24, 65, 0} {1,1}
+plrclothes {185, 24, 205, 0} {1,1}
+plremptylegswalk {120, 584, 140, 560} {1,1}
+plrshoeswalk {140, 584, 160, 560} {1,1}
+plrshoes {45, 96, 65, 72} {1,1}
+playerhair {45, 120, 65, 96} {1,1}
+scorpion {384, 219, 398, 208} {1,1}
+frog {392, 261, 404, 252} {1,1}
+grubby {320, 172, 328, 168} {1,1}
+snail {376, 312, 389, 304} {1,1}
+bird {376, 264, 390, 255} {1,1}
+goldfish {408, 283, 421, 272} {1,1}
+goldfishground {408, 328, 421, 320} {1,1}
+goldfishjump {408, 336, 421, 328} {1,1}
+jellyfish {712, 262, 725, 248} {1,1}
+buttondelete {313, 504, 336, 482} {1,1}
+buttonplay {336, 504, 358, 482} {1,1}
+divider {344, 480, 352, 476} {1,1}
+buttonleft {292, 504, 314, 482} {1,1}
+buttonright {270, 504, 292, 482} {1,1}
+junglewall {472, 280, 488, 264} {2,2}
+walloffleshmouth {408, 681, 479, 632} {1,1}
+wallofflesheye {486, 681, 551, 632} {1,1}
+walloffleshbody {592, 702, 666, 632} {1,1}
+thehungry {558, 650, 590, 632} {1,1}
+wallofflesheyelaser {5, 102, 6, 72} {1,1}
+thehungrylink {536, 744, 550, 739} {1,1}
+muramasa {24, 56, 49, 24} {1,1}
+muramasaprojectile {0, 24, 7, 0} {1,1}
 ]
 items
 [
@@ -663,7 +711,7 @@ t ammo acorn
 t places sapling
 }
 copperpickaxe {
-15
+21
 copperpickaxe
 1
 f damage 4
@@ -672,7 +720,7 @@ t layer blocks
 f digstrength 35
 }
 ironpickaxe {
-13
+20
 ironpickaxe
 1
 f damage 5
@@ -1262,7 +1310,7 @@ f damage 0
 t projectile bullet
 t ammo bullet
 f projectileSpread 5
-f projectileSpeed 1
+f projectileSpeed 0.8
 i rarity 3
 }
 waterspell {
@@ -1310,72 +1358,84 @@ ironbreastplate {
 ironbreastplate
 1
 i defense 3
+t bodytex iron
 }
 ironhelmet {
 20
 ironhelmet
 1
 i defense 2
+t headtex iron
 }
 irongreaves {
 20
 irongreaves
 1
 i defense 2
+t legstex iron
 }
 goldbreastplate {
 20
 goldbreastplate
 1
 i defense 5
+t bodytex gold
 }
 goldhelmet {
 20
 goldhelmet
 1
 i defense 4
+t headtex gold
 }
 goldgreaves {
 20
 goldgreaves
 1
 i defense 4
+t legstex gold
 }
 silverbreastplate {
 20
 silverbreastplate
 1
 i defense 4
+t bodytex silver
 }
 silverhelmet {
 20
 silverhelmet
 1
 i defense 3
+t headtex silver
 }
 silvergreaves {
 20
 silvergreaves
 1
 i defense 3
+t legstex silver
 }
 copperbreastplate {
 20
 copperbreastplate
 1
 i defense 1
+t bodytex copper
 }
 copperhelmet {
 20
 copperhelmet
 1
 i defense 2
+t headtex copper
 }
 coppergreaves {
 20
 coppergreaves
 1
 i defense 1
+t legstex copper
 }
 moltenbreastplate {
 20
@@ -1384,6 +1444,7 @@ moltenbreastplate
 i defense 9
 f meeledamagepercent 7
 i rarity 4
+t bodytex molten
 }
 moltenhelmet {
 20
@@ -1392,6 +1453,7 @@ moltenhelmet
 i defense 8
 f meelecritpercent 7
 i rarity 4
+t headtex molten
 }
 moltengreaves {
 20
@@ -1400,24 +1462,28 @@ moltengreaves
 i defense 8
 f meeleas 0.07
 i rarity 4
+t legstex molten
 }
 cactusbreastplate {
 20
 cactusbreastplate
 1
 i defense 1
+t bodytex cactus
 }
 cactushelmet {
 20
 cactushelmet
 1
 i defense 1
+t headtex cactus
 }
 cactusgreaves {
 20
 cactusgreaves
 1
 i defense 1
+t legstex cactus
 }
 mininghelmet {
 20
@@ -1938,10 +2004,17 @@ f knockback 2
 f manacost 10
 i rarity 4
 }
+muramasa {
+18
+muramasa
+1
+f damage 40
+f knockback 0
+}
 ]
 lights
 [
-torch { 2.4,1,0.3 }
+torch { 2.4,1.4,0.3 }
 purpletorch { 2.3, 0.2, 4.0 }
 furnace {0.8, 0.2, 0.2}
 campfire {0.8, 0.2, 0.2}

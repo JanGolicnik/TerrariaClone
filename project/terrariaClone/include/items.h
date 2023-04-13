@@ -3,7 +3,10 @@
 #include <core.h>
 #include <globals.h>
 #include <enemyFunctions.h>
-#include <componentsystems.h>
+#include <toolSystem.h>
+#include <particleEmmiterSystem.h>
+
+struct projectileBase;
 
 enum itemFamily {
     if_ANY = 0,
@@ -106,6 +109,7 @@ struct itemInfo {
     void(*soundsfunc)() = &sounds::swing;
     float buyprice = 10;
     float sellprice = 0;
+    std::string entity = "";
 };
 
 struct itemChance {
@@ -113,8 +117,10 @@ struct itemChance {
     int num;
     int random;
 };
+
 struct naturalChest {
-    std::unordered_map<std::string, itemChance> items;
+    std::vector<std::pair<std::string, itemChance>> rareitems;
+    std::vector<std::pair<std::string, itemChance>> items;
 };
 
 struct setBonus {
@@ -176,7 +182,6 @@ namespace items
 {
     extern std::unordered_map<std::string, itemInfo> info;
     extern std::vector<recipe> recipes;
-    extern std::unordered_map<std::string, projectileBase> projectiles;
     extern std::unordered_map<std::string, naturalChest> naturalChests;
     extern std::unordered_map<std::string, itemChance> potItems;
     extern std::unordered_map<std::string, setBonus> setBonuses;
@@ -206,12 +211,13 @@ namespace items
     void addToSet(const char* item, std::string set);
     void addSet(std::string item, std::function<void()> func, std::string description);
     void printItems();
+    void addEntity(std::string item, std::string entity);
     glm::vec3 getRarityColor(Rarity rarity);
     std::string getRarityColorString(Rarity rarity);
     itemInfo* getInfo(std::string item);
     itemStat getStat(std::string item, const char* stat, itemStat def = { .valueFloat = 0.0f });
     std::string_view getStatT(std::string item, const char* stat, const char* def = "");
-    void addItemToNaturalChest(std::string chestName, std::string item, float chance, int num, int random);
+    void addItemToNaturalChest(std::string chestName, std::string item, float chance, int num, int random, bool israre = false);
     void addItemToPot(std::string item, float chance, int num, int random);
     void clean();
     void addArmorSprites(std::string name, glm::vec4 coords, glm::vec4 legcoords);

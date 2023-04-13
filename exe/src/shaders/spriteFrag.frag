@@ -13,7 +13,7 @@ void main()
 	if(fSpritesheet == 0){
 		FragColor = texture2D(uSpriteSheets[0], fSpriteCoords) * fColor;
 	}else{
-		FragColor = fColor * texture2D(uSpriteSheets[1], fSpriteCoords).r;
+		FragColor = fColor * texture2D(uSpriteSheets[1], fSpriteCoords);
 	}
 }
 

@@ -8,8 +8,10 @@
 #include <utils.h>
 #include <player.h>
 #include <world.h>
+#include <liquids.h>
 
 namespace enemies {
+    std::unordered_map<std::string, projectileBase> projectiles;
     std::unordered_map<std::string, enemyBase>enemies;
     std::unordered_map<std::string, npc>npcs;
 
@@ -21,16 +23,17 @@ namespace enemies {
     };
     std::vector<std::pair<queuedEnemy, int>> tospawn;
 
-    int spawnEnemy(std::string name, glm::vec2 pos, bool usesslots, glm::vec2 vel)
+    int spawnEnemy(std::string name, glm::vec2 pos, bool usesslots, glm::vec2 vel, int drawparent)
     {
-        if (game::currScene != GAME) return -1;
+        if (game::currScene != GAMELOOP) return -1;
         enemyBase base = enemies[name];
 
         if (base.prespawntimer > 0) {
             tospawn.push_back(std::make_pair(queuedEnemy( name, pos ), base.prespawntimer));
-            //if spawntext pokaz spawntext
+            gameLoop::toast(base.prespawntext);
             return -1;
         }
+        int e = ECS::newEntity();
 
         float randsize = ((rand() % 1000) / 500.0f - 1) * base.randomsize;
         float randomred = ((rand() % 1000) / 500.0f - 1) * base.randomcolor;
@@ -38,10 +41,8 @@ namespace enemies {
         float randomblue = ((rand() % 1000) / 500.0f - 1) * base.randomcolor;
         float randangle = ((rand() % 1000) / 500.0f - 1) * base.randomvelangle;
 
-        base.pC.size += randsize;
         base.dC.size += randsize;
         base.dC.color += glm::vec3(randomred, randomgreen, randomblue);
-        base.dC.parent = globals::mobLayer;
         utils::rotateVecByAngle(&base.pC.vel, randangle);
         if (base.possibleSprites.size() > 0) {
             base.dC.tex = base.possibleSprites[rand() % base.possibleSprites.size()];
@@ -52,49 +53,73 @@ namespace enemies {
             glm::vec2 s(abs(coords.b - coords.r), abs(coords.g - coords.a));
             base.dC.size = s * globals::spritesheetWH;
             base.dC.size /= 8;
-            base.pC.size = base.dC.size;
             base.dC.autocorrect = false;
         }
 
-        if (base.behindBlocks) {
-            base.dC.parent = game::drawSys->behindBlocks;
+        if (drawparent == -1) {
+            if (base.behindBlocks) {
+                base.dC.parent = game::drawSys->behindBlocks;
+            }
+            else {
+                base.dC.parent = drawparent;
+            }
+        }
+        else {
+            base.dC.parent = globals::mobLayer;
+
         }
 
         auto ppos = std::make_shared<glm::vec2>(pos);
-        base.pC.position = ppos;
-        if (vel != glm::vec2(-13245, 123432)) {
-            base.pC.vel = vel;
-        }
         base.dC.position = ppos;
-        for (auto& drop : base.drops) {
-            if (rand() % int(1 / drop.second.chance) == 0) {
-                if (drop.second.randomnum == 0) {
-                    base.mC.drops.insert(std::make_pair(drop.first, drop.second.num));
-                }
-                else {
-                    base.mC.drops.insert(std::make_pair(drop.first, drop.second.num + rand() % (drop.second.randomnum * 2) - drop.second.randomnum));
-                }
+
+        if (base.hasphys) {
+
+            base.pC.size += randsize;
+
+            if (base.resizeToSprite) base.pC.size = base.dC.size;
+
+            base.pC.position = ppos;
+            if (vel != glm::vec2(-13245, 123432)) {
+                base.pC.vel = vel;
             }
-        }
-        for (int i = 0; i < base.childrenBases.size(); i++) {
-            base.mC.children.push_back(spawnEnemy(base.childrenBases[i], pos, true, vel));
+            ECS::queueComponent<physicsC>(e, base.pC);
         }
 
-        int e = ECS::newEntity();
-        if (base.mC.displayName != "") {
-            if (base.bossbar != "") {
-                base.mC.hpbar = ECS::newEntity();
-                UI::addElement(base.mC.hpbar, ui_BOSSBAR, { 0, 100 }, { 0,0 }, gameLoop::hpbarC, { {"entity", {.intVal = e}} }, { {"head", base.bossbar}}, false, anchorBOT);
-            }else
-            if(base.hpbar) {
-                base.mC.hpbar = ECS::newEntity();
-                UI::addElement(base.mC.hpbar, ui_HPBAR, { 0,0 }, { 0,0 }, gameLoop::hpbarC, { {"entity", {.intVal = e}} }, {}, false, anchorNONE);
+        if (base.hasmob) {
+            for (auto& drop : base.drops) {
+                if (rand() % int(1 / drop.second.chance) == 0) {
+                    if (drop.second.randomnum == 0) {
+                        base.mC.drops.insert(std::make_pair(drop.first, drop.second.num));
+                    }
+                    else {
+                        base.mC.drops.insert(std::make_pair(drop.first, drop.second.num + rand() % (drop.second.randomnum * 2) - drop.second.randomnum));
+                    }
+                }
             }
+            for (int i = 0; i < base.childrenBases.size(); i++) {
+                base.mC.children.push_back(spawnEnemy(base.childrenBases[i], pos, true, vel));
+            }
+
+            if (base.mC.displayName != "") {
+                if (base.bossbar != "") {
+                    base.mC.hpbar = ECS::newEntity();
+                    UI::addElement(base.mC.hpbar, ui_BOSSBAR, { 0, 100 }, { 0,0 }, gameLoop::hpbarC, { {"entity", {.intVal = e}} }, { {"head", base.bossbar} }, false, anchorBOT);
+                }
+                else
+                    if (base.hpbar) {
+                        base.mC.hpbar = ECS::newEntity();
+                        UI::addElement(base.mC.hpbar, ui_HPBAR, { 0,0 }, { 0,0 }, gameLoop::hpbarC, { {"entity", {.intVal = e}} }, {}, false, anchorNONE);
+                    }
+            }
+            ECS::queueComponent<mobC>(e, base.mC);
         }
+
+        if (base.spawntext != "") {
+            gameLoop::toast(base.spawntext);
+        }
+
         drawSystem::addComponent(e, &base.dC, false);
-        ECS::queueComponent<physicsC>(e, base.pC);
         ECS::queueComponent<aiC>(e, base.aC);
-        ECS::queueComponent<mobC>(e, base.mC);
         if (base.pec.lifespan != 0) {
             ECS::queueComponent<particleEmmiterC>(e, base.pec);
         }
@@ -202,7 +227,7 @@ namespace enemies {
         int startx = -camera::pos.x - Layers::blocksOnScreen.x / 2 - 40;
         int y = -camera::pos.y + Layers::blocksOnScreen.y / 2 + 15;
         std::vector<glm::vec2> candidates;
-        auto bs = Layers::getLayer("blocks");
+        auto bs = &Layers::blocks;
         for (int x = startx; x < startx + Layers::blocksOnScreen.x + 30; x++) {
             if (Layers::queryBlockInfo(bs, { x,y })->notReplacable == false){
                 candidates.push_back({ x,y });
@@ -215,7 +240,7 @@ namespace enemies {
     {
         int startx = -camera::pos.x - Layers::blocksOnScreen.x / 2 - 30;
         int starty = -camera::pos.y - Layers::blocksOnScreen.y / 2 - 15;
-        auto bs = Layers::getLayer("blocks");
+        auto bs = &Layers::blocks;
         std::vector<glm::vec2> candidates;
         //sky light
         for (int x = startx; x < startx + 25; x++) {
@@ -242,7 +267,7 @@ namespace enemies {
     {
         int startx = -camera::pos.x - Layers::blocksOnScreen.x / 2 - 30;
         int starty = -camera::pos.y - Layers::blocksOnScreen.y / 2 - 15;
-        auto bs = Layers::getLayer("blocks");
+        auto bs = &Layers::blocks;
         std::vector<glm::vec2> candidates;
         //sky light
         for (int x = startx; x < startx + 25; x++) {
@@ -269,7 +294,7 @@ namespace enemies {
     {
         int startx = -camera::pos.x - Layers::blocksOnScreen.x / 2 - 30;
         int starty = -camera::pos.y - Layers::blocksOnScreen.y / 2 - 15;
-        auto bs = Layers::getLayer("blocks");
+        auto bs = &Layers::blocks;
         std::vector<glm::vec2> candidates;
         //sky light
         for (int x = startx; x < startx + 25; x++) {
@@ -296,7 +321,7 @@ namespace enemies {
     {
         int startx = -camera::pos.x - Layers::blocksOnScreen.x / 2 - 30;
         int starty = -camera::pos.y - Layers::blocksOnScreen.y / 2 - 15;
-        auto bs = Layers::getLayer("blocks");
+        auto bs = &Layers::blocks;
         std::vector<glm::vec2> candidates;
         for (int x = startx; x < startx + 25; x++) {
             for (int y = starty; y < starty + Layers::blocksOnScreen.y + 30; y++) {
@@ -323,23 +348,50 @@ namespace enemies {
         return glm::vec2(-camera::pos.x + rand()%(int)Layers::blocksOnScreen.x - Layers::blocksOnScreen.x/2,
             -camera::pos.y + rand() % (int)Layers::blocksOnScreen.y - Layers::blocksOnScreen.y / 2);
     }
-    void addEnemyToDay(std::string enemy, std::string biome, float spawnchance)
+    glm::vec2 liquidSpawnFunc()
+    {
+        int startx = -camera::pos.x - Layers::blocksOnScreen.x / 2 - 30;
+        int starty = -camera::pos.y - Layers::blocksOnScreen.y / 2 - 15;
+        auto bs = &Layers::blocks;
+        std::vector<glm::vec2> candidates;
+        //sky light
+        for (int x = startx; x < startx + 25; x++) {
+            for (int y = starty; y < starty + Layers::blocksOnScreen.y + 30; y++) {
+                if (liquids::at({x,y}) != 0) {
+                    candidates.push_back({ x,y });
+                }
+            }
+        }
+
+        for (int x = startx + Layers::blocksOnScreen.x + 35; x < startx + Layers::blocksOnScreen.x + 55; x++) {
+            for (int y = starty; y < starty + Layers::blocksOnScreen.y + 30; y++) {
+                if (liquids::at({ x,y }) != 0) {
+                    candidates.push_back({ x,y });
+                }
+            }
+        }
+        if (candidates.size() == 0) {
+            return glm::vec2(-10200, -12000);
+        }
+        return candidates[rand() % candidates.size()];
+    }
+    void addEnemyToDay(std::string enemy, std::string biome, int spawnchance)
     {
         Layers::biomes[biome].daymobs.insert(std::make_pair(enemy, spawnchance));
     }
-    void addEnemyToNight(std::string enemy, std::string biome, float spawnchance)
+    void addEnemyToNight(std::string enemy, std::string biome, int spawnchance)
     {
         Layers::biomes[biome].nightmobs.insert(std::make_pair(enemy, spawnchance));
     }
-    void addEnemyToUnderground(std::string enemy, std::string biome, float spawnchance)
+    void addEnemyToUnderground(std::string enemy, std::string biome, int spawnchance)
     {
         Layers::biomes[biome].undergroundmobs.insert(std::make_pair(enemy, spawnchance));
     }
-    void addEnemyToCavern(std::string enemy, std::string biome, float spawnchance)
+    void addEnemyToCavern(std::string enemy, std::string biome, int spawnchance)
     {
         Layers::biomes[biome].cavernmobs.insert(std::make_pair(enemy, spawnchance));
     }
-    void addEnemyToUnderworld(std::string enemy, std::string biome, float spawnchance)
+    void addEnemyToUnderworld(std::string enemy, std::string biome, int spawnchance)
     {
         Layers::biomes[biome].underworldmobs.insert(std::make_pair(enemy, spawnchance));
     }

@@ -3,6 +3,7 @@
 #include <textures.h>
 #include <globals.h>
 #include <enemyFunctions.h>
+#include <drawSystem.h>
 
 namespace particles {
 
@@ -44,11 +45,12 @@ namespace particles {
 		}
 	}
 
-	void spawnEffect(std::string effectName, glm::vec2 pos, glm::vec2 dir)
+	int spawnEffect(std::string effectName, glm::vec2 pos, glm::vec2 dir)
 	{
 		auto effect = effects[effectName];
+		int ent = -1;
 		for (int i = 0; i < effect.size(); i++) {
-			int ent = ECS::newEntity();
+			ent = ECS::newEntity();
 			physicsC pC;
 			pC.weight = 0;
 			pC.isstatic = true;
@@ -62,6 +64,7 @@ namespace particles {
 			ECS::queueComponent<physicsC>(ent, pC);
 			ECS::queueComponent<particleEmmiterC>(ent, effect[i].peC);
 		}	
+		return ent;
 	}
 	void addEffect(std::string name, effectBase effect)
 	{
@@ -183,6 +186,7 @@ namespace particles {
 			dc.tex = vec[i].first;
 			dc.size = glm::vec2(mod) * vec[i].second;
 			dc.parent = globals::particleLayer;
+			dc.opacity = 0.99f;
 
 			physicsC pc;
 			pc.position = ppos;

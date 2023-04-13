@@ -1,7 +1,6 @@
 ﻿#include "blocks.h"
 
 #include <layers.h>
-#include <componentsystems.h>
 #include <globals.h>
 #include <player.h>
 #include <ui.h>
@@ -13,6 +12,7 @@
 #include <liquids.h>
 #include <sounds.h>
 #include <particles.h>
+#include <gameLoop.h>
 
 namespace blocks {
 	std::unordered_map<std::string, BlockInfo> nameToInfo;
@@ -42,18 +42,18 @@ namespace blocks {
 	};
 
 	glm::vec4 wallSc[16] = {
-		{0, 0, 0, 0}, //nobene okol 0
-		{0,  -42, 0, -42}, //ena zgori 1
-		{-42,  0, -42, 0}, //ena desno 2
-		{-42, -42, -42, -42}, //ena zgori ena desno 3
-		{0,  -16, 0, -16}, //ena spodi 4
-		{0,  -29, 0, -29}, // ena zgori ena spodi 5
-		{-42, -16, -42, -16}, //ena spodi ena desno 6
-		{-42, -29, -42, -29}, //ena zgori ena spodi ena desno 7
-		{-16,  0, -16, 0}, //ena levo 8
-		{-16, -42, -16, -42}, //ena levo ena zgori 9
-		{-29,  0, -29, 0}, //ena levo ena desno 10
-		{-29, -42, -29, -42}, // ena zgori ena levo ena desno 11
+		{0, 0, 0, 0},			//nobene okol 0
+		{0,  -42, 0, -42},		//ena zgori 1
+		{-42,  0, -42, 0},		//ena desno 2
+		{-42, -42, -42, -42},	//ena zgori ena desno 3
+		{0,  -16, 0, -16},		//ena spodi 4
+		{0,  -29, 0, -29},		// ena zgori ena spodi 5
+		{-42, -16, -42, -16},	//ena spodi ena desno 6
+		{-42, -29, -42, -29},	//ena zgori ena spodi ena desno 7
+		{-16,  0, -16, 0},		//ena levo 8
+		{-16, -42, -16, -42},	//ena levo ena zgori 9
+		{-29,  0, -29, 0},		//ena levo ena desno 10
+		{-29, -42, -29, -42},	// ena zgori ena levo ena desno 11
 		{-16, -16, -16 ,-16}, // ena spodi ena levo 12
 		{-16, -29, -16, -29}, //levo zgori spodi 13
 		{-29, -16, -29, -16}, //levo spodi desno 14
@@ -61,10 +61,10 @@ namespace blocks {
 	};
 
 	glm::vec4 torchSc[4] = {
-		{0, 0, 0, 0}, //skos razn :tm
-		{9, 0, 8, -4}, // kocka levo
-		{17, 0, 16, -4}, // kocka desno
-		{25, 0, 25, 0}, // kocki desno pa levo
+		{0, 0, 0, 0}, //wall alpa spodi
+		{9, 0, 9, 0}, // kocka levo
+		{17, 0, 17, 0}, // kocka desno
+		{26, 0, 26, 0}, // zgori
 	};
 
 	glm::vec4 grassSc[5] = {
@@ -107,7 +107,7 @@ namespace blocks {
 
 	int nextnumsprites = -1;
 
-	void addBlock(std::string name, std::string texture, bool collidable, bool solid, std::string itemname, std::string layer,
+	void addBlock(std::string name, std::string texture, bool collidable, bool solid, std::string itemname, LayerENUM layer,
 		bool updates, SpriteType spriteType, glm::vec2 size, float friction,
 		std::vector<std::function<bool(BlockConditionArgs)>> placeConditions, bool updateLeft, bool updateTop, bool updateBot, bool updateRight) {
 		
@@ -150,7 +150,7 @@ namespace blocks {
 			nameToID.insert(std::make_pair(name, id));
 		}
 	}
-	void addRule(std::string name, std::vector<BlockRuleCond> conditions, std::function<void(BlockRuleArgs)> func, const char* block, const char* layer, bool exBool)
+	void addRule(std::string name, std::vector<BlockRuleCond> conditions, std::function<void(BlockRuleArgs)> func, const char* block, LayerENUM layer, bool exBool)
 	{
 		BlockRule tmp;
 		tmp.conditions = conditions;
@@ -628,19 +628,20 @@ namespace blocks {
 namespace BRules {
 	void breakSelf(BlockRuleArgs)
 	{
-		Layers::breakBlock(Layers::getLayer(rule->layer), pos, 1, rule->exBool, false, true, true);
+		Layers::breakBlock(rule->layer == BLOCKS ? &Layers::blocks : &Layers::walls, pos, 1, rule->exBool, false, true, true);
 	}
 	void breakSelfAndUpdateBelow(BlockRuleArgs)
 	{
-		Layers::breakBlock(Layers::getLayer(rule->layer), pos, 1, rule->exBool, false, true, true);
-		Layers::updateBlock(Layers::getLayer("blocks"), pos - glm::vec2(0, 1));
+		Layers::breakBlock(rule->layer == BLOCKS ? &Layers::blocks : &Layers::walls, pos, 1, rule->exBool, false, true, true);
+		Layers::updateBlock(&Layers::blocks, pos - glm::vec2(0, 1));
 	}
 	void replaceWith(BlockRuleArgs) {
 		Layers::placeBlock(pos, rule->block);
 	}
 	void growNormalTree(BlockRuleArgs) {
-		std::vector<std::function<bool(BlockConditionArgs)>> tmpCond = { BConditions::isntreplacablebelow };
 		int height = rand() % 5 + 10;
+		if (!Layers::isAreaEmpty(pos + glm::vec2(-2, 0), { 5 , height - 2 })) return;
+		std::vector<std::function<bool(BlockConditionArgs)>> tmpCond = { BConditions::isntreplacablebelow };
 		Layers::placeBlock(pos, "trunkbase1", 1, &tmpCond);
 		Layers::placeBlock({ pos.x - 1, pos.y }, "trunkbase2", 1, &tmpCond);
 		Layers::placeBlock({pos.x + 1, pos.y}, "trunkbase3", 1, &tmpCond);
@@ -648,7 +649,8 @@ namespace BRules {
 		int branchesleft = 0;
 		for (int y2 = 1; y2 < height; y2++) {
 			Layers::placeBlock({pos.x, y2 + pos.y}, "trunk");
-			if (y2 > 3 && rand() % 12 == 0) {
+			if(y2 < height-2)
+			if (y2 > 3 && rand() % 8 == 0) {
 				if (rand() % 2 == 0) {
 					if (branchesright < 3) {
 						Layers::placeBlock({ pos.x - 2, y2 + pos.y }, "normalbranchr");
@@ -669,8 +671,9 @@ namespace BRules {
 		Layers::placeBlock({ pos.x - 1, pos.y - 1 }, "dirt");
 	}
 	void growCorruptTree(BlockRuleArgs) {
-		std::vector<std::function<bool(BlockConditionArgs)>> tmpCond = {BConditions::isntreplacablebelow};
 		int height = rand() % 9 + 10;
+		if (!Layers::isAreaEmpty(pos, { height - 2, 5 })) return;
+		std::vector<std::function<bool(BlockConditionArgs)>> tmpCond = { BConditions::isntreplacablebelow };
 		Layers::placeBlock(pos, "corrupttrunkbase1", 1, &tmpCond);
 		Layers::placeBlock({ pos.x - 1, pos.y }, "corrupttrunkbase2", 1, &tmpCond);
 		Layers::placeBlock({ pos.x + 1, pos.y }, "corrupttrunkbase3", 1, &tmpCond);
@@ -678,7 +681,8 @@ namespace BRules {
 		int branchesleft = 0;
 		for (int y2 = 1; y2 < height; y2++) {
 			Layers::placeBlock({ pos.x, y2 + pos.y }, "corrupttrunk");
-			if (y2 > 4 && rand() % 10 == 0) {
+			if (y2 < height - 2)
+				if (y2 > 4 && rand() % 7 == 0) {
 				if (rand() % 2 == 0) {
 					if (branchesright < 3) {
 						Layers::placeBlock({ pos.x - 2, y2 + pos.y }, "corruptbranchr");
@@ -701,8 +705,9 @@ namespace BRules {
 
 	void growJungleTree(BlockRuleArgs)
 	{
-		std::vector<std::function<bool(BlockConditionArgs)>> tmpCond = { BConditions::isntreplacablebelow };
 		int height = rand() % 10 + 8;
+		if (!Layers::isAreaEmpty(pos, { height - 2, 5 })) return;
+		std::vector<std::function<bool(BlockConditionArgs)>> tmpCond = { BConditions::isntreplacablebelow };
 		Layers::placeBlock(pos, "mahoganytrunkbase1", 1, &tmpCond);
 		Layers::placeBlock({ pos.x - 1, pos.y }, "mahoganytrunkbase2", 1, &tmpCond);
 		Layers::placeBlock({ pos.x + 1, pos.y }, "mahoganytrunkbase3", 1, &tmpCond);
@@ -710,7 +715,8 @@ namespace BRules {
 		int branchesleft = 0;
 		for (int y2 = 1; y2 < height; y2++) {
 			Layers::placeBlock({ pos.x, y2 + pos.y }, "mahoganytrunk");
-			if (y2 > 4 && rand() % 10 == 0) {
+			if (y2 < height - 2)
+				if (y2 > 4 && rand() % 5 == 0) {
 				if (rand() % 2 == 0) {
 					if (branchesright < 3) {
 						Layers::placeBlock({ pos.x - 3, y2 + pos.y }, "junglebranchr");
@@ -733,8 +739,9 @@ namespace BRules {
 
 	void growWinterTree(BlockRuleArgs)
 	{
-		std::vector<std::function<bool(BlockConditionArgs)>> tmpCond = { BConditions::isntreplacablebelow };
 		int height = rand() % 4 + 15;
+		if (!Layers::isAreaEmpty(pos, { height - 2, 5 })) return;
+		std::vector<std::function<bool(BlockConditionArgs)>> tmpCond = { BConditions::isntreplacablebelow };
 		Layers::placeBlock(pos, "borealtrunkbase1", 1, &tmpCond);
 		Layers::placeBlock({ pos.x - 1, pos.y }, "borealtrunkbase2", 1, &tmpCond);
 		Layers::placeBlock({ pos.x + 1, pos.y }, "borealtrunkbase3", 1, &tmpCond);
@@ -742,7 +749,8 @@ namespace BRules {
 		int branchesleft = 0;
 		for (int y2 = 1; y2 < height; y2++) {
 			Layers::placeBlock({ pos.x, y2 + pos.y }, "borealtrunk");
-			if (y2 > 4 && rand() % 10 == 0) {
+			if (y2 < height - 2)
+				if (y2 > 4 && rand() % 7 == 0) {
 				if (rand() % 2 == 0) {
 					if (branchesright < 3) {
 						Layers::placeBlock({ pos.x - 3, y2 + pos.y }, "borealbranchr");
@@ -781,12 +789,12 @@ namespace BFuncs {
 	}
 	bool breakSelf(BlockFuncArgs)
 	{
-		Layers::breakBlock(Layers::getLayer("blocks"), pos, 1, true);
+		Layers::breakBlock(&Layers::blocks, pos, 1, true);
 		return false;
 	}
 	bool toggleDoor(BlockFuncArgs)
 	{
-		std::string b = *Layers::queryBlockName(Layers::getLayer("blocks"), pos);
+		std::string b = *Layers::queryBlockName(&Layers::blocks, pos);
 		
 		std::vector<std::function<bool(BlockConditionArgs)>> tmp = { BConditions::isreplacable };
 
@@ -794,104 +802,104 @@ namespace BFuncs {
 
 		if (b == "door") {
 			if (Player::dir > 0) {
-				Layers::breakBlock(Layers::getLayer("blocks"), pos);
+				Layers::breakBlock(&Layers::blocks, pos);
 				state = 0;
 				if (!Layers::placeBlock(pos, "doorright", 1, &tmp)) {
 					Layers::placeBlock(pos, "door");
 				}
 			}
 			else {
-				Layers::breakBlock(Layers::getLayer("blocks"), pos);
+				Layers::breakBlock(&Layers::blocks, pos);
 				if (!Layers::placeBlock({ pos.x - 1, pos.y }, "doorleft", 1, &tmp)) {
 					Layers::placeBlock(pos, "door");
 				}
 			}
 		}
 		else if (b == "doorright") {
-			Layers::breakBlock(Layers::getLayer("blocks"), pos);
+			Layers::breakBlock(&Layers::blocks, pos);
 			Layers::placeBlock(pos, "door", 1, &tmp);
 			state = 1;
 		}
 		else if (b == "doorleft") {
-			Layers::breakBlock(Layers::getLayer("blocks"), pos);
+			Layers::breakBlock(&Layers::blocks, pos);
 			Layers::placeBlock({ pos.x + 1, pos.y }, "door", 1, &tmp);
 			state = 1;
 		}
 
 		if (b == "borealdoor") {
 			if (Player::dir > 0) {
-				Layers::breakBlock(Layers::getLayer("blocks"), pos);
+				Layers::breakBlock(&Layers::blocks, pos);
 				state = 0;
 				if (!Layers::placeBlock(pos, "borealdoorright", 1, &tmp)) {
 					Layers::placeBlock(pos, "borealdoor");
 				}
 			}
 			else {
-				Layers::breakBlock(Layers::getLayer("blocks"), pos);
+				Layers::breakBlock(&Layers::blocks, pos);
 				if (!Layers::placeBlock({ pos.x - 1, pos.y }, "borealdoorleft", 1, &tmp)) {
 					Layers::placeBlock(pos, "borealdoor");
 				}
 			}
 		}
 		else if (b == "borealdoorright") {
-			Layers::breakBlock(Layers::getLayer("blocks"), pos);
+			Layers::breakBlock(&Layers::blocks, pos);
 			Layers::placeBlock(pos, "borealdoor", 1, &tmp);
 			state = 1;
 		}
 		else if (b == "borealdoorleft") {
-			Layers::breakBlock(Layers::getLayer("blocks"), pos);
+			Layers::breakBlock(&Layers::blocks, pos);
 			Layers::placeBlock({ pos.x + 1, pos.y }, "borealdoor", 1, &tmp);
 			state = 1;
 		}
 
 		if (b == "mahoganydoor") {
 			if (Player::dir > 0) {
-				Layers::breakBlock(Layers::getLayer("blocks"), pos);
+				Layers::breakBlock(&Layers::blocks, pos);
 				state = 0;
 				if (!Layers::placeBlock(pos, "mahoganydoorright", 1, &tmp)) {
 					Layers::placeBlock(pos, "mahoganydoor");
 				}
 			}
 			else {
-				Layers::breakBlock(Layers::getLayer("blocks"), pos);
+				Layers::breakBlock(&Layers::blocks, pos);
 				if (!Layers::placeBlock({ pos.x - 1, pos.y }, "mahoganydoorleft", 1, &tmp)) {
 					Layers::placeBlock(pos, "mahoganydoor");
 				}
 			}
 		}
 		else if (b == "mahoganydoorright") {
-			Layers::breakBlock(Layers::getLayer("blocks"), pos);
+			Layers::breakBlock(&Layers::blocks, pos);
 			Layers::placeBlock(pos, "mahoganydoor", 1, &tmp);
 			state = 1;
 		}
 		else if (b == "mahoganydoorleft") {
-			Layers::breakBlock(Layers::getLayer("blocks"), pos);
+			Layers::breakBlock(&Layers::blocks, pos);
 			Layers::placeBlock({ pos.x + 1, pos.y }, "mahoganydoor", 1, &tmp);
 			state = 1;
 		}
 
 		if (b == "ebonwooddoor") {
 			if (Player::dir > 0) {
-				Layers::breakBlock(Layers::getLayer("blocks"), pos);
+				Layers::breakBlock(&Layers::blocks, pos);
 				state = 0;
 				if (!Layers::placeBlock(pos, "ebonwooddoorright", 1, &tmp)) {
 					Layers::placeBlock(pos, "ebonwooddoor");
 				}
 			}
 			else {
-				Layers::breakBlock(Layers::getLayer("blocks"), pos);
+				Layers::breakBlock(&Layers::blocks, pos);
 				if (!Layers::placeBlock({ pos.x - 1, pos.y }, "ebonwooddoorleft", 1, &tmp)) {
 					Layers::placeBlock(pos, "ebonwooddoor");
 				}
 			}
 		}
 		else if (b == "ebonwooddoorright") {
-			Layers::breakBlock(Layers::getLayer("blocks"), pos);
+			Layers::breakBlock(&Layers::blocks, pos);
 			Layers::placeBlock(pos, "ebonwooddoor", 1, &tmp);
 			state = 1;
 		}
 		else if (b == "ebonwooddoorleft") {
-			Layers::breakBlock(Layers::getLayer("blocks"), pos);
+			Layers::breakBlock(&Layers::blocks, pos);
 			Layers::placeBlock({ pos.x + 1, pos.y }, "ebonwooddoor", 1, &tmp);
 			state = 1;
 		}
@@ -909,6 +917,7 @@ namespace BFuncs {
 	{
 		UI::openInventory();
 		UI::chest->setTo(&Layers::chests[Layers::vecToInt(pos)].items);
+		UI::chest->toggle();
 		UI::openChest = Layers::vecToInt(pos);
 		return false;
 	}
@@ -920,7 +929,7 @@ namespace BFuncs {
 	}
 	bool chestOnBreak(BlockFuncArgs)
 	{
-		if (game::currScene != GAME) return false;
+		if (game::currScene != GAMELOOP) return false;
 		int c = Layers::vecToInt(pos);
 		if (Layers::chests.count(c) >= 1) {
 			for (auto& i : Layers::chests[c].items) {
@@ -939,7 +948,7 @@ namespace BFuncs {
 	}
 	bool potOnBreak(BlockFuncArgs)
 	{
-		if (game::currScene != GAME) return false;
+		if (game::currScene != GAMELOOP) return false;
 		particles::dropGore(pos, "pot");
 
 		//https://terraria.fandom.com/wiki/Pot
@@ -1014,16 +1023,16 @@ namespace BFuncs {
 	bool craftingStationOnUpdate(BlockFuncArgs)
 	{
 		if (glm::distance(Player::pos, pos) <= Player::craftingDist) {
-			auto set = &blocks::nameToInfo[*Layers::queryBlockName(Layers::getLayer("blocks"), pos)].craftingStations;
+			auto set = &blocks::nameToInfo[*Layers::queryBlockName(&Layers::blocks, pos)].craftingStations;
 			UI::craftingStationsInRange.insert(set->begin(), set->end());
 		}
 		return true;
 	}
 	bool chairOnPlace(BlockFuncArgs)
 	{
-		std::string b = *Layers::queryBlockName(Layers::getLayer("blocks"), pos);
+		std::string b = *Layers::queryBlockName(&Layers::blocks, pos);
 		if (Player::dir < 0) {
-			Layers::breakBlock(Layers::getLayer("blocks"), pos);
+			Layers::breakBlock(&Layers::blocks, pos);
 			if (b == "chairright") {
 				Layers::placeBlock(pos, "chairleft");
 			}
@@ -1042,7 +1051,7 @@ namespace BFuncs {
 	bool saplingOnUpdate(BlockFuncArgs)
 	{
 		if (rand() % 100 != 0) return true;
-		auto bs = Layers::getLayer("blocks");
+		auto bs = &Layers::blocks;
 		auto block = Layers::queryBlockName(bs, pos);
 		Layers::breakBlock(bs, pos, 1, false, true);
 		Layers::breakBlock(bs, pos + glm::vec2(0, 1));
@@ -1067,10 +1076,18 @@ namespace BFuncs {
 	}
 	bool shadoworbOnBreak(BlockFuncArgs)
 	{
-		if (game::currScene != GAME) return false;
+		if (game::currScene != GAMELOOP) return false;
 		map::shadoworbsbroken++;
-		if (map::shadoworbsbroken % 3 == 0) {
+		switch (map::shadoworbsbroken % 3) {
+		case 1:
+			gameLoop::toast("A horrible chill goes down your spine...");
+				break;
+		case 2: 
+			gameLoop::toast("Screams echo around you...");
+				break;
+		case 0:
 			enemies::spawnEnemy("eaterofworldshead", pos + glm::vec2(rand() % 100 - 50, -100 - rand() % 50));
+			break;
 		}
 		if (rand() % 3 == 0) {
 			game::droppedItemSys->dropItem(pos, "vilethorn", 1, true);
@@ -1079,13 +1096,13 @@ namespace BFuncs {
 	}
 	bool hellstoneOnBreak(BlockFuncArgs)
 	{
-		if (game::currScene != GAME) return false;
+		if (game::currScene != GAMELOOP) return false;
 		liquids::place("lava", pos, 14);
 		return false;
 	}
 	bool grasssoundOnBreak(BlockFuncArgs)
 	{
-		if(game::currScene == GAME)
+		if(game::currScene == GAMELOOP)
 		sounds::grass();
 		return false;
 	}
@@ -1097,7 +1114,7 @@ bool BConditions::connected(BlockConditionArgs)
 	if (Layers::queryBlockInfo(l, { pos.x - 1, pos.y })->notReplacable) return true;
 	if (Layers::queryBlockInfo(l, { pos.x, pos.y - 1 })->notReplacable) return true;
 	if (Layers::queryBlockInfo(l, { pos.x, pos.y + 1 })->notReplacable) return true;
-	if (Layers::queryBlockInfo(bg, { pos.x, pos.y })->notReplacable) return true;
+	if (Layers::queryBlockInfo(&Layers::walls, { pos.x, pos.y })->notReplacable) return true;
 	return false;
 }
 
@@ -1117,7 +1134,7 @@ bool BConditions::haswall(BlockConditionArgs)
 {
 	for (int x = 0; x < info->size.x; x++) {
 		for (int y = 0; y < info->size.y; y++) {
-			if (!Layers::queryBlockInfo(bg, { pos.x + x, pos.y + y })->notReplacable) {
+			if (!Layers::queryBlockInfo(&Layers::walls, { pos.x + x, pos.y + y })->notReplacable) {
 				return false;
 			}
 		}
@@ -1139,7 +1156,7 @@ bool BConditions::nowall(BlockConditionArgs)
 {
 	for (int x = 0; x < info->size.x; x++) {
 		for (int y = 0; y < info->size.y; y++) {
-			if (Layers::queryBlockInfo(bg, { pos.x + x, pos.y + y })->notReplacable) {
+			if (Layers::queryBlockInfo(&Layers::walls, { pos.x + x, pos.y + y })->notReplacable) {
 				return false;
 			}
 		}

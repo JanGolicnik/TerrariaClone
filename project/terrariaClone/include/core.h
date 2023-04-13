@@ -86,6 +86,11 @@ enum UIFunction {
     ui_INFOFORCRAFTING,
 };
 
+enum LayerENUM {
+    BLOCKS,
+    WALLS
+};
+
 struct OverlayVertex {
 	glm::vec3 position;
 	glm::vec2 texCoords;
@@ -147,14 +152,14 @@ struct BlockRuleCond {
     BlockRuleArg arg;
     glm::vec2 pos;
     std::string block;
-    std::string layer;
+    LayerENUM layer;
     float randomInterval;
 };
 
 struct BlockRule {
     std::vector<BlockRuleCond> conditions;
     const char* block;
-    const char* layer;
+    LayerENUM layer;
     bool exBool;
     std::function<void(BlockRuleArgs)> func;
 };
@@ -166,6 +171,7 @@ struct InventoryItem {
 };
 
 struct playerData {
+    std::string name;
     float hp;
     float currmaxhp;
     float mana;
@@ -182,6 +188,21 @@ struct playerData {
     std::string headarmor;
     std::string bodyarmor;
     std::string legsarmor;
+    uint32_t creationDate;
+    uint32_t playTime;
+};
+
+struct worldData {
+    std::string name;
+    int X;
+    int Y;
+    int moonphase;
+    int shadoworbsbroken;
+    float time;
+    glm::vec3 dayclr;
+    glm::vec2 spawnpoint;
+    uint32_t playTime;
+    uint32_t creationDate;
 };
 
 #endif 

@@ -4,7 +4,6 @@
 #include <blocks.h>
 #include <animations.h>
 #include <ui.h>
-#include <componentsystems.h>
 #include <globals.h>
 #include <textures.h>
 #include <camera.h>
@@ -16,6 +15,7 @@
 #include <liquids.h>
 #include <game.h>
 #include <sounds.h>
+#include <Window.h>
 
 namespace Player {
 
@@ -145,7 +145,7 @@ namespace Player {
 
     void update()
     {
-        auto bs = Layers::getLayer("blocks");
+        auto bs = &Layers::blocks;
         auto phys = ECS::getComponent<physicsC>(entity);
 
         if (dead) {
@@ -327,7 +327,7 @@ namespace Player {
     void doSecondary(std::string item)
     {
         if (input::pressed(k_SECONDARY)) {
-            glm::vec2 vec = globals::mouseBlockCoords();
+            glm::vec2 vec =Window::mouseBlockCoords();
             Layers::doBlockFunction(vec);
             itemtimer = 20;
         }
@@ -356,6 +356,21 @@ namespace Player {
         glDeleteBuffers(1, &playerVB);
         glDeleteBuffers(1, &playerVA);
         glDeleteBuffers(1, &playerIB);
+    }
+    void clear()
+    {
+        Player::heartcrystals = 0;
+        Player::manacrystals = 0;
+        Player::boomerangsout = 0;
+        Player::currsummons = 0;
+        Player::headarmor = "empty";
+        Player::bodyarmor = "empty";
+        Player::legsarmor = "empty";
+        UI::helmetItem.item = "empty";
+        UI::breastplateItem.item = "empty";
+        UI::greavesItem.item = "empty";
+        UI::PlayerHotbar.clear();
+        UI::PlayerInventory.clear();
     }
     void reset() {
         UI::accessory1Item.item = "empty";
@@ -496,6 +511,7 @@ namespace Player {
         file.write((char*)(&skinclr_hsv), sizeof(skinclr_hsv));
         file.write((char*)(&pantsclr_hsv), sizeof(pantsclr_hsv));
         file.write((char*)(&shoeclr_hsv), sizeof(shoeclr_hsv));
+        file.write((char*)(&eyeclr_hsv), sizeof(eyeclr_hsv));
         file.write((char*)(&hairid), sizeof(hairid));
 
         UI::saveInvItem(&UI::helmetItem, &file);
@@ -516,6 +532,7 @@ namespace Player {
     }
     bool load()
     {
+        if (name == "") return false;
         std::string filename = "players/" + name + ".bak";
         std::ifstream file(filename, std::ios::out | std::ios::binary);
         if (!file) { std::cout << "error opening file for loading player\n"; return false; }
@@ -531,6 +548,7 @@ namespace Player {
         file.read((char*)(&skinclr_hsv), sizeof(skinclr_hsv));
         file.read((char*)(&pantsclr_hsv), sizeof(pantsclr_hsv));
         file.read((char*)(&shoeclr_hsv), sizeof(shoeclr_hsv));
+        file.read((char*)(&eyeclr_hsv), sizeof(eyeclr_hsv));
         file.read((char*)(&hairid), sizeof(hairid));
 
         UI::loadInvItem(&UI::helmetItem, &file);
@@ -558,18 +576,21 @@ namespace Player {
         
         playerData data;
 
-        file.read((char*)(&data.hp), sizeof(hp));
-        file.read((char*)(&data.currmaxhp), sizeof(currmaxhp));
-        file.read((char*)(&data.mana), sizeof(mana));
-        file.read((char*)(&data.currmaxmana), sizeof(currmaxmana));
-        file.read((char*)(&data.heartcrystals), sizeof(heartcrystals));
-        file.read((char*)(&data.manacrystals), sizeof(manacrystals));
-        file.read((char*)(&data.hairclr_hsv), sizeof(hairclr_hsv));
-        file.read((char*)(&data.shirtclr_hsv), sizeof(shirtclr_hsv));
-        file.read((char*)(&data.skinclr_hsv), sizeof(skinclr_hsv));
-        file.read((char*)(&data.pantsclr_hsv), sizeof(pantsclr_hsv));
-        file.read((char*)(&data.shoeclr_hsv), sizeof(shoeclr_hsv));
-        file.read((char*)(&data.hairid), sizeof(hairid));
+        data.name = name;
+
+        file.read((char*)(&data.hp), sizeof(data.hp));
+        file.read((char*)(&data.currmaxhp), sizeof(data.currmaxhp));
+        file.read((char*)(&data.mana), sizeof(data.mana));
+        file.read((char*)(&data.currmaxmana), sizeof(data.currmaxmana));
+        file.read((char*)(&data.heartcrystals), sizeof(data.heartcrystals));
+        file.read((char*)(&data.manacrystals), sizeof(data.manacrystals));
+        file.read((char*)(&data.hairclr_hsv), sizeof(data.hairclr_hsv));
+        file.read((char*)(&data.shirtclr_hsv), sizeof(data.shirtclr_hsv));
+        file.read((char*)(&data.skinclr_hsv), sizeof(data.skinclr_hsv));
+        file.read((char*)(&data.pantsclr_hsv), sizeof(data.pantsclr_hsv));
+        file.read((char*)(&data.shoeclr_hsv), sizeof(data.shoeclr_hsv));
+        file.read((char*)(&data.eyeclr_hsv), sizeof(data.eyeclr_hsv));
+        file.read((char*)(&data.hairid), sizeof(data.hairid));
 
         InventoryItem tmp;
         UI::loadInvItem(&tmp, &file);
@@ -586,7 +607,7 @@ namespace Player {
     void useItem(std::string item, itemInfo* iteminfo)
     {
         if (dead) return;
-        glm::vec2 vec = globals::mouseBlockCoords();
+        glm::vec2 vec =Window::mouseBlockCoords();
 
         for (auto& cond : items::getInfo(item)->conditions) {
             if (!cond(item)) {
@@ -863,12 +884,12 @@ namespace Player {
         glBindVertexArray(playerVA);
         glBindBuffer(GL_ARRAY_BUFFER, playerVB);
 
-        glm::vec4 skinclr = glm::vec4(utils::hsvToRgb(skinclr_hsv), 1);
-        glm::vec4 irisclr = glm::vec4(utils::hsvToRgb(eyeclr_hsv), 1);
-        glm::vec4 shoeclr = glm::vec4(utils::hsvToRgb(shoeclr_hsv), 1);
-        glm::vec4 pantsclr = glm::vec4(utils::hsvToRgb(pantsclr_hsv), 1);
-        glm::vec4 shirtclr = glm::vec4(utils::hsvToRgb(shirtclr_hsv), 1);
-        glm::vec4 hairclr = glm::vec4(utils::hsvToRgb(hairclr_hsv), 1);
+        glm::vec4 skinclr = glm::vec4(utils::hsvToRgb(data->skinclr_hsv), 1);
+        glm::vec4 irisclr = glm::vec4(utils::hsvToRgb(data->eyeclr_hsv), 1);
+        glm::vec4 shoeclr = glm::vec4(utils::hsvToRgb(data->shoeclr_hsv), 1);
+        glm::vec4 pantsclr = glm::vec4(utils::hsvToRgb(data->pantsclr_hsv), 1);
+        glm::vec4 shirtclr = glm::vec4(utils::hsvToRgb(data->shirtclr_hsv), 1);
+        glm::vec4 hairclr = glm::vec4(utils::hsvToRgb(data->hairclr_hsv), 1);
 
         glm::vec2 size = glm::vec2(20, 24) / glm::vec2(8);
         size *= scale;

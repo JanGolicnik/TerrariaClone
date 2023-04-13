@@ -5,7 +5,6 @@
 
 #include <blocks.h>
 #include <utils.h>
-#include <componentsystems.h>
 #include <globals.h>
 #include <textures.h>
 #include <blocks.h>
@@ -17,6 +16,7 @@
 #include <background.h>
 #include <enemies.h>
 #include <particles.h>
+#include <Window.h>
 #include <game.h>
 
 namespace Layers {
@@ -24,7 +24,9 @@ namespace Layers {
     glm::vec2 trueBsOnScr;
     int nQuads;
     int nDrawnIndices;
-    std::vector<Layer> layers;
+
+    Layer blocks;
+    Layer walls;
 
     int nDrawnBlocks;
 
@@ -48,44 +50,22 @@ namespace Layers {
 
     std::unordered_map<int, glm::vec3> lights;
 
-    void addLayer(const char* name, float darkness, int drawingOffset)
-    {
-        Layer l;
-        l.mname = name;
-        l.mdrawingOffset = drawingOffset;
-        l.mblocks = new Block[nQuads];
-        l.mdarkness = darkness;
-        layers.push_back(l);
-    }
-
-    Layer* getLayer(std::string_view l)
-    {
-        for (int i = 0; i < layers.size(); i++) {
-            if (layers[i].mname == l) {
-                return &layers[i];
-            }
-        }
-        return nullptr;
-    }
-
     void reschanged()
     {
         glDeleteVertexArrays(1, &layersVA);
         glDeleteBuffers(1, &layersVB);
         glDeleteBuffers(1, &layersIB);
         init();
-        delete[] drawnVertices;
-        nQuads = map::mapX * map::mapY;
+        if(drawnVertices) delete[] drawnVertices;
+        if(lightVertices) delete[] lightVertices;
         drawnVertices = new BlockVertex[nDrawnBlocks * 4];
         lightVertices = new BlockVertex[nDrawnBlocks * 4];
     }
 
     void init()
     {
-        blocksOnScreen.x = globals::resX / (globals::blocksizepx / 2) + offsets;
-        blocksOnScreen.y = globals::resY / (globals::blocksizepx / 2) + offsets;
-        trueBsOnScr.x = globals::resX / (globals::blocksizepx / 2);
-        trueBsOnScr.y = globals::resY / (globals::blocksizepx / 2);
+        trueBsOnScr = blocksOnScreen = floor(Window::res / glm::vec2(globals::blocksizepx / 2.0f));
+        blocksOnScreen += offsets;
         nDrawnBlocks = blocksOnScreen.x * blocksOnScreen.y;
         nDrawnIndices = nDrawnBlocks * 6;
 
@@ -137,12 +117,14 @@ namespace Layers {
         nQuads = map::mapX * map::mapY;
         if (drawnVertices != nullptr) delete[] drawnVertices;
         drawnVertices = new BlockVertex[nDrawnBlocks * 4];
-        if (lightVertices != nullptr) delete[] drawnVertices;
+        if (lightVertices != nullptr) delete[] lightVertices;
         lightVertices = new BlockVertex[nDrawnBlocks * 4];
-        addLayer("bg", 1.0f);
-        addLayer("blocks", 1.0f);
-        if (childParent != nullptr) delete[] drawnVertices;
-        childParent = new blockRelationship("blocks");
+        if (childParent != nullptr) delete childParent;
+        childParent = new blockRelationship(BLOCKS);
+        if (blocks.mblocks != nullptr) delete[] blocks.mblocks;
+        blocks.mblocks = new Block[nQuads];
+        if (walls.mblocks != nullptr) delete[] walls.mblocks;
+        walls.mblocks = new Block[nQuads];
     }
 
     void clean()
@@ -153,55 +135,51 @@ namespace Layers {
         drawnVertices = nullptr;
         delete lightVertices;
         lightVertices = nullptr;
-        for (auto& layer : layers) {
-            delete[] layer.mblocks;
-            layer.mblocks = nullptr;
-        }
-        layers.clear();
+        delete[] blocks.mblocks;
+        blocks.mblocks = nullptr;
+        delete[] walls.mblocks;
+        walls.mblocks = nullptr;
     }
 
     bool placeBlock(Layer* l, glm::vec2 pos, std::string type, int size, std::vector<std::function<bool(BlockConditionArgs)>>* conditions, glm::vec3 setlight, bool update)
     {
-        if (verifyBlock(l, &pos, false)) {
-            auto info = &blocks::nameToInfo[type];
-            auto bg = Layers::getLayer("bg");
-            auto bs = Layers::getLayer("blocks");
+        if (!verifyBlock(l, &pos, false)) return false;
 
-            if (size > 1) {
-                for (int x2 = -size; x2 < size; x2++) {
-                    for (int y2 = -size; y2 < size; y2++) {
-                        if (glm::distance(pos + glm::vec2(x2, y2), pos) < size / 2) {
-                            placeBlock(l, pos + glm::vec2(x2, y2), type, 1, conditions);
-                        }
+        if (size > 1) {
+            for (int x2 = -size; x2 < size; x2++) {
+                for (int y2 = -size; y2 < size; y2++) {
+                    if (glm::distance(pos + glm::vec2(x2, y2), pos) < size / 2.0f) {
+                        placeBlock(l, pos + glm::vec2(x2, y2), type, 1, conditions);
                     }
                 }
             }
+        }
 
-            if (conditions != nullptr) {
-                for (int i = 0; i < conditions->size(); i++) {
-                    if(!conditions->at(i)(l, bg, bs, pos, info)) return false;
-                }
+        auto info = &blocks::nameToInfo[type];
+        if (conditions != nullptr) {
+            for (int i = 0; i < conditions->size(); i++) {
+                if(!conditions->at(i)(l, pos, info)) return false;
             }
+        }
 
-            for (int x = 0; x < info->size.x; x++) {
-                for (int y = 0; y < info->size.y; y++) {
-                    glm::vec2 newpos = pos + glm::vec2(x, y);
-                    breakBlock(l, newpos, 1, false, true);
-                }
+        for (int x = 0; x < info->size.x; x++) {
+            for (int y = 0; y < info->size.y; y++) {
+                breakBlock(l, pos + glm::vec2(x, y), 1, false, true);
             }
+        }
 
-            int wholestate = 0;
+        int wholestate = 0;
+        switch (info->spriteType) {
+        case st_MULTISPRITE:
+            wholestate = (rand() % info->numsprites) * (info->size.x * info->size.y);
+            break;
+        case st_POT:
+            wholestate = (rand() % 2) * 4;
+            break;
+        }
+        for (int x = 0; x < info->size.x; x++) {
+            int state = 0;
             switch (info->spriteType) {
-            case st_MULTISPRITE:
-                wholestate = (rand() % info->numsprites) * (info->size.x * info->size.y);
-                break;
-            case st_POT:
-                wholestate = (rand() % 2) * 4;
-                break;
-            }
-            for (int x = 0; x < info->size.x; x++) {
-                int state = 0;
-                switch (info->spriteType) {
                 case st_SINGLE:
                     state = int(x * info->size.y);
                     break;
@@ -223,44 +201,40 @@ namespace Layers {
                 case st_POT:
                     state = int(x * info->size.y);
                     break;
-                }
-                for (int y = 0; y < info->size.y; y++) {
-                    glm::vec2 newpos = pos + glm::vec2(x, y);
-                    breakBlock(l, newpos);
-                    int c = vecToInt(newpos);
-                    l->mblocks[c].id = blocks::nameToID.at(type);
-                    l->mblocks[c].state = wholestate + state + y;
-                    l->mblocks[c].breaking = 1;
-                    if (x != 0 || y != 0) {
-                        childParent->addSub(newpos, pos, true);
-                    }
-                }
             }
 
-
-            blocks::nameToInfo[type].onPlace(pos, info);
-
-            if (update) {
-                pos.x = round(pos.x);
-                pos.y = round(pos.y);
-                autoSprite(l, { pos.x,pos.y });
-                autoSprite(l, { pos.x + 1,pos.y });
-                autoSprite(l, { pos.x - 1,pos.y });
-                autoSprite(l, { pos.x,pos.y + 1 });
-                autoSprite(l, { pos.x,pos.y - 1 });
+            for (int y = 0; y < info->size.y; y++) {
+                glm::vec2 newpos = pos + glm::vec2(x, y);
+                if (newpos.x < 0 || newpos.y < 0 || newpos.x > map::mapX || newpos.y > map::mapY) break;
+                breakBlock(l, newpos);
+                int c = vecToInt(newpos);
+                l->mblocks[c].id = blocks::nameToID.at(type);
+                l->mblocks[c].state = wholestate + state + y;
+                l->mblocks[c].breaking = 1;
+                if (x != 0 || y != 0) {
+                    childParent->addSub(newpos, pos, true);
+                }
             }
-
-            return true;
-                
         }
-        else {
-            return false;
+        info->onPlace(pos, info);
+        if (update) {
+            pos.x = round(pos.x);
+            pos.y = round(pos.y);
+            autoSprite(l, { pos.x,pos.y });
+            autoSprite(l, { pos.x + 1,pos.y });
+            autoSprite(l, { pos.x - 1,pos.y });
+            autoSprite(l, { pos.x,pos.y + 1 });
+            autoSprite(l, { pos.x,pos.y - 1 });
         }
+        return true;
     }
 
     void fastPlaceBlock(glm::vec2 pos, std::string type, Layer* layer, int size)
     {
-        if (layer == nullptr) layer = getLayer(blocks::nameToInfo[type].layer);
+        if (layer == nullptr) {
+            if (blocks::nameToInfo[type].layer == BLOCKS) layer = &blocks;
+            else layer = &walls;
+        }
         if (verifyBlock(layer, &pos, false)) {
             int c = vecToInt(pos);
             layer->mblocks[c] = { blocks::nameToID.at(type), glm::vec3(0), 0, 1.0f};
@@ -279,15 +253,13 @@ namespace Layers {
     bool placeBlock(glm::vec2 pos, std::string type, int size, std::vector<std::function<bool(BlockConditionArgs)>>* conditions, glm::vec3 setlight)
     {
         if (blocks::nameToInfo.count(type.data()) <= 0)  return false;
-        Layer* l = getLayer(blocks::nameToInfo[type].layer);
+        Layer* l = blocks::nameToInfo[type].layer == BLOCKS ? &blocks : &walls;
         return placeBlock(l, pos, type, size, conditions, setlight);
     }
 
     void breakBlock(Layer* l, glm::vec2 pos, int size, bool dropitem, bool checkforchildren, bool execute, bool particles)
     {
         if (verifyBlock(l, &pos, checkforchildren)) {
-            auto bs = getLayer("blocks");
-            auto bg = getLayer("bg");
 
             auto info = queryBlockInfo(l, pos);
             if(dropitem) game::droppedItemSys->dropItem(pos, info->drops, 1);
@@ -300,16 +272,16 @@ namespace Layers {
 
             if (execute) info->onBreak(pos, info);
 
-            clearRelationships(l, pos);
+            if(l == &blocks) clearRelationships(pos);
             autoSprite(l, pos);
-            autoSprite(bg, { pos.x + 1,pos.y });
-            autoSprite(bg, { pos.x - 1,pos.y });
-            autoSprite(bg, { pos.x,pos.y + 1 });
-            autoSprite(bg, { pos.x,pos.y - 1 });
-            autoSprite(bs, { pos.x + 1,pos.y });
-            autoSprite(bs, { pos.x - 1,pos.y });
-            autoSprite(bs, { pos.x,pos.y + 1 });
-            autoSprite(bs, { pos.x,pos.y - 1 });
+            autoSprite(&walls, { pos.x + 1,pos.y });
+            autoSprite(&walls, { pos.x - 1,pos.y });
+            autoSprite(&walls, { pos.x,pos.y + 1 });
+            autoSprite(&walls, { pos.x,pos.y - 1 });
+            autoSprite(&blocks, { pos.x + 1,pos.y });
+            autoSprite(&blocks, { pos.x - 1,pos.y });
+            autoSprite(&blocks, { pos.x,pos.y + 1 });
+            autoSprite(&blocks, { pos.x,pos.y - 1 });
             if (size > 1) {
                 for (int x2 = -size; x2 < size; x2++) {
                     for (int y2 = -size; y2 < size; y2++) {
@@ -365,10 +337,10 @@ namespace Layers {
         glUniformMatrix4fv(4, 1, GL_FALSE, glm::value_ptr(camera::trans));
 
         glActiveTexture(GL_TEXTURE0 + 4);
-        glBindTexture(GL_TEXTURE_2D, globals::tmpFBT);
+        glBindTexture(GL_TEXTURE_2D, Window::tmpFBT);
         glUniform1i(9, 4);
 
-        glUniform2f(10, globals::resX, globals::resY);
+        glUniform2f(10, Window::res.x, Window::res.y);
 
         glBindBuffer(GL_ARRAY_BUFFER, layersVB);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(BlockVertex) * nDrawnBlocks * 4, lightVertices);
@@ -400,67 +372,97 @@ namespace Layers {
         glUniform1i(8, 3);
 
         glActiveTexture(GL_TEXTURE0 + 4);
-        glBindTexture(GL_TEXTURE_2D, globals::tmpFBT);
+        glBindTexture(GL_TEXTURE_2D, Window::tmpFBT);
         glUniform1i(9, 4);
 
-        glUniform2f(10, globals::resX, globals::resY);
+        glUniform2f(10, Window::res.x, Window::res.y);
 
         memset(lightVertices, 0, sizeof(BlockVertex) * 4 * nDrawnBlocks);
 
         blocks::PremadeBlock emptyblock = blocks::blockBuffer[globals::emptyid][0];
 
-        for (auto& l : layers) {
+        glUniform1f(2, 1);
 
-            glUniform1f(2, l.mdarkness);
+        memset(drawnVertices, 0, sizeof(BlockVertex) * 4 * nDrawnBlocks);
 
-            memset(drawnVertices, 0, sizeof(BlockVertex) * 4 * nDrawnBlocks);
+        glm::vec2 camC = -camera::pos;
 
-            glm::vec2 camC = -camera::pos;
+        camC -= blocksOnScreen/glm::vec2(2.0f);
 
-            camC -= blocksOnScreen/glm::vec2(2.0f);
+        int n = 0;
+        for (int x = 0; x < blocksOnScreen.x; x++) {
+            for (int y = 0; y < blocksOnScreen.y; y++) {
 
-            int n = 0;
-            for (int x = 0; x < blocksOnScreen.x; x++) {
-                for (int y = 0; y < blocksOnScreen.y; y++) {
+                glm::vec2 pos = round(camC + glm::vec2(x, y));
+                int c = vecToInt(pos);
 
-                    glm::vec2 pos = floor(camC + glm::vec2(x, y));
-                    int c = vecToInt(pos);
+                if (c < 0 || c >= nQuads) continue;
+                blocks::PremadeBlock tmp = blocks::blockBuffer[walls.mblocks[c].id][walls.mblocks[c].state];
+                tmp.v0.Position += pos;
+                tmp.v1.Position += pos;
+                tmp.v2.Position += pos;
+                tmp.v3.Position += pos;
 
-                    if (c < 0 || c >= nQuads) continue;
-                    blocks::PremadeBlock tmp = blocks::blockBuffer[l.mblocks[c].id][l.mblocks[c].state];
-                    tmp.v0.Position += pos;
-                    tmp.v1.Position += pos;
-                    tmp.v2.Position += pos;
-                    tmp.v3.Position += pos;
+                tmp.v0.light = tmp.v1.light = tmp.v2.light = tmp.v3.light = glm::vec3(1);
 
-                    tmp.v0.light = tmp.v1.light = tmp.v2.light = tmp.v3.light = glm::vec3(1);
-
-                    tmp.v3.breaking = tmp.v2.breaking = tmp.v1.breaking = tmp.v0.breaking = l.mblocks[c].breaking;
+                tmp.v3.breaking = tmp.v2.breaking = tmp.v1.breaking = tmp.v0.breaking = walls.mblocks[c].breaking;
                     
-                    memcpy(drawnVertices + n * 4, &tmp, 4 * sizeof(BlockVertex));
+                memcpy(drawnVertices + n * 4, &tmp, 4 * sizeof(BlockVertex));
 
-                    tmp.v0.light = l.mblocks[c].light;
-                    tmp.v1.light = l.mblocks[c].light;
-                    tmp.v2.light = l.mblocks[c].light;
-                    tmp.v3.light = l.mblocks[c].light;
-
-                    tmp.v0.Position = emptyblock.v0.Position + pos;
-                    tmp.v1.Position = emptyblock.v1.Position + pos;
-                    tmp.v2.Position = emptyblock.v2.Position + pos;
-                    tmp.v3.Position = emptyblock.v3.Position + pos;
-
-                    memcpy(lightVertices + n * 4, &tmp, 4 * sizeof(BlockVertex));
-
-                    n++;
-                }
+                n++;
             }
-
-            glBindBuffer(GL_ARRAY_BUFFER, layersVB);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(BlockVertex) * nDrawnBlocks * 4, drawnVertices);
-
-            glBindVertexArray(layersVA);
-            glDrawElements(GL_TRIANGLES, nDrawnIndices, GL_UNSIGNED_INT, nullptr);
         }
+
+        glBindBuffer(GL_ARRAY_BUFFER, layersVB);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(BlockVertex) * nDrawnBlocks * 4, drawnVertices);
+
+        glBindVertexArray(layersVA);
+        glDrawElements(GL_TRIANGLES, nDrawnIndices, GL_UNSIGNED_INT, nullptr);
+
+
+        memset(drawnVertices, 0, sizeof(BlockVertex) * 4 * nDrawnBlocks);
+
+        n = 0;
+        for (int x = 0; x < blocksOnScreen.x; x++) {
+            for (int y = 0; y < blocksOnScreen.y; y++) {
+
+                glm::vec2 pos = round(camC + glm::vec2(x, y));
+                int c = vecToInt(pos);
+
+                if (c < 0 || c >= nQuads) continue;
+                blocks::PremadeBlock tmp = blocks::blockBuffer[blocks.mblocks[c].id][blocks.mblocks[c].state];
+                tmp.v0.Position += pos;
+                tmp.v1.Position += pos;
+                tmp.v2.Position += pos;
+                tmp.v3.Position += pos;
+
+                tmp.v0.light = tmp.v1.light = tmp.v2.light = tmp.v3.light = glm::vec3(1);
+
+                tmp.v3.breaking = tmp.v2.breaking = tmp.v1.breaking = tmp.v0.breaking = blocks.mblocks[c].breaking;
+
+                memcpy(drawnVertices + n * 4, &tmp, 4 * sizeof(BlockVertex));
+
+                tmp.v0.light = blocks.mblocks[c].light;
+                tmp.v1.light = blocks.mblocks[c].light;
+                tmp.v2.light = blocks.mblocks[c].light;
+                tmp.v3.light = blocks.mblocks[c].light;
+
+                tmp.v0.Position = emptyblock.v0.Position + pos;
+                tmp.v1.Position = emptyblock.v1.Position + pos;
+                tmp.v2.Position = emptyblock.v2.Position + pos;
+                tmp.v3.Position = emptyblock.v3.Position + pos;
+
+                memcpy(lightVertices + n * 4, &tmp, 4 * sizeof(BlockVertex));
+
+                n++;
+            }
+        }
+
+        glBindBuffer(GL_ARRAY_BUFFER, layersVB);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(BlockVertex) * nDrawnBlocks * 4, drawnVertices);
+
+        glBindVertexArray(layersVA);
+        glDrawElements(GL_TRIANGLES, nDrawnIndices, GL_UNSIGNED_INT, nullptr);
     }
 
     void autoSprite(Layer* l, glm::vec2 pos)
@@ -704,10 +706,9 @@ namespace Layers {
 
     glm::vec3 getLight(glm::vec2 pos, glm::vec3 iffail)
     {
-        auto l = getLayer("blocks");
-        if (verifyBlock(l, &pos, false)) {
+        if (verifyBlock(&blocks, &pos, false)) {
             int c = vecToInt(round(pos));
-             return l->mblocks[c].light;
+             return blocks.mblocks[c].light;
         }
         else {
             return iffail;
@@ -756,11 +757,9 @@ namespace Layers {
         int startx = abs(camera::pos.x) - (blocksOnScreen.x / 2) - 5;
         int starty = abs(camera::pos.y) - (blocksOnScreen.y / 2) - 5;
 
-        auto blocks = getLayer("blocks");
-
         for (int x = 0; x < blocksOnScreen.x + 10; x++) {
             for (int y = 0; y < blocksOnScreen.y + 10; y++) {
-                updateBlock(blocks, {x + startx, y + starty});
+                updateBlock(&blocks, {x + startx, y + starty});
             }
         }
 
@@ -802,7 +801,7 @@ namespace Layers {
                 particles::emitParticle(pos, &info->emmiter);
             }
         
-            if (l->mname == "blocks") {
+            if (l == &blocks) {
                 if (childParent->isSub(pos)) {
                     pos = childParent->subs[c];
                     info = queryBlockInfo(l, pos);
@@ -834,23 +833,23 @@ namespace Layers {
             case br_IS:
                 if (c->arg == bs_STAT) {
                     if (c->block == "updates") {
-                        if (blocks::idToInfo[Layers::queryBlock(Layers::getLayer(c->layer), { pos.x + c->pos.x, pos.y + c->pos.y })->id].updates == true) {
+                        if (blocks::idToInfo[Layers::queryBlock(c->layer == BLOCKS ? &blocks : &walls, { pos.x + c->pos.x, pos.y + c->pos.y })->id].updates == true) {
                             return true;
                         }
                     }
-                }else if(*Layers::queryBlockName(Layers::getLayer(c->layer), { pos.x + c->pos.x, pos.y + c->pos.y }) == c->block) {
+                }else if(*Layers::queryBlockName(c->layer == BLOCKS ? &blocks : &walls, { pos.x + c->pos.x, pos.y + c->pos.y }) == c->block) {
                     return true;
                 }
                 break;
             case br_ISNT:
                 if (c->arg == bs_STAT) {
                     if (c->block == "updates") {
-                        if (blocks::idToInfo[Layers::queryBlock(Layers::getLayer(c->layer), { pos.x + c->pos.x, pos.y + c->pos.y })->id].updates == false) {
+                        if (blocks::idToInfo[Layers::queryBlock(c->layer == BLOCKS ? &blocks : &walls, { pos.x + c->pos.x, pos.y + c->pos.y })->id].updates == false) {
                             return true;
                         }
                     }
                 }
-                else if (*Layers::queryBlockName(Layers::getLayer(c->layer), { pos.x + c->pos.x, pos.y + c->pos.y }) != c->block) {
+                else if (*Layers::queryBlockName(c->layer == BLOCKS ? &blocks : &walls, { pos.x + c->pos.x, pos.y + c->pos.y }) != c->block) {
                     return true;
                 }
                 break;
@@ -866,7 +865,7 @@ namespace Layers {
         return false;
     }
 
-    inline int vecToInt(glm::vec2 pos)
+    int vecToInt(glm::vec2 pos)
     {
         return pos.x * map::mapY + pos.y;
     }
@@ -879,11 +878,12 @@ namespace Layers {
     bool verifyBlock(Layer* l, glm::vec2* pos, bool checkForChildren)
     {
         if (l == nullptr) return false;
+        if (l->mblocks == nullptr) return false;
         if (pos->x < 0 || pos->x >= map::mapX) return false;
         if (pos->y < 0 || pos->y > map::mapY) return false;
 
         if (checkForChildren) {
-            if (l->mname == "blocks") {
+            if (l == &blocks) {
                 if (childParent->isSub(*pos)) {
                     int c = vecToInt(*pos);
                     *pos = childParent->subs[c];
@@ -895,8 +895,8 @@ namespace Layers {
 
     bool doBlockFunction(glm::vec2 pos)
     {
-        if (verifyBlock(getLayer("blocks"), &pos)) {
-            auto info = queryBlockInfo(getLayer("blocks"), pos);
+        if (verifyBlock(&blocks, &pos)) {
+            auto info = queryBlockInfo(&blocks, pos);
             if (info->function(pos, info)) {
                 return true;
             }
@@ -904,50 +904,67 @@ namespace Layers {
         return false;
     }
 
-    void clearRelationships(Layer* l, glm::vec2 pos, bool Break)
+    void clearRelationships(glm::vec2 pos, bool Break)
     {
         childParent->clearRelationships(pos, Break);
     }
 
     void calculateLight() {
-        Layer* bs = getLayer("blocks");
-        Layer* bg = getLayer("bg");
 
         int startx = -camera::pos.x - blocksOnScreen.x / 2 - 15;
         int starty = -camera::pos.y - blocksOnScreen.y / 2 - 15;
         int endx = startx + blocksOnScreen.x + 30;
         int endy = starty + blocksOnScreen.y + 30;
 
+        startx = glm::clamp(startx, 1, map::mapX - 1);
+        starty = glm::clamp(starty, 1, map::mapY - 1);
+        endx = glm::clamp(endx, 1, map::mapX - 1);
+        endy = glm::clamp(endy, 1, map::mapY - 1);
+
         int daylightstarty = starty;
-        if (daylightstarty < map::surfaceH - map::surfaceScale) {
-            daylightstarty = map::surfaceH - map::surfaceScale;
-        }
+        int daylightendy = endy;
+        glm::vec3 lightclr = globals::dayclr;
+        if (daylightendy > map::surfaceH - map::surfaceScale) {
+            if (daylightstarty < map::surfaceH - map::surfaceScale) {
+                daylightstarty = map::surfaceH - map::surfaceScale;
+            }
 
-        startx = glm::clamp(startx, 1, map::mapX-1);
-        starty = glm::clamp(starty, 1, map::mapY-1);
-        endx = glm::clamp(endx, 1, map::mapX-1);
-        endy = glm::clamp(endy, 1, map::mapY-1);
-
-        for (int x = startx; x < endx; x++) {
-            for (int y = daylightstarty; y < endy; y++) {
-                int c = vecToInt({ x,y });
-                if (blocks::idToInfo[bg->mblocks[c].id].emitskylight) {
-                    keepLightAbove(bs, { x,y }, globals::dayclr);
+            for (int x = startx; x < endx; x++) {
+                for (int y = daylightstarty; y < daylightendy; y++) {
+                    int c = vecToInt({ x,y });
+                    if (blocks::idToInfo[walls.mblocks[c].id].emitskylight) {
+                        keepLightAbove(&blocks, { x,y }, lightclr);
+                    }
                 }
             }
+        }
+        else if (daylightstarty < map::underworldH) {
+            lightclr = glm::vec3(0.5, 0.3, 0.3);
+            if (daylightendy > map::underworldH) {
+                daylightendy = map::underworldH;
+            }
+            for (int x = startx; x < endx; x++) {
+                for (int y = daylightstarty; y < daylightendy; y++) {
+                    int c = vecToInt({ x,y });
+                    if (blocks.mblocks[c].id == globals::emptyid) {
+                        keepLightAbove(&blocks, { x,y }, lightclr);
+                    }
+                }
+            }
+
         }
 
         for (int x = startx; x < endx; x++) {
             for (int y = starty; y < endy; y++) {
                 int c = vecToInt({ x,y });
 
-                blocks::BlockInfo* info = fastQueryBlockInfo(bs, { x,y });
+                blocks::BlockInfo* info = fastQueryBlockInfo(&blocks, { x,y });
 
                 glm::vec3 currL = info->light;
-                currL += fastQueryBlock(bs, { x - 1, y })->light;
-                currL += fastQueryBlock(bs, { x + 1, y })->light;
-                currL += fastQueryBlock(bs, { x, y - 1 })->light;
-                currL += fastQueryBlock(bs, { x, y + 1 })->light;
+                currL += fastQueryBlock(&blocks, { x - 1, y })->light;
+                currL += fastQueryBlock(&blocks, { x + 1, y })->light;
+                currL += fastQueryBlock(&blocks, { x, y - 1 })->light;
+                currL += fastQueryBlock(&blocks, { x, y + 1 })->light;
 
                 if(lights.count(c) >= 1) currL += lights[c];
                    
@@ -957,8 +974,8 @@ namespace Layers {
 
                 currL += glm::vec3(globals::cheaterlight);
 
-                fastSetLight(bg, { x, y }, currL);
-                fastSetLight(bs, { x, y }, currL);
+                fastSetLight(&walls, { x, y }, currL);
+                fastSetLight(&blocks, { x, y }, currL);
             }
         }
         lights.clear();
@@ -1033,32 +1050,24 @@ namespace Layers {
 
     bool isAreaEmpty(glm::vec2 pos, glm::vec2 size)
     {
-        auto bs = Layers::getLayer("blocks");
         for (int x = pos.x; x < pos.x + size.x; x++) {
             for (int y = pos.y; y < pos.y + size.y; y++) {
-                if (Layers::queryBlockInfo(bs, { x,y })->notReplacable){
+                if (Layers::queryBlockInfo(&blocks, { x,y })->notReplacable){
                 return false;
                }
             }
         }
         return true;
     }
-
-    void spawnMobs()
-    {
-       
-    }
-
     glm::vec2 findEmptySpot()
     {
         int startx = -camera::pos.x - blocksOnScreen.x / 2 - 30;
         int starty = -camera::pos.y - blocksOnScreen.y / 2 - 15;
-        auto bs= Layers::getLayer("blocks");
         std::vector<glm::vec2> candidates;
         //sky light
         for (int x = startx; x < startx + 25; x++) {
             for (int y = starty; y < starty + blocksOnScreen.y + 30; y++) {
-                if (queryBlockInfo(bs, { x, y })->notReplacable == false && queryBlockInfo(bs, { x,y - 1 })->notReplacable == true) {
+                if (queryBlockInfo(&blocks, { x, y })->notReplacable == false && queryBlockInfo(&blocks, { x,y - 1 })->notReplacable == true) {
                     candidates.push_back({ x,y });
                 }
             }
@@ -1066,7 +1075,7 @@ namespace Layers {
 
         for (int x = startx + blocksOnScreen.x + 35; x < startx + blocksOnScreen.x + 55; x++) {
             for (int y = starty; y < starty + blocksOnScreen.y + 30; y++) {
-                if (queryBlockInfo(bs, { x, y })->notReplacable == false && queryBlockInfo(bs, { x,y - 1 })->notReplacable == true) {
+                if (queryBlockInfo(&blocks, { x, y })->notReplacable == false && queryBlockInfo(&blocks, { x,y - 1 })->notReplacable == true) {
                     candidates.push_back({ x,y });
                 }
             }
@@ -1116,20 +1125,14 @@ namespace Layers {
         }
         return false;
     }
-
 }
 
-blockRelationship::blockRelationship(std::string LAYERNAME, std::unordered_map<int, glm::vec2> SUBS, std::unordered_map<int, std::set<int>> DOMS)
+blockRelationship::blockRelationship(LayerENUM LAYERNAME, std::unordered_map<int, glm::vec2> SUBS, std::unordered_map<int, std::set<int>> DOMS)
 {
-    l = Layers::getLayer(LAYERNAME);
+    l = LAYERNAME == BLOCKS ? &Layers::blocks : &Layers::walls;
     layerName = LAYERNAME;
     subs = SUBS;
     doms = DOMS;
-}
-
-blockRelationship::blockRelationship()
-{
-    l = nullptr;
 }
 
 void blockRelationship::addSub(glm::vec2 pos, glm::vec2 dom, bool removeprev)
@@ -1307,7 +1310,5 @@ void blockRelationship::load(std::ifstream* file)
 
         doms.insert(std::make_pair(key, val));
     }
-
-    l = Layers::getLayer(layerName);
 }
 

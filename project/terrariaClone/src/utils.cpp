@@ -4,7 +4,6 @@
 #include <blocks.h>
 
 #include <ECS/ECS.h>
-#include <componentsystems.h>
 
 #include <textures.h>
 
@@ -12,25 +11,25 @@ std::array<BlockVertex, 4> utils::CreateQuad(float x, float y, glm::vec4 sC, glm
 {
 
     BlockVertex v0;
-    v0.Position = { x - size.x / 2, y - size.y / 2};
+    v0.Position = { x - size.x / 2.0f, y - size.y / 2.0f };
     v0.SpriteCoords = { sC.r, sC.g };
     v0.TexCoords = { 0, 0 };
     v0.light = light;
 
     BlockVertex v1;
-    v1.Position = { x + size.x / 2, y - size.y / 2};
+    v1.Position = { x + size.x / 2.0f, y - size.y / 2.0f };
     v1.SpriteCoords = { sC.b, sC.g };
     v1.TexCoords = { 1, 0 };
     v1.light = light;
 
     BlockVertex v2;
-    v2.Position = { x + size.x / 2, y + size.y / 2};
+    v2.Position = { x + size.x / 2.0f, y + size.y / 2.0f };
     v2.SpriteCoords = { sC.b, sC.a };
     v2.TexCoords = { 1, 1 };
     v2.light = light;
 
     BlockVertex v3;
-    v3.Position = { x - size.x / 2, y + size.x / 2};
+    v3.Position = { x - size.x / 2.0f, y + size.x / 2.0f };
     v3.SpriteCoords = { sC.r, sC.a };
     v3.TexCoords = { 0, 1 };
     v3.light = light;

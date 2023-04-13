@@ -138,6 +138,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\aiSystem.cpp" />
+    <ClCompile Include="src\drawSystem.cpp" />
+    <ClCompile Include="src\droppedItemSystem.cpp" />
+    <ClCompile Include="src\particleEmmiterSystem.cpp" />
+    <ClCompile Include="src\PhysicsSystem.cpp" />
+    <ClCompile Include="src\mobSystem.cpp" />
+    <ClCompile Include="src\toolSystem.cpp" />
+    <ClCompile Include="src\uiSystem.cpp" />
+    <ClCompile Include="src\Window.cpp" />
     <ClCompile Include="src\liquids.cpp" />
     <ClCompile Include="src\buffs.cpp" />
     <ClCompile Include="src\sounds.cpp" />
@@ -161,7 +170,6 @@
     <ClCompile Include="src\ui.cpp" />
     <ClCompile Include="src\layers.cpp" />
     <ClCompile Include="src\Source.cpp" />
-    <ClCompile Include="src\componentSystems.cpp" />
     <ClCompile Include="src\utils.cpp" />
     <ClCompile Include="src\blocks.cpp" />
     <ClCompile Include="src\textures.cpp" />
@@ -174,6 +182,15 @@
     <ClCompile Include="src\noise.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\aiSystem.h" />
+    <ClInclude Include="include\drawSystem.h" />
+    <ClInclude Include="include\droppedItemSystem.h" />
+    <ClInclude Include="include\mobSystem.h" />
+    <ClInclude Include="include\particleEmmiterSystem.h" />
+    <ClInclude Include="include\PhysicsSystem.h" />
+    <ClInclude Include="include\toolSystem.h" />
+    <ClInclude Include="include\uiSystem.h" />
+    <ClInclude Include="include\Window.h" />
     <ClInclude Include="include\buffs.h" />
     <ClInclude Include="include\enemies.h" />
     <ClInclude Include="include\background.h" />
@@ -189,7 +206,6 @@
     <ClInclude Include="include\GLFW\glfw3native.h" />
     <ClInclude Include="include\KHR\khrplatform.h" />
     <ClInclude Include="include\core.h" />
-    <ClInclude Include="include\componentSystems.h" />
     <ClInclude Include="include\sounds.h" />
     <ClInclude Include="include\utils.h" />
     <ClInclude Include="include\ui.h" />

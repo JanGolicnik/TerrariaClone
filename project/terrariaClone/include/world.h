@@ -1,7 +1,6 @@
 #pragma once
 
 #include <core.h>
-#include <componentsystems.h>
 
 #include <enemies.h>
 #include <mutex>
@@ -51,15 +50,17 @@ namespace map
 	extern std::unordered_map<std::string, npc> npcs;
 	
 	void growBlock(glm::vec2 pos, std::string block, int depth, int chance, std::set<std::string>ignore = {});
-	void clear();
-	void generateTest();
-	void generategame();
-
-	void createWorld();
 
 	bool save();
 	bool load();
+	worldData loadToData(std::string name);
 	bool loadSpecific(std::string NAME);
+
+	void clear();
+
+	void createWorld();
+	void generateGame();
+	void generateTest();
 
 	void makeDesert(bool left);
 	void makeSnow(bool left);
@@ -85,8 +86,6 @@ namespace map
 
 	void makeHell();
 
-	void spawnDebugSetup(glm::vec2 pos);
-
 	void liquidHole(glm::vec2 pos, std::string liquid, glm::vec2 size, bool half, bool breakwall);
 	void placeLiquids();
 
@@ -94,5 +93,7 @@ namespace map
 	void spawnLivingNPCS();
 	void saveNPCS(std::ofstream* file);
 	void loadNPCS(std::ifstream* file);
+
+	void spawnDebugSetup(glm::vec2 pos);
 };
 

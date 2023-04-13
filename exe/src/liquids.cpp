@@ -9,6 +9,7 @@
 #include <particles.h>
 #include <game.h>
 #include <sounds.h>
+#include <Window.h>
 
 namespace liquids
 {
@@ -162,7 +163,7 @@ namespace liquids
 	}
 	void updateOnScreen()
 	{
-		auto bs = Layers::getLayer("blocks");
+		auto bs = &Layers::blocks;
 		std::vector<std::pair<int, int>>toadd;
 
 		glm::vec2 camC = -camera::pos;
@@ -243,10 +244,10 @@ namespace liquids
 		glUniform1i(6, 1);
 
 		glUniform1i(7, globals::time);
-		glUniform2f(8, globals::resX, globals::resY);
+		glUniform2f(8, Window::res.x, Window::res.y);
 
 		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, globals::tmpFBT);
+		glBindTexture(GL_TEXTURE_2D, Window::tmpFBT);
 		glUniform1i(9, 2);
 
 		glUniformMatrix4fv(4, 1, GL_FALSE, glm::value_ptr(camera::trans));
@@ -255,7 +256,7 @@ namespace liquids
 
 		camC -= Layers::blocksOnScreen / glm::vec2(2.0f);
 
-		auto blocks = Layers::getLayer("blocks");
+		auto blocks = &Layers::blocks;
 
 		int n = 0;
 		for (int x = 0; x < Layers::blocksOnScreen.x; x++) {
@@ -385,7 +386,7 @@ namespace liquids
 				dir = ((data & 0x0f000000u) >> 24);
 			}
 		}
-		else if (c%map::mapY != 0 && Layers::canLiquidGoThru(Layers::getLayer("blocks"), c - 1)) {
+		else if (c%map::mapY != 0 && Layers::canLiquidGoThru(&Layers::blocks, c - 1)) {
 			map[c - 1] = map[c];
 			map.erase(c);
 			settle(c - 1);
@@ -394,7 +395,7 @@ namespace liquids
 
 		int side = map::mapY;
 		if (dir == 1) side *= -1;
-		if (settle(c + side, c, lastbounce) <= 0 && Layers::canLiquidGoThru(Layers::getLayer("blocks"), c + side)) {
+		if (settle(c + side, c, lastbounce) <= 0 && Layers::canLiquidGoThru(&Layers::blocks, c + side)) {
 			map[c + side] = map[c];
 			map.erase(c);
 			settle(c + side, lastbounce, lastlastbounce);
@@ -402,7 +403,7 @@ namespace liquids
 		}
 
 		side *= -1;
-		if (settle(c + side, c, lastbounce) <= 0 && Layers::canLiquidGoThru(Layers::getLayer("blocks"), c + side)) {
+		if (settle(c + side, c, lastbounce) <= 0 && Layers::canLiquidGoThru(&Layers::blocks, c + side)) {
 			map[c + side] = (map[c] & ~0x0f000000u) | ((!dir) << 24);
 			map.erase(c);
 			settle(c + side, c, lastbounce);
@@ -418,7 +419,6 @@ namespace liquids
 	void settleAll() {
 		settledmap.clear();
 		for (int x = 0; x < map::mapX; x++) {
-			std::cout << "settling " << x<< " ";
 			for (int y = 0; y < map::mapY; y++) {
 				settle({ x,y });
 			}

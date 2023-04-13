@@ -6,28 +6,24 @@
 #include <items.h>
 
 struct Block {
-	int id;
-	glm::vec3 light;
-	int state;
-	float breaking;
+	int id = 0;
+	glm::vec3 light = glm::vec3(0.0f);
+	int state = 0;
+	float breaking = 0.0f;
 	int timealive = 0;
 };
 
 struct Layer {
-	std::string mname;
 	Block* mblocks;
-	float mdarkness;
-	int mdrawingOffset;
 };
 
 class blockRelationship {
 public:
-	Layer* l;
+	Layer* l = nullptr;
 	std::string layerName;
 	std::unordered_map<int, glm::vec2> subs;
 	std::unordered_map<int, std::set<int>> doms;
-	blockRelationship(std::string LAYERNAME, std::unordered_map<int, glm::vec2> SUBS = {}, std::unordered_map<int, std::set<int>> DOMS = {});
-	blockRelationship();
+	blockRelationship(LayerENUM LAYERNAME, std::unordered_map<int, glm::vec2> SUBS = {}, std::unordered_map<int, std::set<int>> DOMS = {});
 	void addSub(glm::vec2 pos, glm::vec2 dom, bool removeprev = true);
 	void addDom(glm::vec2 pos, std::set<int> subs, bool removeprev = true);
 	void clearRelationships(glm::vec2 pos, bool Break = true);
@@ -69,9 +65,10 @@ namespace Layers
 	extern int nDrawnIndices;
 	extern glm::vec2 trueBsOnScr;
 
-	extern int nDrawnBlocks;
+	extern Layer blocks;
+	extern Layer walls;
 
-	extern std::vector<Layer> layers;
+	extern int nDrawnBlocks;
 
 	extern blockRelationship* childParent;
 
@@ -91,10 +88,6 @@ namespace Layers
 	void setUp();
 	void clean();
 	void reschanged();
-
-	void addLayer(const char* name, float darkness, int drawingOffset = 0.0f);
-
-	Layer* getLayer(std::string_view l);
 
 	void fastPlaceBlock(glm::vec2 pos, std::string type, Layer* layer = nullptr, int size = 1);
 	bool placeBlock(Layer* l, glm::vec2 pos, std::string type, int size = 1, std::vector<std::function<bool(BlockConditionArgs)>>* conditions = nullptr, glm::vec3 setlight = glm::vec3(0.0f), bool update = true);
@@ -134,7 +127,7 @@ namespace Layers
 		
 	bool doBlockFunction(glm::vec2 pos);
 
-	void clearRelationships(Layer* l, glm::vec2 pos, bool Break = true);
+	void clearRelationships(glm::vec2 pos, bool Break = true);
 
 	void calculateLight();
 
@@ -142,7 +135,6 @@ namespace Layers
 	void loadChests(std::ifstream* file);
 
 	bool isAreaEmpty(glm::vec2 pos, glm::vec2 size);
-	void spawnMobs();
 	glm::vec2 findEmptySpot();
 
 	void spawnParticlesFromBlock(glm::vec2 pos, blocks::BlockInfo* info);

@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <ECS\components.h>
+
 class SystemBase {
 public:
     std::shared_ptr<ComponentArrayBase> componentArray;
@@ -25,7 +26,7 @@ public:
         auto a = static_cast<ComponentArray<T>*>(componentArray.get());
         a->QremovingComponent(entity);
     }
-
+    
     template<typename T>
     void queueComponent(int entity, T component) {
         auto a = static_cast<ComponentArray<T>*>(componentArray.get());

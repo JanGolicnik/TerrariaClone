@@ -29,7 +29,7 @@ public:
     std::vector<T> Q;
     std::unordered_map<int, int> CtEQ;
     std::unordered_map<int, int> EtCQ;
-    std::set<int> componentsForRemoval; //entitiji
+    std::set<int> componentsForRemoval; 
 
     void empty() {
         components.clear();

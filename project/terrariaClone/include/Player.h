@@ -2,6 +2,7 @@
 
 #include <core.h>
 #include <Layers.h>
+#include <uiSystem.h>
 
 namespace Player
 {
@@ -111,10 +112,12 @@ namespace Player
     void update();
     void render();
     void clean();
+    void clear();
     void calculateStats();
     bool save();
     bool load();
     playerData loadToData(std::string name);
+    void loadFromData(playerData*);
     void jump();
     void stop();
 

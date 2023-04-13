@@ -23,188 +23,189 @@
 namespace resources {
     void registerAssets()
     {
-        blocks::addBlock("empty", "empty", false, false, "empty", "blocks", false, st_SINGLE, { 1,1 }, 1, {}, false, false, false, false);
-        blocks::addBlock("dirt", "dirt", true, true, "dirt", "blocks", true, st_BLOCK);
-        blocks::addBlock("grass", "grass", true, true, "dirt", "blocks", true, st_BLOCK);
-        blocks::addBlock("glass", "glass", true, true, "glass", "blocks", true, st_BLOCK);
-        blocks::addBlock("stone", "stone", true, true, "stone", "blocks", true, st_BLOCK);
-        blocks::addBlock("sand", "sand", true, true, "sand", "blocks", true, st_BLOCK);
-        blocks::addBlock("wood", "wood", true, true, "wood", "blocks", true, st_BLOCK);
-        blocks::addBlock("dirtwall", "dirtwall", true, true, "dirtwall", "bg", true, st_WALL, { 1, 1 }, 0, { BConditions::isreplacable });
-        blocks::addBlock("glasswall", "glasswall", true, true, "glasswall", "bg", true, st_WALL, { 1, 1 }, 0, { BConditions::isreplacable });
-        blocks::addBlock("woodwall", "woodwall", true, true, "woodwall", "bg", true, st_WALL, { 1, 1 }, 0, { BConditions::isreplacable });
-        blocks::addBlock("stonewall", "stonewall", true, true, "stonewall", "bg", true, st_WALL, { 1, 1 }, 0, { BConditions::isreplacable });
-        blocks::addBlock("trunk", "trunk", false, true, "wood", "blocks", false, st_SINGLE, { 1,1 }, 0, {}, false, false, false, false);
-        blocks::addBlock("trunkbase1", "trunkbase1", false, true, "wood", "blocks", false, st_SINGLE, { 1, 1 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, true, false);
-        blocks::addBlock("trunkbase2", "trunkbase2", false, true, "wood", "blocks", false, st_SINGLE, { 1, 1 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, true, false);
-        blocks::addBlock("trunkbase3", "trunkbase3", false, true, "wood", "blocks", false, st_SINGLE, { 1, 1 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, true, false);
-        blocks::addBlock("leaves", "leaves", false, true, "acorn", "blocks", false, st_SINGLE, glm::vec2(1), 0, { BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("sapling", "sapling", false, true, "acorn", "blocks", false, st_SINGLE, { 1, 2 }, 0, { BConditions::nowall, BConditions::isntreplacablebelow, BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("purpletorch", "purpletorch", false, true, "purpletorch", "blocks", false, st_TORCH, glm::vec2(1.0f, 1.0f), 0, { BConditions::isreplacable, BConditions::connected }, false, false, false, false);
-        blocks::addBlock("torch", "torch", false, true, "torch", "blocks", false, st_TORCH, glm::vec2(1.0f, 1.0f), 0, { BConditions::isreplacable, BConditions::connected }, false, false, false, false);
-        blocks::addBlock("chest", "chest", false, true, "chest", "blocks", false, st_SINGLE, glm::vec2(2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("door", "closeddoor", true, true, "door", "blocks", false, st_SINGLE, glm::vec2(1, 3), 0, { BConditions::solidontop, BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("doorleft", "opendoorleft", false, true, "door", "blocks", false, st_SINGLE, glm::vec2(2, 3), 0, { BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("doorright", "opendoorright", false, true, "door", "blocks", false, st_SINGLE, glm::vec2(2, 3), 0, { BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("anvil", "anvil", false, true, "anvil", "blocks", false, st_SINGLE, glm::vec2(2, 1), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("craftingbench", "craftingbench", false, true, "craftingbench", "blocks", false, st_SINGLE, glm::vec2(2, 1), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("table", "table", false, true, "table", "blocks", false, st_SINGLE, glm::vec2(4, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("furnace", "furnace", false, true, "furnace", "blocks", false, st_SINGLE, glm::vec2(3, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("gravestone", "gravestone", false, true, "gravestone", "blocks", false, st_SINGLE, glm::vec2(2, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("chairright", "chairright", false, true, "chair", "blocks", false, st_SINGLE, glm::vec2(1, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("chairleft", "chairleft", false, true, "chair", "blocks", false, st_SINGLE, glm::vec2(1, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("slimestatue", "slimestatue", false, true, "slimestatue", "blocks", false, st_SINGLE, glm::vec2(2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("ironore", "ironore", true, true, "ironore", "blocks", true, st_BLOCK);
-        blocks::addBlock("copperore", "copperore", true, true, "copperore", "blocks", true, st_BLOCK);
-        blocks::addBlock("corruptgrass", "corruptgrass", true, true, "dirt", "blocks", true, st_BLOCK);
-        blocks::addBlock("junglegrass", "junglegrass", true, true, "mud", "blocks", true, st_BLOCK);
-        blocks::addBlock("mud", "mud", true, true, "mud", "blocks", true, st_BLOCK);
-        blocks::addBlock("ash", "ash", true, true, "ash", "blocks", true, st_BLOCK);
-        blocks::addBlock("snow", "snow", true, true, "snow", "blocks", true, st_BLOCK);
-        blocks::addBlock("borealwood", "borealwood", true, true, "borealwood", "blocks", true, st_BLOCK);
-        blocks::addBlock("ebonwood", "ebonwood", true, true, "ebonwood", "blocks", true, st_BLOCK);
-        blocks::addBlock("mahoganywood", "mahoganywood", true, true, "mahoganywood", "blocks", true, st_BLOCK);
-        blocks::addBlock("stonebrick", "stonebrick", true, true, "stonebrick", "blocks", true, st_BLOCK);
-        blocks::addBlock("ebonwoodwall", "ebonwoodwall", true, true, "ebonwoodwall", "bg", true, st_WALL, { 1, 1 }, 0, { BConditions::isreplacable });
-        blocks::addBlock("snowwall", "snowwall", true, true, "empty", "bg", true, st_WALL, { 1, 1 }, 0, { BConditions::isreplacable });
-        blocks::addBlock("mudwall", "mudwall", true, true, "empty", "bg", true, st_WALL, { 1, 1 }, 0, { BConditions::isreplacable });
-        blocks::addBlock("mahoganywoodwall", "mahoganywoodwall", true, true, "mahoganywoodwall", "bg", true, st_WALL, { 1, 1 }, 0, { BConditions::isreplacable });
-        blocks::addBlock("borealwoodwall", "borealwoodwall", true, true, "borealwoodwall", "bg", true, st_WALL, { 1, 1 }, 0, { BConditions::isreplacable });
-        blocks::addBlock("borealdoor", "borealdoor", true, true, "borealdoor", "blocks", false, st_SINGLE, glm::vec2(1, 3), 0, { BConditions::solidontop, BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("borealdoorleft", "borealdoorleft", false, true, "borealdoor", "blocks", false, st_SINGLE, glm::vec2(2, 3), 0, { BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("borealdoorright", "borealdoorright", false, true, "borealdoor", "blocks", false, st_SINGLE, glm::vec2(2, 3), 0, { BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("borealtable", "borealtable", false, true, "borealtable", "blocks", false, st_SINGLE, glm::vec2(4, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("borealworkbench", "borealworkbench", false, true, "borealworkbench", "blocks", false, st_SINGLE, glm::vec2(2, 1), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("mahoganydoor", "mahoganydoor", true, true, "mahoganydoor", "blocks", false, st_SINGLE, glm::vec2(1, 3), 0, { BConditions::solidontop, BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("mahoganydoorleft", "mahoganydoorleft", false, true, "mahoganydoor", "blocks", false, st_SINGLE, glm::vec2(2, 3), 0, { BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("mahoganydoorright", "mahoganydoorright", false, true, "mahoganydoor", "blocks", false, st_SINGLE, glm::vec2(2, 3), 0, { BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("mahoganytable", "mahoganytable", false, true, "mahoganytable", "blocks", false, st_SINGLE, glm::vec2(4, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("mahoganyworkbench", "mahoganyworkbench", false, true, "mahoganyworkbench", "blocks", false, st_SINGLE, glm::vec2(2, 1), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("ebonwooddoor", "ebonwooddoor", true, true, "ebonwooddoor", "blocks", false, st_SINGLE, glm::vec2(1, 3), 0, { BConditions::solidontop, BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("ebonwooddoorleft", "ebonwooddoorleft", false, true, "ebonwooddoor", "blocks", false, st_SINGLE, glm::vec2(2, 3), 0, { BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("ebonwooddoorright", "ebonwooddoorright", false, true, "ebonwooddoor", "blocks", false, st_SINGLE, glm::vec2(2, 3), 0, { BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("ebonwoodtable", "ebonwoodtable", false, true, "ebonwoodtable", "blocks", false, st_SINGLE, glm::vec2(4, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("ebonwoodworkbench", "ebonwoodworkbench", false, true, "ebonwoodworkbench", "blocks", false, st_SINGLE, glm::vec2(2, 1), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("ebonwoodchairright", "ebonwoodchairright", false, true, "ebonwoodchair", "blocks", false, st_SINGLE, glm::vec2(1, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("mahoganychairright", "mahoganychairright", false, true, "mahoganychair", "blocks", false, st_SINGLE, glm::vec2(1, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("borealchairright", "borealchairright", false, true, "borealchair", "blocks", false, st_SINGLE, glm::vec2(1, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("ebonwoodchairleft", "ebonwoodchairleft", false, true, "ebonwoodchair", "blocks", false, st_SINGLE, glm::vec2(1, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("mahoganychairleft", "mahoganychairleft", false, true, "mahoganychair", "blocks", false, st_SINGLE, glm::vec2(1, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("borealchairleft", "borealchairleft", false, true, "borealchair", "blocks", false, st_SINGLE, glm::vec2(1, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("sandstone", "sandstone", true, true, "sandstone", "blocks", true, st_BLOCK);
-        blocks::addBlock("hardenedsand", "hardenedsand", true, true, "hardenedsand", "blocks", true, st_BLOCK);
-        blocks::addBlock("hardenedsandwall", "hardenedsandwall", true, true, "hardenedsandwall", "bg", true, st_WALL, { 1, 1 }, 0, { BConditions::isreplacable });
-        blocks::addBlock("sandstonewall", "sandstonewall", true, true, "sandstonewall", "bg", true, st_WALL, { 1, 1 }, 0, { BConditions::isreplacable });
-        blocks::addBlock("ebonstonewall", "ebonstonewall", true, true, "empty", "bg", true, st_WALL, { 1, 1 }, 0, { BConditions::isreplacable });
-        blocks::addBlock("ebonstone", "ebonstone", true, true, "ebonstone", "blocks", true, st_BLOCK);
-        blocks::addBlock("corrupttrunk", "corrupttrunk", false, true, "ebonwood", "blocks", false, st_SINGLE, { 1,1 }, 0, {}, false, false, false, false);
-        blocks::addBlock("corrupttrunkbase1", "corrupttrunkbase1", false, true, "ebonwood", "blocks", false, st_SINGLE, { 1, 1 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, true, false);
-        blocks::addBlock("corrupttrunkbase2", "corrupttrunkbase2", false, true, "ebonwood", "blocks", false, st_SINGLE, { 1, 1 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, true, false);
-        blocks::addBlock("corrupttrunkbase3", "corrupttrunkbase3", false, true, "ebonwood", "blocks", false, st_SINGLE, { 1, 1 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, true, false);
-        blocks::addBlock("corruptleaves", "corruptleaves", false, true, "acorn", "blocks", false, st_SINGLE, glm::vec2(1), 0, { BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("corruptsapling", "corruptsapling", false, true, "acorn", "blocks", false, st_SINGLE, { 1, 2 }, 0, { BConditions::nowall, BConditions::isntreplacablebelow, BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("mahoganytrunk", "mahoganytrunk", false, true, "mahoganywood", "blocks", false, st_SINGLE, { 1,1 }, 0, {}, false, false, false, false);
-        blocks::addBlock("mahoganytrunkbase1", "mahoganytrunkbase1", false, true, "mahoganywood", "blocks", false, st_SINGLE, { 1, 1 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, true, false);
-        blocks::addBlock("mahoganytrunkbase2", "mahoganytrunkbase2", false, true, "mahoganywood", "blocks", false, st_SINGLE, { 1, 1 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, true, false);
-        blocks::addBlock("mahoganytrunkbase3", "mahoganytrunkbase3", false, true, "mahoganywood", "blocks", false, st_SINGLE, { 1, 1 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, true, false);
-        blocks::addBlock("mahoganyleaves", "mahoganyleaves", false, true, "acorn", "blocks", false, st_SINGLE, glm::vec2(1), 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
-        blocks::addBlock("mahoganysapling", "mahoganysapling", false, true, "acorn", "blocks", false, st_SINGLE, { 1, 2 }, 0, { BConditions::nowall, BConditions::isntreplacablebelow, BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("borealtrunk", "borealtrunk", false, true, "borealwood", "blocks", false, st_SINGLE, { 1,1 }, 0, {}, false, false, false, false);
-        blocks::addBlock("borealtrunkbase1", "borealtrunkbase1", false, true, "borealwood", "blocks", false, st_SINGLE, { 1, 1 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, true, false);
-        blocks::addBlock("borealtrunkbase2", "borealtrunkbase2", false, true, "borealwood", "blocks", false, st_SINGLE, { 1, 1 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, true, false);
-        blocks::addBlock("borealtrunkbase3", "borealtrunkbase3", false, true, "borealwood", "blocks", false, st_SINGLE, { 1, 1 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, true, false);
-        blocks::addBlock("borealleaves", "borealleaves", false, true, "acorn", "blocks", false, st_SINGLE, glm::vec2(1), 0, { BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("borealsapling", "borealsapling", false, true, "acorn", "blocks", false, st_SINGLE, { 1, 2 }, 0, { BConditions::nowall, BConditions::isntreplacablebelow, BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("normalgrassdecor", "normalgrassdecor", false, false, "empty", "blocks", false, st_GRASS, { 1, 2 }, 0, { BConditions::isempty, BConditions::nowall, BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("corruptgrassdecor", "corruptgrassdecor", false, false, "empty", "blocks", false, st_GRASS, { 1, 2 }, 0, {BConditions::isempty, BConditions::nowall, BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("junglegrassdecor", "junglegrassdecor", false, false, "empty", "blocks", false, st_GRASS, { 1, 2 }, 0, { BConditions::isempty, BConditions::nowall, BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("normalbranchr", "normalbranchr", false, false, "wood", "blocks", false, st_SINGLE, { 2, 2 }, 0, {  }, false, false, false, false);
-        blocks::addBlock("normalbranchl", "normalbranchl", false, false, "wood", "blocks", false, st_SINGLE, { 2, 2 }, 0, {  }, false, false, false, false);
-        blocks::addBlock("corruptbranchr", "corruptbranchr", false, false, "ebonwood", "blocks", false, st_SINGLE, { 2, 2 }, 0, {  }, false, false, false, false);
-        blocks::addBlock("corruptbranchl", "corruptbranchl", false, false, "ebonwood", "blocks", false, st_SINGLE, { 2, 2 }, 0, {  }, false, false, false, false);
-        blocks::addBlock("junglebranchr", "junglebranchr", false, false, "mahoganywood", "blocks", false, st_SINGLE, { 3, 2 }, 0, {  }, false, false, false, false);
-        blocks::addBlock("junglebranchl", "junglebranchl", false, false, "mahoganywood", "blocks", false, st_SINGLE, { 3, 2 }, 0, {  }, false, false, false, false);
-        blocks::addBlock("borealbranchr", "borealbranchr", false, false, "borealwood", "blocks", false, st_SINGLE, { 3, 2 }, 0, {  }, false, false, false, false);
-        blocks::addBlock("borealbranchl", "borealbranchl", false, false, "borealwood", "blocks", false, st_SINGLE, { 3, 2 }, 0, {  }, false, false, false, false);
-        blocks::addBlock("icicle", "icicle", false, false, "empty", "blocks", false, st_STALAKTIT, { 1, 2 }, 0, { BConditions::haswall, BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("stalaktit", "stalaktit", false, false, "empty", "blocks", false, st_STALAKTIT, { 1, 2 }, 0, { BConditions::haswall, BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("corruptstalaktit", "corruptstalaktit", false, false, "empty", "blocks", false, st_STALAKTIT, { 1, 2 }, 0, { BConditions::haswall, BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("sandstalaktit", "sandstalaktit", false, false, "empty", "blocks", false, st_STALAKTIT, { 1, 2 }, 0, { BConditions::haswall, BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("stalagmit", "stalagmit", false, false, "empty", "blocks", false, st_STALAGMIT, { 1, 2 }, 0, { BConditions::haswall, BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("sandstalagmit", "sandstalagmit", false, false, "empty", "blocks", false, st_STALAGMIT, { 1, 2 }, 0, { BConditions::haswall, BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("corruptstalagmit", "corruptstalagmit", false, false, "empty", "blocks", false, st_STALAGMIT, { 1, 2 }, 0, { BConditions::haswall, BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("empty", "empty", false, false, "empty", BLOCKS, false, st_SINGLE, { 1,1 }, 1, {}, false, false, false, false);
+        blocks::addBlock("dirt", "dirt", true, true, "dirt", BLOCKS, true, st_BLOCK);
+        blocks::addBlock("grass", "grass", true, true, "dirt", BLOCKS, true, st_BLOCK);
+        blocks::addBlock("glass", "glass", true, true, "glass", BLOCKS, true, st_BLOCK);
+        blocks::addBlock("stone", "stone", true, true, "stone", BLOCKS, true, st_BLOCK);
+        blocks::addBlock("sand", "sand", true, true, "sand", BLOCKS, true, st_BLOCK);
+        blocks::addBlock("wood", "wood", true, true, "wood", BLOCKS, true, st_BLOCK);
+        blocks::addBlock("dirtwall", "dirtwall", true, true, "dirtwall",WALLS, true, st_WALL, { 1, 1 }, 0, { BConditions::isreplacable });
+        blocks::addBlock("glasswall", "glasswall", true, true, "glasswall",WALLS, true, st_WALL, { 1, 1 }, 0, { BConditions::isreplacable });
+        blocks::addBlock("woodwall", "woodwall", true, true, "woodwall",WALLS, true, st_WALL, { 1, 1 }, 0, { BConditions::isreplacable });
+        blocks::addBlock("stonewall", "stonewall", true, true, "stonewall",WALLS, true, st_WALL, { 1, 1 }, 0, { BConditions::isreplacable });
+        blocks::addBlock("trunk", "trunk", false, true, "wood", BLOCKS, false, st_SINGLE, { 1,1 }, 0, {}, false, false, false, false);
+        blocks::addBlock("trunkbase1", "trunkbase1", false, true, "wood", BLOCKS, false, st_SINGLE, { 1, 1 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, true, false);
+        blocks::addBlock("trunkbase2", "trunkbase2", false, true, "wood", BLOCKS, false, st_SINGLE, { 1, 1 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, true, false);
+        blocks::addBlock("trunkbase3", "trunkbase3", false, true, "wood", BLOCKS, false, st_SINGLE, { 1, 1 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, true, false);
+        blocks::addBlock("leaves", "leaves", false, true, "acorn", BLOCKS, false, st_SINGLE, glm::vec2(1), 0, { BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("sapling", "sapling", false, true, "acorn", BLOCKS, false, st_SINGLE, { 1, 2 }, 0, { BConditions::nowall, BConditions::isntreplacablebelow, BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("purpletorch", "purpletorch", false, true, "purpletorch", BLOCKS, false, st_TORCH, glm::vec2(1.0f, 1.0f), 0, { BConditions::isreplacable, BConditions::connected }, false, false, false, false);
+        blocks::addBlock("torch", "torch", false, true, "torch", BLOCKS, false, st_TORCH, glm::vec2(1.0f, 1.0f), 0, { BConditions::isreplacable, BConditions::connected }, false, false, false, false);
+        blocks::addBlock("chest", "chest", false, true, "chest", BLOCKS, false, st_SINGLE, glm::vec2(2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("door", "closeddoor", true, true, "door", BLOCKS, false, st_SINGLE, glm::vec2(1, 3), 0, { BConditions::solidontop, BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("doorleft", "opendoorleft", false, true, "door", BLOCKS, false, st_SINGLE, glm::vec2(2, 3), 0, { BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("doorright", "opendoorright", false, true, "door", BLOCKS, false, st_SINGLE, glm::vec2(2, 3), 0, { BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("anvil", "anvil", false, true, "anvil", BLOCKS, false, st_SINGLE, glm::vec2(2, 1), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("craftingbench", "craftingbench", false, true, "craftingbench", BLOCKS, false, st_SINGLE, glm::vec2(2, 1), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("table", "table", false, true, "table", BLOCKS, false, st_SINGLE, glm::vec2(4, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("furnace", "furnace", false, true, "furnace", BLOCKS, false, st_SINGLE, glm::vec2(3, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("gravestone", "gravestone", false, true, "gravestone", BLOCKS, false, st_SINGLE, glm::vec2(2, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("chairright", "chairright", false, true, "chair", BLOCKS, false, st_SINGLE, glm::vec2(1, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("chairleft", "chairleft", false, true, "chair", BLOCKS, false, st_SINGLE, glm::vec2(1, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("slimestatue", "slimestatue", false, true, "slimestatue", BLOCKS, false, st_SINGLE, glm::vec2(2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("ironore", "ironore", true, true, "ironore", BLOCKS, true, st_BLOCK);
+        blocks::addBlock("copperore", "copperore", true, true, "copperore", BLOCKS, true, st_BLOCK);
+        blocks::addBlock("corruptgrass", "corruptgrass", true, true, "dirt", BLOCKS, true, st_BLOCK);
+        blocks::addBlock("junglegrass", "junglegrass", true, true, "mud", BLOCKS, true, st_BLOCK);
+        blocks::addBlock("mud", "mud", true, true, "mud", BLOCKS, true, st_BLOCK);
+        blocks::addBlock("ash", "ash", true, true, "ash", BLOCKS, true, st_BLOCK);
+        blocks::addBlock("snow", "snow", true, true, "snow", BLOCKS, true, st_BLOCK);
+        blocks::addBlock("borealwood", "borealwood", true, true, "borealwood", BLOCKS, true, st_BLOCK);
+        blocks::addBlock("ebonwood", "ebonwood", true, true, "ebonwood", BLOCKS, true, st_BLOCK);
+        blocks::addBlock("mahoganywood", "mahoganywood", true, true, "mahoganywood", BLOCKS, true, st_BLOCK);
+        blocks::addBlock("stonebrick", "stonebrick", true, true, "stonebrick", BLOCKS, true, st_BLOCK);
+        blocks::addBlock("ebonwoodwall", "ebonwoodwall", true, true, "ebonwoodwall",WALLS, true, st_WALL, { 1, 1 }, 0, { BConditions::isreplacable });
+        blocks::addBlock("snowwall", "snowwall", true, true, "empty",WALLS, true, st_WALL, { 1, 1 }, 0, { BConditions::isreplacable });
+        blocks::addBlock("mudwall", "mudwall", true, true, "empty",WALLS, true, st_WALL, { 1, 1 }, 0, { BConditions::isreplacable });
+        blocks::addBlock("mahoganywoodwall", "mahoganywoodwall", true, true, "mahoganywoodwall",WALLS, true, st_WALL, { 1, 1 }, 0, { BConditions::isreplacable });
+        blocks::addBlock("borealwoodwall", "borealwoodwall", true, true, "borealwoodwall",WALLS, true, st_WALL, { 1, 1 }, 0, { BConditions::isreplacable });
+        blocks::addBlock("borealdoor", "borealdoor", true, true, "borealdoor", BLOCKS, false, st_SINGLE, glm::vec2(1, 3), 0, { BConditions::solidontop, BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("borealdoorleft", "borealdoorleft", false, true, "borealdoor", BLOCKS, false, st_SINGLE, glm::vec2(2, 3), 0, { BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("borealdoorright", "borealdoorright", false, true, "borealdoor", BLOCKS, false, st_SINGLE, glm::vec2(2, 3), 0, { BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("borealtable", "borealtable", false, true, "borealtable", BLOCKS, false, st_SINGLE, glm::vec2(4, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("borealworkbench", "borealworkbench", false, true, "borealworkbench", BLOCKS, false, st_SINGLE, glm::vec2(2, 1), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("mahoganydoor", "mahoganydoor", true, true, "mahoganydoor", BLOCKS, false, st_SINGLE, glm::vec2(1, 3), 0, { BConditions::solidontop, BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("mahoganydoorleft", "mahoganydoorleft", false, true, "mahoganydoor", BLOCKS, false, st_SINGLE, glm::vec2(2, 3), 0, { BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("mahoganydoorright", "mahoganydoorright", false, true, "mahoganydoor", BLOCKS, false, st_SINGLE, glm::vec2(2, 3), 0, { BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("mahoganytable", "mahoganytable", false, true, "mahoganytable", BLOCKS, false, st_SINGLE, glm::vec2(4, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("mahoganyworkbench", "mahoganyworkbench", false, true, "mahoganyworkbench", BLOCKS, false, st_SINGLE, glm::vec2(2, 1), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("ebonwooddoor", "ebonwooddoor", true, true, "ebonwooddoor", BLOCKS, false, st_SINGLE, glm::vec2(1, 3), 0, { BConditions::solidontop, BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("ebonwooddoorleft", "ebonwooddoorleft", false, true, "ebonwooddoor", BLOCKS, false, st_SINGLE, glm::vec2(2, 3), 0, { BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("ebonwooddoorright", "ebonwooddoorright", false, true, "ebonwooddoor", BLOCKS, false, st_SINGLE, glm::vec2(2, 3), 0, { BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("ebonwoodtable", "ebonwoodtable", false, true, "ebonwoodtable", BLOCKS, false, st_SINGLE, glm::vec2(4, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("ebonwoodworkbench", "ebonwoodworkbench", false, true, "ebonwoodworkbench", BLOCKS, false, st_SINGLE, glm::vec2(2, 1), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("ebonwoodchairright", "ebonwoodchairright", false, true, "ebonwoodchair", BLOCKS, false, st_SINGLE, glm::vec2(1, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("mahoganychairright", "mahoganychairright", false, true, "mahoganychair", BLOCKS, false, st_SINGLE, glm::vec2(1, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("borealchairright", "borealchairright", false, true, "borealchair", BLOCKS, false, st_SINGLE, glm::vec2(1, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("ebonwoodchairleft", "ebonwoodchairleft", false, true, "ebonwoodchair", BLOCKS, false, st_SINGLE, glm::vec2(1, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("mahoganychairleft", "mahoganychairleft", false, true, "mahoganychair", BLOCKS, false, st_SINGLE, glm::vec2(1, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("borealchairleft", "borealchairleft", false, true, "borealchair", BLOCKS, false, st_SINGLE, glm::vec2(1, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("sandstone", "sandstone", true, true, "sandstone", BLOCKS, true, st_BLOCK);
+        blocks::addBlock("hardenedsand", "hardenedsand", true, true, "hardenedsand", BLOCKS, true, st_BLOCK);
+        blocks::addBlock("hardenedsandwall", "hardenedsandwall", true, true, "hardenedsandwall",WALLS, true, st_WALL, { 1, 1 }, 0, { BConditions::isreplacable });
+        blocks::addBlock("sandstonewall", "sandstonewall", true, true, "sandstonewall",WALLS, true, st_WALL, { 1, 1 }, 0, { BConditions::isreplacable });
+        blocks::addBlock("ebonstonewall", "ebonstonewall", true, true, "empty",WALLS, true, st_WALL, { 1, 1 }, 0, { BConditions::isreplacable });
+        blocks::addBlock("ebonstone", "ebonstone", true, true, "ebonstone", BLOCKS, true, st_BLOCK);
+        blocks::addBlock("corrupttrunk", "corrupttrunk", false, true, "ebonwood", BLOCKS, false, st_SINGLE, { 1,1 }, 0, {}, false, false, false, false);
+        blocks::addBlock("corrupttrunkbase1", "corrupttrunkbase1", false, true, "ebonwood", BLOCKS, false, st_SINGLE, { 1, 1 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, true, false);
+        blocks::addBlock("corrupttrunkbase2", "corrupttrunkbase2", false, true, "ebonwood", BLOCKS, false, st_SINGLE, { 1, 1 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, true, false);
+        blocks::addBlock("corrupttrunkbase3", "corrupttrunkbase3", false, true, "ebonwood", BLOCKS, false, st_SINGLE, { 1, 1 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, true, false);
+        blocks::addBlock("corruptleaves", "corruptleaves", false, true, "acorn", BLOCKS, false, st_SINGLE, glm::vec2(1), 0, { BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("corruptsapling", "corruptsapling", false, true, "acorn", BLOCKS, false, st_SINGLE, { 1, 2 }, 0, { BConditions::nowall, BConditions::isntreplacablebelow, BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("mahoganytrunk", "mahoganytrunk", false, true, "mahoganywood", BLOCKS, false, st_SINGLE, { 1,1 }, 0, {}, false, false, false, false);
+        blocks::addBlock("mahoganytrunkbase1", "mahoganytrunkbase1", false, true, "mahoganywood", BLOCKS, false, st_SINGLE, { 1, 1 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, true, false);
+        blocks::addBlock("mahoganytrunkbase2", "mahoganytrunkbase2", false, true, "mahoganywood", BLOCKS, false, st_SINGLE, { 1, 1 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, true, false);
+        blocks::addBlock("mahoganytrunkbase3", "mahoganytrunkbase3", false, true, "mahoganywood", BLOCKS, false, st_SINGLE, { 1, 1 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, true, false);
+        blocks::addBlock("mahoganyleaves", "mahoganyleaves", false, true, "acorn", BLOCKS, false, st_SINGLE, glm::vec2(1), 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::addBlock("mahoganysapling", "mahoganysapling", false, true, "acorn", BLOCKS, false, st_SINGLE, { 1, 2 }, 0, { BConditions::nowall, BConditions::isntreplacablebelow, BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("borealtrunk", "borealtrunk", false, true, "borealwood", BLOCKS, false, st_SINGLE, { 1,1 }, 0, {}, false, false, false, false);
+        blocks::addBlock("borealtrunkbase1", "borealtrunkbase1", false, true, "borealwood", BLOCKS, false, st_SINGLE, { 1, 1 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, true, false);
+        blocks::addBlock("borealtrunkbase2", "borealtrunkbase2", false, true, "borealwood", BLOCKS, false, st_SINGLE, { 1, 1 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, true, false);
+        blocks::addBlock("borealtrunkbase3", "borealtrunkbase3", false, true, "borealwood", BLOCKS, false, st_SINGLE, { 1, 1 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, true, false);
+        blocks::addBlock("borealleaves", "borealleaves", false, true, "acorn", BLOCKS, false, st_SINGLE, glm::vec2(1), 0, { BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("borealsapling", "borealsapling", false, true, "acorn", BLOCKS, false, st_SINGLE, { 1, 2 }, 0, { BConditions::nowall, BConditions::isntreplacablebelow, BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("normalgrassdecor", "normalgrassdecor", false, false, "empty", BLOCKS, false, st_GRASS, { 1, 2 }, 0, { BConditions::isempty, BConditions::nowall, BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("corruptgrassdecor", "corruptgrassdecor", false, false, "empty", BLOCKS, false, st_GRASS, { 1, 2 }, 0, {BConditions::isempty, BConditions::nowall, BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("junglegrassdecor", "junglegrassdecor", false, false, "empty", BLOCKS, false, st_GRASS, { 1, 2 }, 0, { BConditions::isempty, BConditions::nowall, BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("normalbranchr", "normalbranchr", false, false, "wood", BLOCKS, false, st_SINGLE, { 2, 2 }, 0, {  }, false, false, false, false);
+        blocks::addBlock("normalbranchl", "normalbranchl", false, false, "wood", BLOCKS, false, st_SINGLE, { 2, 2 }, 0, {  }, false, false, false, false);
+        blocks::addBlock("corruptbranchr", "corruptbranchr", false, false, "ebonwood", BLOCKS, false, st_SINGLE, { 2, 2 }, 0, {  }, false, false, false, false);
+        blocks::addBlock("corruptbranchl", "corruptbranchl", false, false, "ebonwood", BLOCKS, false, st_SINGLE, { 2, 2 }, 0, {  }, false, false, false, false);
+        blocks::addBlock("junglebranchr", "junglebranchr", false, false, "mahoganywood", BLOCKS, false, st_SINGLE, { 3, 2 }, 0, {  }, false, false, false, false);
+        blocks::addBlock("junglebranchl", "junglebranchl", false, false, "mahoganywood", BLOCKS, false, st_SINGLE, { 3, 2 }, 0, {  }, false, false, false, false);
+        blocks::addBlock("borealbranchr", "borealbranchr", false, false, "borealwood", BLOCKS, false, st_SINGLE, { 3, 2 }, 0, {  }, false, false, false, false);
+        blocks::addBlock("borealbranchl", "borealbranchl", false, false, "borealwood", BLOCKS, false, st_SINGLE, { 3, 2 }, 0, {  }, false, false, false, false);
+        blocks::addBlock("icicle", "icicle", false, false, "empty", BLOCKS, false, st_STALAKTIT, { 1, 2 }, 0, { BConditions::haswall, BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("stalaktit", "stalaktit", false, false, "empty", BLOCKS, false, st_STALAKTIT, { 1, 2 }, 0, { BConditions::haswall, BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("corruptstalaktit", "corruptstalaktit", false, false, "empty", BLOCKS, false, st_STALAKTIT, { 1, 2 }, 0, { BConditions::haswall, BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("sandstalaktit", "sandstalaktit", false, false, "empty", BLOCKS, false, st_STALAKTIT, { 1, 2 }, 0, { BConditions::haswall, BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("stalagmit", "stalagmit", false, false, "empty", BLOCKS, false, st_STALAGMIT, { 1, 2 }, 0, { BConditions::haswall, BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("sandstalagmit", "sandstalagmit", false, false, "empty", BLOCKS, false, st_STALAGMIT, { 1, 2 }, 0, { BConditions::haswall, BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("corruptstalagmit", "corruptstalagmit", false, false, "empty", BLOCKS, false, st_STALAGMIT, { 1, 2 }, 0, { BConditions::haswall, BConditions::isreplacable }, false, false, false, false);
         blocks::setNextNumSprites(6);
-        blocks::addBlock("smallrock", "smallrock", false, false, "empty", "blocks", false, st_MULTISPRITE, { 1, 1 }, 0, { BConditions::isempty,BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("smallrock", "smallrock", false, false, "empty", BLOCKS, false, st_MULTISPRITE, { 1, 1 }, 0, { BConditions::isempty,BConditions::isreplacable }, false, false, false, false);
         blocks::setNextNumSprites(3);
-        blocks::addBlock("mediumrock", "mediumrock", false, false, "empty", "blocks", false, st_MULTISPRITE, { 2, 1 }, 0, { BConditions::isempty, BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("woodenplatform", "woodenplatform", false, false, "woodenplatform", "blocks", false, st_PLATFORM, { 1 ,1 }, 1, { BConditions::isreplacable }, false, false, false, false);
-        blocks::addBlock("campfire", "campfire", false, true, "campfire", "blocks", false, st_SINGLE, { 3,2 }, 1, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("goldore", "goldore", true, true, "goldore", "blocks", true, st_BLOCK);
-        blocks::addBlock("silverore", "silverore", true, true, "silverore", "blocks", true, st_BLOCK);
-        blocks::addBlock("hellstone", "hellstone", true, true, "hellstone", "blocks", true, st_BLOCK);
-        blocks::addBlock("demoniteore", "demoniteore", true, true, "demoniteore", "blocks", true, st_BLOCK);
-        blocks::addBlock("obsidianbrick", "obsidianbrick", true, true, "obsidianbrick", "blocks", true, st_BLOCK);
-        blocks::addBlock("obsidian", "obsidian", true, true, "obsidian", "blocks", true, st_BLOCK);
-        blocks::addBlock("hellforge", "hellforge", false, true, "hellforge", "blocks", false, st_SINGLE, glm::vec2(3, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("cactustop", "cactustop", false, true, "cactus", "blocks", false);
-        blocks::addBlock("cactusmid", "cactusmid", false, true, "cactus", "blocks", false);
-        blocks::addBlock("cactusright", "cactusright", false, true, "cactus", "blocks", false);
-        blocks::addBlock("cactusleft", "cactusleft", false, true, "cactus", "blocks", false);
-        blocks::addBlock("cactusleftarm", "cactusleftarm", false, true, "cactus", "blocks", false);
-        blocks::addBlock("cactusarmleftmid", "cactusarmleftmid", false, true, "cactus", "blocks", false);
-        blocks::addBlock("cactusarmlefttop", "cactusarmlefttop", false, true, "cactus", "blocks", false);
-        blocks::addBlock("cactusrightarm", "cactusrightarm", false, true, "cactus", "blocks", false);
-        blocks::addBlock("cactusarmrightmid", "cactusarmrightmid", false, true, "cactus", "blocks", false);
-        blocks::addBlock("cactusarmrighttop", "cactusarmrighttop", false, true, "cactus", "blocks", false);
-        blocks::addBlock("sunflower", "sunflower", false, true, "sunflower", "blocks", false, st_SINGLE, { 2,4 }, 1, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("heartcrystal", "heartcrystal", false, true, "heartcrystal", "blocks", false, st_SINGLE, { 2,2 }, 1, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("bottle", "placedbottle", false, true, "bottle", "blocks", false, st_SINGLE, { 1,1 }, 1, { BConditions::isreplacable, BConditions::bottle }, false, false, false, false);
-        blocks::addBlock("mushroom", "mushroom", false, false, "mushroom", "blocks", false, st_SINGLE, { 1,1 }, 1, {}, false, false, false, false);
-        blocks::addBlock("daybloom", "daybloom", false, false, "daybloom", "blocks", false, st_SINGLE, { 1,1 }, 1, {}, false, false, false, false);
-        blocks::addBlock("demonaltar", "demonaltar", false, true, "empty", "blocks", false, st_SINGLE, { 3,3 }, 1, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("shadoworb", "shadoworb", false, true, "empty", "blocks", false, st_SINGLE, { 2,2 }, 1, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("water", "water", false, false, "empty", "blocks", false, st_WATER, { 1,1 }, 1, {}, true, true, true, true);
-        blocks::addBlock("lava", "lava", false, false, "empty", "blocks", false, st_WATER, { 1,1 }, 1, {}, true, true, true, true);
-        blocks::addBlock("junglespores", "junglespores", false, false, "junglespores", "blocks", false, st_SINGLE, { 1,1 }, 1, {}, false, false, false, false);
-        blocks::addBlock("normalvines", "normalvines", false, false, "empty", "blocks", false, st_VINES, { 1,1 }, 1, {}, false, false, false, false);
-        blocks::addBlock("junglevines", "junglevines", false, false, "empty", "blocks", false, st_VINES, { 1,1 }, 1, {}, false, false, false, false);
-        blocks::addBlock("pot", "pot", false, true, "empty", "blocks", false, st_POT, { 2, 2 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow, BConditions::haswall }, false, false, false, false);
-        blocks::addBlock("icepot", "icepot", false, true, "empty", "blocks", false, st_POT, { 2, 2 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow, BConditions::haswall }, false, false, false, false);
-        blocks::addBlock("junglepot", "junglepot", false, true, "empty", "blocks", false, st_POT, { 2, 2 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow, BConditions::haswall }, false, false, false, false);
-        blocks::addBlock("hellpot", "hellpot", false, true, "empty", "blocks", false, st_POT, { 2, 2 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow, BConditions::haswall }, false, false, false, false);
-        blocks::addBlock("frozenchest", "frozenchest", false, true, "frozenchest", "blocks", false, st_SINGLE, glm::vec2(2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("mahoganychest", "mahoganychest", false, true, "mahoganychest", "blocks", false, st_SINGLE, glm::vec2(2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("goldchest", "goldchest", false, true, "goldchest", "blocks", false, st_SINGLE, glm::vec2(2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("shadowchest", "shadowchest", false, true, "shadowchest", "blocks", false, st_SINGLE, glm::vec2(2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
-        blocks::addBlock("waterchest", "waterchest", false, true, "waterchest", "blocks", false, st_SINGLE, glm::vec2(2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("mediumrock", "mediumrock", false, false, "empty", BLOCKS, false, st_MULTISPRITE, { 2, 1 }, 0, { BConditions::isempty, BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("woodenplatform", "woodenplatform", false, false, "woodenplatform", BLOCKS, false, st_PLATFORM, { 1 ,1 }, 1, { BConditions::isreplacable }, false, false, false, false);
+        blocks::addBlock("campfire", "campfire", false, true, "campfire", BLOCKS, false, st_SINGLE, { 3,2 }, 1, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("goldore", "goldore", true, true, "goldore", BLOCKS, true, st_BLOCK);
+        blocks::addBlock("silverore", "silverore", true, true, "silverore", BLOCKS, true, st_BLOCK);
+        blocks::addBlock("hellstone", "hellstone", true, true, "hellstone", BLOCKS, true, st_BLOCK);
+        blocks::addBlock("demoniteore", "demoniteore", true, true, "demoniteore", BLOCKS, true, st_BLOCK);
+        blocks::addBlock("obsidianbrick", "obsidianbrick", true, true, "obsidianbrick", BLOCKS, true, st_BLOCK);
+        blocks::addBlock("obsidian", "obsidian", true, true, "obsidian", BLOCKS, true, st_BLOCK);
+        blocks::addBlock("hellforge", "hellforge", false, true, "hellforge", BLOCKS, false, st_SINGLE, glm::vec2(3, 2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("cactustop", "cactustop", false, true, "cactus", BLOCKS, false);
+        blocks::addBlock("cactusmid", "cactusmid", false, true, "cactus", BLOCKS, false);
+        blocks::addBlock("cactusright", "cactusright", false, true, "cactus", BLOCKS, false);
+        blocks::addBlock("cactusleft", "cactusleft", false, true, "cactus", BLOCKS, false);
+        blocks::addBlock("cactusleftarm", "cactusleftarm", false, true, "cactus", BLOCKS, false);
+        blocks::addBlock("cactusarmleftmid", "cactusarmleftmid", false, true, "cactus", BLOCKS, false);
+        blocks::addBlock("cactusarmlefttop", "cactusarmlefttop", false, true, "cactus", BLOCKS, false);
+        blocks::addBlock("cactusrightarm", "cactusrightarm", false, true, "cactus", BLOCKS, false);
+        blocks::addBlock("cactusarmrightmid", "cactusarmrightmid", false, true, "cactus", BLOCKS, false);
+        blocks::addBlock("cactusarmrighttop", "cactusarmrighttop", false, true, "cactus", BLOCKS, false);
+        blocks::addBlock("sunflower", "sunflower", false, true, "sunflower", BLOCKS, false, st_SINGLE, { 2,4 }, 1, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("heartcrystal", "heartcrystal", false, true, "heartcrystal", BLOCKS, false, st_SINGLE, { 2,2 }, 1, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("bottle", "placedbottle", false, true, "bottle", BLOCKS, false, st_SINGLE, { 1,1 }, 1, { BConditions::isreplacable, BConditions::bottle }, false, false, false, false);
+        blocks::addBlock("mushroom", "mushroom", false, false, "mushroom", BLOCKS, false, st_SINGLE, { 1,1 }, 1, {}, false, false, false, false);
+        blocks::addBlock("daybloom", "daybloom", false, false, "daybloom", BLOCKS, false, st_SINGLE, { 1,1 }, 1, {}, false, false, false, false);
+        blocks::addBlock("demonaltar", "demonaltar", false, true, "empty", BLOCKS, false, st_SINGLE, { 3,3 }, 1, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("shadoworb", "shadoworb", false, true, "empty", BLOCKS, false, st_SINGLE, { 2,2 }, 1, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("water", "water", false, false, "empty", BLOCKS, false, st_WATER, { 1,1 }, 1, {}, true, true, true, true);
+        blocks::addBlock("lava", "lava", false, false, "empty", BLOCKS, false, st_WATER, { 1,1 }, 1, {}, true, true, true, true);
+        blocks::addBlock("junglespores", "junglespores", false, false, "junglespores", BLOCKS, false, st_SINGLE, { 1,1 }, 1, {}, false, false, false, false);
+        blocks::addBlock("normalvines", "normalvines", false, false, "empty", BLOCKS, false, st_VINES, { 1,1 }, 1, {}, false, false, false, false);
+        blocks::addBlock("junglevines", "junglevines", false, false, "empty", BLOCKS, false, st_VINES, { 1,1 }, 1, {}, false, false, false, false);
+        blocks::addBlock("pot", "pot", false, true, "empty", BLOCKS, false, st_POT, { 2, 2 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow, BConditions::haswall }, false, false, false, false);
+        blocks::addBlock("icepot", "icepot", false, true, "empty", BLOCKS, false, st_POT, { 2, 2 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow, BConditions::haswall }, false, false, false, false);
+        blocks::addBlock("junglepot", "junglepot", false, true, "empty", BLOCKS, false, st_POT, { 2, 2 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow, BConditions::haswall }, false, false, false, false);
+        blocks::addBlock("hellpot", "hellpot", false, true, "empty", BLOCKS, false, st_POT, { 2, 2 }, 0, { BConditions::isreplacable, BConditions::isntreplacablebelow, BConditions::haswall }, false, false, false, false);
+        blocks::addBlock("frozenchest", "frozenchest", false, true, "frozenchest", BLOCKS, false, st_SINGLE, glm::vec2(2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("mahoganychest", "mahoganychest", false, true, "mahoganychest", BLOCKS, false, st_SINGLE, glm::vec2(2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("goldchest", "goldchest", false, true, "goldchest", BLOCKS, false, st_SINGLE, glm::vec2(2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("shadowchest", "shadowchest", false, true, "shadowchest", BLOCKS, false, st_SINGLE, glm::vec2(2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
+        blocks::addBlock("waterchest", "waterchest", false, true, "waterchest", BLOCKS, false, st_SINGLE, glm::vec2(2), 0, { BConditions::isreplacable, BConditions::issolidbelow }, false, false, false, false);
         blocks::setNextNumSprites(3);
-        blocks::addBlock("bigrock", "bigrock", false, false, "empty", "blocks", false, st_MULTISPRITE, { 3, 2 }, 0, { BConditions::isempty,BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::addBlock("bigrock", "bigrock", false, false, "empty", BLOCKS, false, st_MULTISPRITE, { 3, 2 }, 0, { BConditions::isempty,BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
         blocks::setNextNumSprites(18);
-        blocks::addBlock("normalflowers", "normalflowers", false, false, "empty", "blocks", false, st_MULTISPRITE, { 1, 2 }, 0, { BConditions::isempty,BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::addBlock("normalflowers", "normalflowers", false, false, "empty", BLOCKS, false, st_MULTISPRITE, { 1, 2 }, 0, { BConditions::isempty,BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
         blocks::setNextNumSprites(19);
-        blocks::addBlock("jungleflowers", "jungleflowers", false, false, "empty", "blocks", false, st_MULTISPRITE, { 1, 2 }, 0, { BConditions::isempty,BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::addBlock("jungleflowers", "jungleflowers", false, false, "empty", BLOCKS, false, st_MULTISPRITE, { 1, 2 }, 0, { BConditions::isempty,BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
         blocks::setNextNumSprites(13);
-        blocks::addBlock("corruptflowers", "corruptflowers", false, false, "empty", "blocks", false, st_MULTISPRITE, { 1, 2 }, 0, { BConditions::isempty, BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::addBlock("corruptflowers", "corruptflowers", false, false, "empty", BLOCKS, false, st_MULTISPRITE, { 1, 2 }, 0, { BConditions::isempty, BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
         blocks::setNextNumSprites(9);
-        blocks::addBlock("undergroundskeletondecor", "undergroundskeletondecor", false, false, "empty", "blocks", false, st_MULTISPRITE, { 1, 1 }, 0, { BConditions::isempty, BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::addBlock("undergroundskeletondecor", "undergroundskeletondecor", false, false, "empty", BLOCKS, false, st_MULTISPRITE, { 1, 1 }, 0, { BConditions::isempty, BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
         blocks::setNextNumSprites(8);
-        blocks::addBlock("undergroundtooldecor", "undergroundtooldecor", false, false, "empty", "blocks", false, st_MULTISPRITE, { 1, 1 }, 0, { BConditions::isempty,BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::addBlock("undergroundtooldecor", "undergroundtooldecor", false, false, "empty", BLOCKS, false, st_MULTISPRITE, { 1, 1 }, 0, { BConditions::isempty,BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
         blocks::setNextNumSprites(6);
-        blocks::addBlock("smallice", "smallice", false, false, "empty", "blocks", false, st_MULTISPRITE, { 1, 1 }, 0, { BConditions::isempty, BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::addBlock("smallice", "smallice", false, false, "empty", BLOCKS, false, st_MULTISPRITE, { 1, 1 }, 0, { BConditions::isempty, BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
         blocks::setNextNumSprites(3);
-        blocks::addBlock("mediumice", "mediumice", false, false, "empty", "blocks", false, st_MULTISPRITE, { 2, 1 }, 0, { BConditions::isempty, BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::addBlock("mediumice", "mediumice", false, false, "empty", BLOCKS, false, st_MULTISPRITE, { 2, 1 }, 0, { BConditions::isempty, BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
         blocks::setNextNumSprites(3);
-        blocks::addBlock("bigice", "bigice", false, false, "empty", "blocks", false, st_MULTISPRITE, { 3, 2 }, 0, { BConditions::isempty, BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::addBlock("bigice", "bigice", false, false, "empty", BLOCKS, false, st_MULTISPRITE, { 3, 2 }, 0, { BConditions::isempty, BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
         blocks::setNextNumSprites(6);
-        blocks::addBlock("smalldesert", "smalldesert", false, false, "empty", "blocks", false, st_MULTISPRITE, { 1, 1 }, 0, { BConditions::isempty,BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::addBlock("smalldesert", "smalldesert", false, false, "empty", BLOCKS, false, st_MULTISPRITE, { 1, 1 }, 0, { BConditions::isempty,BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
         blocks::setNextNumSprites(3);
-        blocks::addBlock("mediumdesert", "mediumdesert", false, false, "empty", "blocks", false, st_MULTISPRITE, { 2, 1 }, 0, { BConditions::isempty,BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::addBlock("mediumdesert", "mediumdesert", false, false, "empty", BLOCKS, false, st_MULTISPRITE, { 2, 1 }, 0, { BConditions::isempty,BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
         blocks::setNextNumSprites(3);
-        blocks::addBlock("bigdesert", "bigdesert", false, false, "empty", "blocks", false, st_MULTISPRITE, { 3, 2 }, 0, { BConditions::isempty, BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::addBlock("bigdesert", "bigdesert", false, false, "empty", BLOCKS, false, st_MULTISPRITE, { 3, 2 }, 0, { BConditions::isempty, BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
         blocks::setNextNumSprites(2);
-        blocks::addBlock("bigjungle", "bigjungle", false, false, "empty", "blocks", false, st_MULTISPRITE, { 3, 2 }, 0, { BConditions::isempty,BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::addBlock("bigjungle", "bigjungle", false, false, "empty", BLOCKS, false, st_MULTISPRITE, { 3, 2 }, 0, { BConditions::isempty,BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
         blocks::setNextNumSprites(5);
-        blocks::addBlock("mediumjungle", "mediumjungle", false, false, "empty", "blocks", false, st_MULTISPRITE, { 2, 2 }, 0, {BConditions::isempty, BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::addBlock("mediumjungle", "mediumjungle", false, false, "empty", BLOCKS, false, st_MULTISPRITE, { 2, 2 }, 0, {BConditions::isempty, BConditions::isreplacable, BConditions::isntreplacablebelow }, false, false, false, false);
+        blocks::addBlock("junglewall", "junglewall", true, true, "empty", WALLS, true, st_WALL, { 1, 1 }, 0, { BConditions::isreplacable });
 
         globals::waterid = blocks::nameToID["water"];
 
@@ -281,6 +282,7 @@ namespace resources {
         blocks::addCraftingStation("bottle", "bottle");
         blocks::addCraftingStation("demonaltar", "demonaltar");
 
+        Layers::biomes.insert(std::make_pair<std::string, Biome>("none", { -1, "forest", {600, 5}, {600, 5}, {600, 5}, {600, 5}, {600, 5} }));
         Layers::biomes.insert(std::make_pair<std::string, Biome>("forest", { 100, "forest", {600, 5}, {600, 5}, {600, 5}, {600, 5}, {600, 5} }));
         Layers::biomes.insert(std::make_pair<std::string, Biome>("snow", { 100, "snow", {600, 5}, {600, 5}, {600, 5}, {600, 5}, {600, 5} }));
         Layers::biomes.insert(std::make_pair<std::string, Biome>("desert", { 100, "desert", {600, 5}, {600, 5}, {600, 5}, {600, 5}, {600, 5} }));
@@ -573,6 +575,8 @@ namespace resources {
         items::addItem("acorn", "Acorn", "acorn", { itemFuncs::placeSapling }, globals::blockPlaceSpeed, { if_MISC }, {}, { itemConditions::hasAmmo });
         items::addItem("woodenbow", "Wooden Bow", "woodenbow", { itemFuncs::shootArrow, itemFuncs::removeAmmo }, 20, { if_BOW, if_RANGED }, {}, { itemConditions::hasAmmo }, ia_USE, 2);
         items::addItem("arrow", "Arrow", "arrow", {}, 0, { if_ARROW, if_PROJECTILE }, {});
+        items::addItem("flamingarrow", "Flaming arrow", "flamingarrow", {}, 0, { if_ARROW, if_PROJECTILE }, {});
+        items::addItem("demonicarrow", "Demonic arrow", "demonicarrow", {}, 0, { if_ARROW, if_PROJECTILE }, {});
         items::addItem("bomb", "Bomb", "bomb", { itemFuncs::throwSelf }, 20, { if_THROWABLE }, {}, { itemConditions::hasAmmo });
         items::addItem("minishark", "Minishark", "minishark", { itemFuncs::shootArrow, itemFuncs::removeAmmo }, 4, { if_GUN, if_RANGED }, {}, { itemConditions::hasAmmo }, ia_USE, 2);
         items::addItem("waterspell", "Water Bolt", "waterspell", { itemFuncs::shootArrow }, 1, { if_SPELL, if_RANGED }, {}, { itemConditions::nothing }, ia_USE);
@@ -592,6 +596,7 @@ namespace resources {
         items::addItem("ironbar", "Iron Bar", "ironbar", {}, globals::blockPlaceSpeed, { if_BAR }, {}, {});
         items::addItem("ironore", "Iron Ore", "ironoreitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE, if_BLOCK }, {}, { itemConditions::hasAmmo });
         items::addItem("copperore", "Copper Ore", "ironoreitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
+        items::addItem("copperbar", "Copper Bar", "copperbar", {}, globals::blockPlaceSpeed, { if_BAR }, {}, {});
         items::addItem("stonebrick", "Stone Brick", "stonebrickitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
         items::addItem("mud", "Mud", "muditem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
         items::addItem("snow", "Snow", "snowitem", { itemFuncs::place },  globals::blockPlaceSpeed, { if_ORE,if_BLOCK }, {}, { itemConditions::hasAmmo });
@@ -740,6 +745,7 @@ namespace resources {
         items::addItem("mahoganychest", "Mahogany Chest", "mahoganychestitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
         items::addItem("waterchest", "Water Chest", "waterchestitem", { itemFuncs::place }, globals::blockPlaceSpeed, { if_BLOCK }, {}, { itemConditions::hasAmmo });
         items::addItem("manacrystal", "Mana Crystal", "manacrystal", { itemFuncs::removeAmmo, itemFuncs::manaCrystal}, globals::blockPlaceSpeed, {if_BLOCK}, {}, {itemConditions::manaCrystal});
+        items::addItem("muramasa", "Muramasa", "muramasa", {}, 18, { if_WEAPON, if_MEELE }, {});
 
         items::addSet("none", itemFuncs::nonearmorbonus, "");
         items::addSet("ironarmor", itemFuncs::ironarmorbonus, "Set bonus: 2 defense");
@@ -776,11 +782,11 @@ namespace resources {
         items::addItemToNaturalChest("surface", "dirt", 0.5, 10, 5);
         items::addItemToNaturalChest("surface", "torch", 0.2, 15, 5);
         items::addItemToNaturalChest("surface", "healthpotion", 0.2, 1, 0);
-        items::addItemToNaturalChest("surface", "aglet", 0.05, 1, 0);
+        items::addItemToNaturalChest("surface", "aglet", 0.05, 1, 0, true);
         items::addItemToNaturalChest("surface", "coppercoin", 0.2, 70, 10);
-        items::addItemToNaturalChest("surface", "magicmirror", 0.05, 1, 0);
-        items::addItemToNaturalChest("surface", "bandofregeneration", 0.05, 1, 0);
-        items::addItemToNaturalChest("surface", "shackle", 0.15, 1, 0);
+        items::addItemToNaturalChest("surface", "magicmirror", 0.05, 1, 0, true);
+        items::addItemToNaturalChest("surface", "bandofregeneration", 0.05, 1, 0, true);
+        items::addItemToNaturalChest("surface", "shackle", 0.15, 1, 0, true);
         items::addItemToNaturalChest("surface", "mushroom", 0.3, 4, 1);
         items::addItemToNaturalChest("surface", "bottle", 0.3, 2, 1);
         items::addItemToNaturalChest("surface", "sunflower", 0.1, 1, 0);
@@ -789,127 +795,127 @@ namespace resources {
         items::addItemToNaturalChest("surface", "arrow", 0.14, 10, 3);
         items::addItemToNaturalChest("underground", "torch", 0.4, 15, 5);
         items::addItemToNaturalChest("underground", "healthpotion", 0.1, 3, 2);
-        items::addItemToNaturalChest("underground", "aglet", 0.15, 1, 0);
+        items::addItemToNaturalChest("underground", "aglet", 0.15, 1, 0, true);
         items::addItemToNaturalChest("underground", "coppercoin", 0.2, 70, 10);
-        items::addItemToNaturalChest("underground", "magicmirror", 0.1, 1, 0);
-        items::addItemToNaturalChest("underground", "bandofregeneration", 0.1, 1, 0);
-        items::addItemToNaturalChest("underground", "bandofstarpower", 0.1, 1, 0);
-        items::addItemToNaturalChest("underground", "shackle", 0.15, 1, 0);
+        items::addItemToNaturalChest("underground", "magicmirror", 0.1, 1, 0, true);
+        items::addItemToNaturalChest("underground", "bandofregeneration", 0.1, 1, 0, true);
+        items::addItemToNaturalChest("underground", "bandofstarpower", 0.1, 1, 0, true);
+        items::addItemToNaturalChest("underground", "shackle", 0.15, 1, 0, true);
         items::addItemToNaturalChest("underground", "bottle", 0.2, 3, 2);
         items::addItemToNaturalChest("underground", "copperore", 0.1, 10, 4);
         items::addItemToNaturalChest("underground", "ironore", 0.1, 6, 4);
         items::addItemToNaturalChest("underground", "ironbar", 0.1, 3, 1);
         items::addItemToNaturalChest("underground", "copperbar", 0.1, 3, 2);
-        items::addItemToNaturalChest("underground", "enchantedsword", 0.01, 1, 0);
-        items::addItemToNaturalChest("underground", "minishark", 0.01, 1, 0);
-        items::addItemToNaturalChest("underground", "magicmissile", 0.01, 1, 0);
-        items::addItemToNaturalChest("underground", "boomerang", 0.1, 1, 0);
+        items::addItemToNaturalChest("underground", "enchantedsword", 0.01, 1, 0, true);
+        items::addItemToNaturalChest("underground", "minishark", 0.01, 1, 0, true);
+        items::addItemToNaturalChest("underground", "magicmissile", 0.01, 1, 0, true);
+        items::addItemToNaturalChest("underground", "woodenboomerang", 0.1, 1, 0, true);
         items::addItemToNaturalChest("underground", "bomb", 0.14, 5, 2);
         items::addItemToNaturalChest("underground", "arrow", 0.2, 40, 15);
         items::addItemToNaturalChest("underground", "bullet", 0.1, 40, 15);
-        items::addItemToNaturalChest("underground", "hermesboots", 0.1, 1, 0);
-        items::addItemToNaturalChest("underground", "cloudinabottle", 0.1, 1, 0);
+        items::addItemToNaturalChest("underground", "hermesboots", 0.1, 1, 0, true);
+        items::addItemToNaturalChest("underground", "cloudinabottle", 0.1, 1, 0, true);
         items::addItemToNaturalChest("underground", "slimestatue", 0.1, 1, 0);
-        items::addItemToNaturalChest("underground", "mininghelmet", 0.05, 1, 0);
+        items::addItemToNaturalChest("underground", "mininghelmet", 0.05, 1, 0, true);
         items::addItemToNaturalChest("underground", "suseye", 0.05, 1, 0);
-        items::addItemToNaturalChest("underground", "enchantedboomerang", 0.03, 1, 0);
-        items::addItemToNaturalChest("underground", "starfury", 0.01, 1, 0);
+        items::addItemToNaturalChest("underground", "enchantedboomerang", 0.03, 1, 0, true);
+        items::addItemToNaturalChest("underground", "starfury", 0.01, 1, 0, true);
         items::addItemToNaturalChest("hell", "torch", 0.4, 15, 5);
         items::addItemToNaturalChest("hell", "healthpotion", 0.1, 3, 2);
         items::addItemToNaturalChest("hell", "aglet", 0.15, 1, 0);
         items::addItemToNaturalChest("hell", "coppercoin", 0.2, 70, 10);
-        items::addItemToNaturalChest("hell", "magicmirror", 0.1, 1, 0);
-        items::addItemToNaturalChest("hell", "bandofregeneration", 0.1, 1, 0);
-        items::addItemToNaturalChest("hell", "shackle", 0.15, 1, 0);
+        items::addItemToNaturalChest("hell", "magicmirror", 0.1, 1, 0, true);
+        items::addItemToNaturalChest("hell", "bandofregeneration", 0.1, 1, 0, true);
+        items::addItemToNaturalChest("hell", "shackle", 0.15, 1, 0, true);
         items::addItemToNaturalChest("hell", "bottle", 0.2, 3, 2);
         items::addItemToNaturalChest("hell", "goldore", 0.1, 10, 4);
         items::addItemToNaturalChest("hell", "silverore", 0.1, 6, 4);
         items::addItemToNaturalChest("hell", "goldbar", 0.1, 3, 1);
         items::addItemToNaturalChest("hell", "silverbar", 0.1, 3, 2);
-        items::addItemToNaturalChest("hell", "enchantedsword", 0.01, 1, 0);
-        items::addItemToNaturalChest("hell", "minishark", 0.01, 1, 0);
-        items::addItemToNaturalChest("hell", "magicmissile", 0.01, 1, 0);
+        items::addItemToNaturalChest("hell", "enchantedsword", 0.01, 1, 0, true);
+        items::addItemToNaturalChest("hell", "minishark", 0.01, 1, 0, true);
+        items::addItemToNaturalChest("hell", "magicmissile", 0.01, 1, 0, true);
         items::addItemToNaturalChest("hell", "bomb", 0.14, 5, 2);
         items::addItemToNaturalChest("hell", "flamingarrow", 0.2, 40, 15);
         items::addItemToNaturalChest("hell", "demonicarrow", 0.2, 20, 5);
-        items::addItemToNaturalChest("hell", "lightdisc", 0.2, 40, 15);
+        items::addItemToNaturalChest("hell", "lightdisc", 0.2, 40, 15, true);
         items::addItemToNaturalChest("hell", "bullet", 0.1, 40, 15);
         items::addItemToNaturalChest("hell", "hellforge", 0.1, 1, 0);
-        items::addItemToNaturalChest("hell", "hermesboots", 0.1, 1, 0);
-        items::addItemToNaturalChest("hell", "bandofstarpower", 0.1, 1, 0);
+        items::addItemToNaturalChest("hell", "hermesboots", 0.1, 1, 0, true);
+        items::addItemToNaturalChest("hell", "bandofstarpower", 0.1, 1, 0, true);
         items::addItemToNaturalChest("frozen", "torch", 0.4, 15, 5);
         items::addItemToNaturalChest("frozen", "healthpotion", 0.1, 3, 2);
-        items::addItemToNaturalChest("frozen", "aglet", 0.15, 1, 0);
+        items::addItemToNaturalChest("frozen", "aglet", 0.15, 1, 0, true);
         items::addItemToNaturalChest("frozen", "coppercoin", 0.2, 70, 10);
-        items::addItemToNaturalChest("frozen", "magicmirror", 0.1, 1, 0);
-        items::addItemToNaturalChest("frozen", "bandofregeneration", 0.1, 1, 0);
-        items::addItemToNaturalChest("frozen", "bandofstarpower", 0.1, 1, 0);
-        items::addItemToNaturalChest("frozen", "shackle", 0.15, 1, 0);
+        items::addItemToNaturalChest("frozen", "magicmirror", 0.1, 1, 0, true);
+        items::addItemToNaturalChest("frozen", "bandofregeneration", 0.1, 1, 0, true);
+        items::addItemToNaturalChest("frozen", "bandofstarpower", 0.1, 1, 0, true);
+        items::addItemToNaturalChest("frozen", "shackle", 0.15, 1, 0, true);
         items::addItemToNaturalChest("frozen", "bottle", 0.2, 3, 2);
         items::addItemToNaturalChest("frozen", "copperore", 0.1, 10, 4);
         items::addItemToNaturalChest("frozen", "ironore", 0.1, 6, 4);
         items::addItemToNaturalChest("frozen", "ironbar", 0.1, 3, 1);
         items::addItemToNaturalChest("frozen", "copperbar", 0.1, 3, 2);
         items::addItemToNaturalChest("frozen", "iceblade", 0.03, 1, 0);
-        items::addItemToNaturalChest("frozen", "snowballcannon", 0.01, 1, 0);
+        items::addItemToNaturalChest("frozen", "snowballcannon", 0.01, 1, 0, true);
         items::addItemToNaturalChest("frozen", "bomb", 0.14, 5, 2);
         items::addItemToNaturalChest("frozen", "arrow", 0.2, 40, 15);
         items::addItemToNaturalChest("frozen", "snowball", 0.2, 20, 5);
         items::addItemToNaturalChest("frozen", "bullet", 0.1, 40, 15);
-        items::addItemToNaturalChest("frozen", "hermesboots", 0.1, 1, 0);
-        items::addItemToNaturalChest("frozen", "cloudinabottle", 0.1, 1, 0);
+        items::addItemToNaturalChest("frozen", "hermesboots", 0.1, 1, 0, true);
+        items::addItemToNaturalChest("frozen", "cloudinabottle", 0.1, 1, 0, true);
         items::addItemToNaturalChest("frozen", "slimestatue", 0.1, 1, 0);
-        items::addItemToNaturalChest("frozen", "mininghelmet", 0.05, 1, 0);
-        items::addItemToNaturalChest("frozen", "frozenboomerang", 0.03, 1, 0);
+        items::addItemToNaturalChest("frozen", "mininghelmet", 0.05, 1, 0, true);
+        items::addItemToNaturalChest("frozen", "frozenboomerang", 0.03, 1, 0, true);
         items::addItemToNaturalChest("jungle", "torch", 0.4, 15, 5);
         items::addItemToNaturalChest("jungle", "healthpotion", 0.1, 3, 2);
-        items::addItemToNaturalChest("jungle", "aglet", 0.15, 1, 0);
+        items::addItemToNaturalChest("jungle", "aglet", 0.15, 1, 0, true);
         items::addItemToNaturalChest("jungle", "coppercoin", 0.2, 70, 10);
-        items::addItemToNaturalChest("jungle", "magicmirror", 0.1, 1, 0);
-        items::addItemToNaturalChest("jungle", "bandofregeneration", 0.1, 1, 0);
-        items::addItemToNaturalChest("jungle", "bandofstarpower", 0.1, 1, 0);
-        items::addItemToNaturalChest("jungle", "ankletofthewind", 0.15, 1, 0);
+        items::addItemToNaturalChest("jungle", "magicmirror", 0.1, 1, 0, true);
+        items::addItemToNaturalChest("jungle", "bandofregeneration", 0.1, 1, 0, true);
+        items::addItemToNaturalChest("jungle", "bandofstarpower", 0.1, 1, 0, true);
+        items::addItemToNaturalChest("jungle", "ankletofthewind", 0.15, 1, 0, true);
         items::addItemToNaturalChest("jungle", "bottle", 0.2, 3, 2);
         items::addItemToNaturalChest("jungle", "copperore", 0.1, 10, 4);
         items::addItemToNaturalChest("jungle", "ironore", 0.1, 6, 4);
         items::addItemToNaturalChest("jungle", "ironbar", 0.1, 3, 1);
         items::addItemToNaturalChest("jungle", "junglespores", 0.1, 3, 2);
-        items::addItemToNaturalChest("jungle", "feralclaws", 0.1, 1, 0);
+        items::addItemToNaturalChest("jungle", "feralclaws", 0.1, 1, 0, true);
         items::addItemToNaturalChest("jungle", "stinger", 0.1, 1, 0);
         items::addItemToNaturalChest("jungle", "bomb", 0.14, 5, 2);
         items::addItemToNaturalChest("jungle", "arrow", 0.2, 40, 15);
         items::addItemToNaturalChest("jungle", "vines", 0.1, 5, 2);
         items::addItemToNaturalChest("jungle", "bullet", 0.1, 40, 15);
-        items::addItemToNaturalChest("jungle", "hermesboots", 0.1, 1, 0);
-        items::addItemToNaturalChest("jungle", "cloudinabottle", 0.1, 1, 0);
+        items::addItemToNaturalChest("jungle", "hermesboots", 0.1, 1, 0, true);
+        items::addItemToNaturalChest("jungle", "cloudinabottle", 0.1, 1, 0, true);
         items::addItemToNaturalChest("jungle", "slimestatue", 0.1, 1, 0);
-        items::addItemToNaturalChest("jungle", "mininghelmet", 0.05, 1, 0);
-        items::addItemToNaturalChest("jungle", "beegun", 0.05, 1, 0);
+        items::addItemToNaturalChest("jungle", "mininghelmet", 0.05, 1, 0, true);
+        items::addItemToNaturalChest("jungle", "beegun", 0.05, 1, 0, true);
         items::addItemToNaturalChest("water", "torch", 0.4, 15, 5);
         items::addItemToNaturalChest("water", "healthpotion", 0.1, 3, 2);
         items::addItemToNaturalChest("water", "aglet", 0.15, 1, 0);
         items::addItemToNaturalChest("water", "coppercoin", 0.2, 70, 10);
-        items::addItemToNaturalChest("water", "magicmirror", 0.1, 1, 0);
-        items::addItemToNaturalChest("water", "bandofregeneration", 0.1, 1, 0);
-        items::addItemToNaturalChest("water", "bandofstarpower", 0.1, 1, 0);
-        items::addItemToNaturalChest("water", "shackle", 0.15, 1, 0);
+        items::addItemToNaturalChest("water", "magicmirror", 0.1, 1, 0, true);
+        items::addItemToNaturalChest("water", "bandofregeneration", 0.1, 1, 0, true);
+        items::addItemToNaturalChest("water", "bandofstarpower", 0.1, 1, 0, true);
+        items::addItemToNaturalChest("water", "shackle", 0.15, 1, 0, true);
         items::addItemToNaturalChest("water", "bottle", 0.2, 3, 2);
         items::addItemToNaturalChest("water", "copperore", 0.1, 10, 4);
         items::addItemToNaturalChest("water", "ironore", 0.1, 6, 4);
         items::addItemToNaturalChest("water", "ironbar", 0.1, 3, 1);
         items::addItemToNaturalChest("water", "copperbar", 0.1, 3, 2);
-        items::addItemToNaturalChest("water", "enchantedsword", 0.01, 1, 0);
-        items::addItemToNaturalChest("water", "aquastaff", 0.2, 1, 0);
-        items::addItemToNaturalChest("water", "boomerang", 0.1, 1, 0);
+        items::addItemToNaturalChest("water", "enchantedsword", 0.01, 1, 0, true);
+        items::addItemToNaturalChest("water", "aquascepter", 0.2, 1, 0, true);
+        items::addItemToNaturalChest("water", "woodenboomerang", 0.1, 1, 0, true);
         items::addItemToNaturalChest("water", "bomb", 0.14, 5, 2);
         items::addItemToNaturalChest("water", "arrow", 0.2, 40, 15);
         items::addItemToNaturalChest("water", "bullet", 0.1, 40, 15);
-        items::addItemToNaturalChest("water", "hermesboots", 0.1, 1, 0);
-        items::addItemToNaturalChest("water", "cloudinabottle", 0.1, 1, 0);
+        items::addItemToNaturalChest("water", "hermesboots", 0.1, 1, 0, true);
+        items::addItemToNaturalChest("water", "cloudinabottle", 0.1, 1, 0, true);
         items::addItemToNaturalChest("water", "slimestatue", 0.1, 1, 0);
-        items::addItemToNaturalChest("water", "mininghelmet", 0.05, 1, 0);
+        items::addItemToNaturalChest("water", "mininghelmet", 0.05, 1, 0, true);
         items::addItemToNaturalChest("water", "suseye", 0.05, 1, 0);
-        items::addItemToNaturalChest("water", "enchantedboomerang", 0.03, 1, 0);
+        items::addItemToNaturalChest("water", "enchantedboomerang", 0.03, 1, 0, true);
 
         items::addOnPickup("coppercoin", itemFuncs::coppercoinonpickup);
         items::addOnPickup("silvercoin", itemFuncs::silvercoinonpickup);
@@ -919,6 +925,7 @@ namespace resources {
         items::addLight("purpletorch", glm::vec3(2.3, 0.2, 4.0));
 
         items::addSizeMod("terrablade", 2.4);
+        items::addSizeMod("muramasa", 4);
         items::addSizeMod("aquascepter", 2);
         items::addSizeMod("starfury", 1.8);
         items::addSizeMod("iceblade", 1.8);
@@ -975,7 +982,7 @@ namespace resources {
         items::disableAutouse("platinumsword");
 
         items::addSound("minishark", &sounds::gun);
-        items::addSound("aquastaff", &sounds::aquastaff);
+        items::addSound("aquascepter", &sounds::aquastaff);
         items::addSound("woodenbow", &sounds::bow);
         items::addSound("ironbow", &sounds::bow);
         items::addSound("goldbow", &sounds::bow);
@@ -990,6 +997,9 @@ namespace resources {
         items::addSound("star", &sounds::star);
         items::addSound("manastar", &sounds::star);
         items::addSound("heartcrystal", &sounds::star);
+
+        items::addEntity("fallenstar", "star");
+        items::addEntity("voodoodoll", "voodoodoll");
 
         //volcanoeffect
         {
@@ -1022,6 +1032,7 @@ namespace resources {
         items::addOnhit("bladeofgrass", collisionFs::bladeofgrassDamage);
         items::addOnhit("moltenpickaxe", collisionFs::moltenPickaxeDamage);
         items::addOnhit("moltenhamaxe", collisionFs::moltenHamaxeDamage);
+        items::addOnhit("muramasa", collisionFs::muramasaDamage);
 
         buffs::addBuff("nothing", "empty", buffs::nothing, true);
         buffs::addBuff("onfire", "onfirebuff", buffs::onfirebuff, false, "Slowly losing life");
@@ -1032,6 +1043,7 @@ namespace resources {
         buffs::addBuff("potionsickness", "potionsicknessbuff", buffs::nothing, false, "Cannot consume anymore healing items");
         buffs::addBuff("poisoned", "poisonedbuff", buffs::poisoned, false, "Slowly losing life");
         buffs::addBuff("chilled", "chilledbuff", buffs::chilled, false, "Your movement speed has been reduced");
+        buffs::addBuff("horrified", "horrifiedbuff", buffs::nothing, false, "You have seen something nasty, there is no escape.");
    
 
     }
@@ -1350,7 +1362,7 @@ namespace resources {
             tmpframes.clear();
             pixels = 9;
             for (int i = 0; i < 4; i++) {
-                tmpframes.push_back({ i * 3, {0, -9 -i * pixels, 0, -9 -i * pixels}, ft_OFFSET1 });
+                tmpframes.push_back({ i * 3, {0, -i * pixels, 0, -i * pixels}, ft_OFFSET1 });
             }
             animations::createAnim("birdfly", textures::nametocoords["bird"]->coords, { tmpframes }, 3 * 4);
 
@@ -1365,6 +1377,23 @@ namespace resources {
 
             animations::createAnim("jellyfishboost", textures::nametocoords["jellyfish"]->coords, { {0, {0, -0, 0, -0} , ft_OFFSET1 }, {3, {0, -15, 0, -15}, ft_OFFSET1 },
                                                                                                     {6, {0, -30, 0, -30}, ft_OFFSET1 }, {40, {0, -45, 0, -45}, ft_OFFSET1 } },44, false);
+            animations::createAnim("walloffleshmouth", textures::nametocoords["walloffleshmouth"]->coords, { {0, {0, 0, 0, 0}, ft_OFFSET1 }, {6, {0, -52, 0, -52}, ft_OFFSET1 } }, 12);
+            animations::createAnim("wallofflesheye", textures::nametocoords["wallofflesheye"]->coords, { {0, {0, 0, 0, 0}, ft_OFFSET1 }, {6, {0, -52, 0, -52}, ft_OFFSET1 } }, 12);
+            animations::createAnim("walloffleshbody", textures::nametocoords["walloffleshbody"]->coords, { {0, {0, 0, 0, 0}, ft_OFFSET1 }, {4, {0, -70, 0, -70}, ft_OFFSET1 } }, 8);
+
+            tmpframes.clear();
+            pixels = 18;
+            for (int i = 0; i < 3; i++) {
+                tmpframes.push_back({ i * 6, {0, -i * pixels, 0, -i * pixels}, ft_OFFSET1 });
+            }
+            animations::createAnim("thehungryattached", textures::nametocoords["thehungry"]->coords, { tmpframes }, 6 * 3);
+
+            tmpframes.clear();
+            pixels = 18;
+            for (int i = 0; i < 5; i++) {
+                tmpframes.push_back({ i * 6, {0, -i * pixels, 0, -i * pixels}, ft_OFFSET1 });
+            }
+            animations::createAnim("thehungryflying", textures::nametocoords["thehungry"]->coords, { tmpframes }, 6 * 5);
 
 
             items::addArmorSprites("skin", textures::nametocoords["plrhands"]->coords, glm::vec4(0));
@@ -1381,162 +1410,162 @@ namespace resources {
 
         //rules
         {
-        blocks::addRule("grass", { {br_IS, bs_STAT, glm::vec2(1,0), "updates", "blocks"},
-                                    {br_IS, bs_STAT, glm::vec2(-1,0), "updates", "blocks"},
-                                    {br_IS, bs_STAT, glm::vec2(0,1), "updates", "blocks"},
-                                    {br_IS, bs_STAT, glm::vec2(0,-1), "updates", "blocks"}
-            }, BRules::replaceWith, "dirt", "blocks");
+        blocks::addRule("grass", { {br_IS, bs_STAT, glm::vec2(1,0), "updates", BLOCKS},
+                                    {br_IS, bs_STAT, glm::vec2(-1,0), "updates", BLOCKS},
+                                    {br_IS, bs_STAT, glm::vec2(0,1), "updates", BLOCKS},
+                                    {br_IS, bs_STAT, glm::vec2(0,-1), "updates", BLOCKS}
+            }, BRules::replaceWith, "dirt", BLOCKS);
 
-        blocks::addRule("trunk", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "trunk", "blocks"},
-                                    {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "trunkbase1", "blocks"},
-            }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("trunkbase1", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "dirt", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("trunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "dirt", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("trunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(1,0), "trunkbase1", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("trunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "dirt", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("trunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(-1,0), "trunkbase1", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("leaves", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "trunk", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("normalbranchr", { { br_ISNT, bs_BLOCK, glm::vec2(2, 0), "trunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("normalbranchl", { { br_ISNT, bs_BLOCK, glm::vec2(-1, 0), "trunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("normalgrassdecor",  { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "normalgrassdecor", "blocks"},
-                                            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "grass", "blocks"}
-                                        }, BRules::breakSelf, "empty", "blocks", false);
-        blocks::addRule("junglegrassdecor", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "junglegrassdecor", "blocks"},
-                                {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "junglegrass", "blocks"}
-            }, BRules::breakSelf, "empty", "blocks", false);
-        blocks::addRule("corruptgrassdecor", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corruptgrassdecor", "blocks"},
-                                {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corruptgrass", "blocks"}
-            }, BRules::breakSelf, "empty", "blocks", false);
-        blocks::addRule("normalflowers", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "normalgrassdecor", "blocks"},
-                                            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "grass", "blocks"}
-            }, BRules::breakSelf, "empty", "blocks", false);
-        blocks::addRule("jungleflowers", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "jungleflowers", "blocks"},
-                                    {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "junglegrass", "blocks"}
-            }, BRules::breakSelf, "empty", "blocks", false);
-        blocks::addRule("corruptflowers", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corruptflowers", "blocks"},
-                                    {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corruptgrass", "blocks"}
-            }, BRules::breakSelf, "empty", "blocks", false);
-        blocks::addRule("torch", { {br_ISNT, bs_STAT, glm::vec2(1,0), "updates", "blocks"},
-                                    {br_ISNT, bs_STAT, glm::vec2(-1,0), "updates", "blocks"},
-                                    {br_ISNT, bs_STAT, glm::vec2(0,1), "updates", "blocks"},
-                                    {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", "blocks"},
-                                    {br_ISNT, bs_STAT, glm::vec2(0,0), "updates", "bg"}
-                                    }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("purpletorch", { {br_ISNT, bs_STAT, glm::vec2(1,0), "updates", "blocks"},
-                                            {br_ISNT, bs_STAT, glm::vec2(-1,0), "updates", "blocks"},
-                                            {br_ISNT, bs_STAT, glm::vec2(0,1), "updates", "blocks"},
-                                            {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", "blocks"},
-                                            {br_ISNT, bs_STAT, glm::vec2(0,0), "updates", "bg"}
-                                            }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("sand", { {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", "blocks"} }, BRules::breakSelf, "empty", "blocks", false);
-        blocks::addRule("sand", { {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", "blocks"} }, BRules::spawnSand);
-        blocks::addRule("corrupttrunk", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corrupttrunk", "blocks"},
-                        {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corrupttrunkbase1", "blocks"},
-            }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("corrupttrunkbase1", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "dirt", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("corrupttrunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "dirt", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("corrupttrunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(1,0), "corrupttrunkbase1", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("corrupttrunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "dirt", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("corrupttrunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(-1,0), "corrupttrunkbase1", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("corruptleaves", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corrupttrunk", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("corruptbranchr", { { br_ISNT, bs_BLOCK, glm::vec2(2, 0), "corrupttrunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("corruptbranchl", { { br_ISNT, bs_BLOCK, glm::vec2(-1, 0), "corrupttrunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("borealtrunk", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "borealtrunk", "blocks"},
-            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "borealtrunkbase1", "blocks"},
-            }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("borealtrunkbase1", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "snow", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("borealtrunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "snow", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("borealtrunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(1,0), "borealtrunkbase1", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("borealtrunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "snow", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("borealtrunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(-1,0), "borealtrunkbase1", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("borealleaves", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "borealtrunk", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("borealbranchr", { { br_ISNT, bs_BLOCK, glm::vec2(3, 0), "borealtrunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("borealbranchl", { { br_ISNT, bs_BLOCK, glm::vec2(-1, 0), "borealtrunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("mahoganytrunk", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "mahoganytrunk", "blocks"},
-            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "mahoganytrunkbase1", "blocks"},
-            }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("mahoganytrunkbase1", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "mud", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("mahoganytrunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "mud", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("mahoganytrunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(1,0), "mahoganytrunkbase1", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("mahoganytrunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "mud", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("mahoganytrunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(-1,0), "mahoganytrunkbase1", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("mahoganyleaves", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "mahoganytrunk", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("junglebranchr", { { br_ISNT, bs_BLOCK, glm::vec2(3, 0), "mahoganytrunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("junglebranchl", { { br_ISNT, bs_BLOCK, glm::vec2(-1, 0), "mahoganytrunk", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("icicle", { { br_ISNT, bs_BLOCK, glm::vec2(0, 2), "snow", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("stalaktit", { { br_ISNT, bs_BLOCK, glm::vec2(0, 2), "stone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("corruptstalaktit", { { br_ISNT, bs_BLOCK, glm::vec2(0, 2), "ebonstone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("sandstalaktit", { { br_ISNT, bs_BLOCK, glm::vec2(0, 2), "sandstone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("stalagmit", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "stone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("corruptstalagmit", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "ebonstone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("sandstalagmit", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "sandstone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("smallrock", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "stone", "blocks" }, { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "grass", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("mediumrock", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "grass", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(0, -1), "stone", "blocks" },
-    { br_ISNT, bs_BLOCK, glm::vec2(2, -1), "grass", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(2, -1), "stone", "blocks" }, }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("bigrock", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "grass", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(0, -1), "stone", "blocks" },
-            { br_ISNT, bs_BLOCK, glm::vec2(1, -1), "grass", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(1, -1), "stone", "blocks" }, 
-            { br_ISNT, bs_BLOCK, glm::vec2(2, -1), "grass", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(2, -1), "stone", "blocks" },}, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("smallice", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "snow", "blocks" }}, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("mediumice", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "snow", "blocks" }, { br_ISNT, bs_BLOCK, glm::vec2(1, -1), "snow", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("bigice", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "snow", "blocks" }, { br_ISNT, bs_BLOCK, glm::vec2(1, -1), "snow", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(2, -1), "snow", "blocks" }, }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("mediumjungle", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "sjunglegrassnow", "blocks" }, { br_ISNT, bs_BLOCK, glm::vec2(1, -1), "snow", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("bigjungle", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "junglegrass", "blocks" }, { br_ISNT, bs_BLOCK, glm::vec2(1, -1), "snow", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(2, -1), "snow", "blocks" }, }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("smalldesert", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "sandstone", "blocks" }, { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "hardenedsand", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("mediumdesert", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "sandstone", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(0, -1), "hardenedsand", "blocks" },
-    { br_ISNT, bs_BLOCK, glm::vec2(2, -1), "sandstone", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(2, -1), "hardenedsand", "blocks" }, }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("bigdesert", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "sandstone", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(0, -1), "hardenedsand", "blocks" },
-            { br_ISNT, bs_BLOCK, glm::vec2(1, -1), "sandstone", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(1, -1), "hardenedsand", "blocks" },
-            { br_ISNT, bs_BLOCK, glm::vec2(2, -1), "sandstone", "blocks" },{ br_ISNT, bs_BLOCK, glm::vec2(2, -1), "hardenedsand", "blocks" }, }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("pot", { { br_ISNT, bs_STAT, glm::vec2(0, -1), "updates", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("pot", { { br_ISNT, bs_STAT, glm::vec2(1, -1), "updates", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("sapling", {  {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "grass", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("mahoganysapling", {    {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "junglegrass", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("corruptsapling", {  {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corruptgrass", "blocks"}   }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("borealsapling", {  {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "snow", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("undergroundskeletondecor", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "stone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("undergroundtooldecor", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "stone", "blocks" } }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("cactusmid", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "sand", "blocks"},
-            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusmid", "blocks"},
-            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusleft", "blocks"}, 
-            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusright", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("cactusleft", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "sand", "blocks"},
-            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusmid", "blocks"},
-            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusleft", "blocks"},
-            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusright", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("cactusright", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "sand", "blocks"},
-            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusmid", "blocks"},
-            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusleft", "blocks"},
-            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusright", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("cactusmid", { {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusmid", "blocks"},
-            {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactustop", "blocks"},
-            {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusleft", "blocks"}, 
-            {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusright", "blocks"} }, BRules::replaceWith, "cactustop", "blocks", true);
-        blocks::addRule("cactustop", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusmid", "blocks"},
-            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusleft", "blocks"},
-            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusright", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("cactusleftarm", { {br_ISNT, bs_BLOCK, glm::vec2(1,0), "cactusleft", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("cactusrightarm", { {br_ISNT, bs_BLOCK, glm::vec2(-1,0), "cactusright", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("cactusarmleftmid", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusarmleftmid", "blocks"},
-                                            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusleftarm", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("cactusarmrightmid", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusarmrightmid", "blocks"},
-                                                {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusrightarm", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("cactusarmleftmid", { {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusarmleftmid", "blocks"},
-            {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusarmlefttop", "blocks"} }, BRules::replaceWith, "cactusarmlefttop", "blocks", true);
-        blocks::addRule("cactusarmrightmid", { {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusarmrightmid", "blocks"},
-            {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusarmrighttop", "blocks"} }, BRules::replaceWith, "cactusarmrightop", "blocks", true);
-        blocks::addRule("cactusarmlefttop", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusarmleftmid", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("cactusarmrighttop", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusarmrightmid", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("sunflower", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "grass", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("sunflower", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "grass", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("heartcrystal", { {br_ISNT, bs_STAT, glm::vec2(1,-1), "updates", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("heartcrystal", { {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("bottle", { {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", "blocks"} }, BRules::breakSelf, "empty", "blocks", true);
-        blocks::addRule("normalvines", { {br_ISNT, bs_BLOCK, glm::vec2(0,1), "normalvines", "blocks"},
-                                    {br_ISNT, bs_BLOCK, glm::vec2(0,1), "grass", "blocks"},
-            }, BRules::breakSelfAndUpdateBelow, "empty", "blocks", true);
-        blocks::addRule("junglevines", { {br_ISNT, bs_BLOCK, glm::vec2(0,1), "junglevines", "blocks"},
-                                    {br_ISNT, bs_BLOCK, glm::vec2(0,1), "junglegrass", "blocks"},
-            }, BRules::breakSelfAndUpdateBelow, "empty", "blocks", true);
+        blocks::addRule("trunk", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "trunk", BLOCKS},
+                                    {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "trunkbase1", BLOCKS},
+            }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("trunkbase1", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "dirt", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("trunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "dirt", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("trunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(1,0), "trunkbase1", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("trunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "dirt", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("trunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(-1,0), "trunkbase1", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("leaves", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "trunk", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("normalbranchr", { { br_ISNT, bs_BLOCK, glm::vec2(2, 0), "trunk", BLOCKS } }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("normalbranchl", { { br_ISNT, bs_BLOCK, glm::vec2(-1, 0), "trunk", BLOCKS } }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("normalgrassdecor",  { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "normalgrassdecor", BLOCKS},
+                                            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "grass", BLOCKS}
+                                        }, BRules::breakSelf, "empty", BLOCKS, false);
+        blocks::addRule("junglegrassdecor", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "junglegrassdecor", BLOCKS},
+                                {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "junglegrass", BLOCKS}
+            }, BRules::breakSelf, "empty", BLOCKS, false);
+        blocks::addRule("corruptgrassdecor", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corruptgrassdecor", BLOCKS},
+                                {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corruptgrass", BLOCKS}
+            }, BRules::breakSelf, "empty", BLOCKS, false);
+        blocks::addRule("normalflowers", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "normalgrassdecor", BLOCKS},
+                                            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "grass", BLOCKS}
+            }, BRules::breakSelf, "empty", BLOCKS, false);
+        blocks::addRule("jungleflowers", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "jungleflowers", BLOCKS},
+                                    {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "junglegrass", BLOCKS}
+            }, BRules::breakSelf, "empty", BLOCKS, false);
+        blocks::addRule("corruptflowers", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corruptflowers", BLOCKS},
+                                    {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corruptgrass", BLOCKS}
+            }, BRules::breakSelf, "empty", BLOCKS, false);
+        blocks::addRule("torch", { {br_ISNT, bs_STAT, glm::vec2(1,0), "updates", BLOCKS},
+                                    {br_ISNT, bs_STAT, glm::vec2(-1,0), "updates", BLOCKS},
+                                    {br_ISNT, bs_STAT, glm::vec2(0,1), "updates", BLOCKS},
+                                    {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", BLOCKS},
+                                    {br_ISNT, bs_STAT, glm::vec2(0,0), "updates",WALLS}
+                                    }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("purpletorch", { {br_ISNT, bs_STAT, glm::vec2(1,0), "updates", BLOCKS},
+                                            {br_ISNT, bs_STAT, glm::vec2(-1,0), "updates", BLOCKS},
+                                            {br_ISNT, bs_STAT, glm::vec2(0,1), "updates", BLOCKS},
+                                            {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", BLOCKS},
+                                            {br_ISNT, bs_STAT, glm::vec2(0,0), "updates",WALLS}
+                                            }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("sand", { {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, false);
+        blocks::addRule("sand", { {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", BLOCKS} }, BRules::spawnSand);
+        blocks::addRule("corrupttrunk", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corrupttrunk", BLOCKS},
+                        {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corrupttrunkbase1", BLOCKS},
+            }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("corrupttrunkbase1", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "dirt", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("corrupttrunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "dirt", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("corrupttrunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(1,0), "corrupttrunkbase1", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("corrupttrunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "dirt", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("corrupttrunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(-1,0), "corrupttrunkbase1", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("corruptleaves", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corrupttrunk", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("corruptbranchr", { { br_ISNT, bs_BLOCK, glm::vec2(2, 0), "corrupttrunk", BLOCKS } }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("corruptbranchl", { { br_ISNT, bs_BLOCK, glm::vec2(-1, 0), "corrupttrunk", BLOCKS } }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("borealtrunk", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "borealtrunk", BLOCKS},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "borealtrunkbase1", BLOCKS},
+            }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("borealtrunkbase1", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "snow", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("borealtrunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "snow", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("borealtrunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(1,0), "borealtrunkbase1", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("borealtrunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "snow", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("borealtrunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(-1,0), "borealtrunkbase1", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("borealleaves", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "borealtrunk", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("borealbranchr", { { br_ISNT, bs_BLOCK, glm::vec2(3, 0), "borealtrunk", BLOCKS } }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("borealbranchl", { { br_ISNT, bs_BLOCK, glm::vec2(-1, 0), "borealtrunk", BLOCKS } }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("mahoganytrunk", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "mahoganytrunk", BLOCKS},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "mahoganytrunkbase1", BLOCKS},
+            }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("mahoganytrunkbase1", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "mud", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("mahoganytrunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "mud", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("mahoganytrunkbase2", { {br_ISNT, bs_BLOCK, glm::vec2(1,0), "mahoganytrunkbase1", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("mahoganytrunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "mud", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("mahoganytrunkbase3", { {br_ISNT, bs_BLOCK, glm::vec2(-1,0), "mahoganytrunkbase1", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("mahoganyleaves", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "mahoganytrunk", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("junglebranchr", { { br_ISNT, bs_BLOCK, glm::vec2(3, 0), "mahoganytrunk", BLOCKS } }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("junglebranchl", { { br_ISNT, bs_BLOCK, glm::vec2(-1, 0), "mahoganytrunk", BLOCKS } }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("icicle", { { br_ISNT, bs_BLOCK, glm::vec2(0, 2), "snow", BLOCKS } }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("stalaktit", { { br_ISNT, bs_BLOCK, glm::vec2(0, 2), "stone", BLOCKS } }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("corruptstalaktit", { { br_ISNT, bs_BLOCK, glm::vec2(0, 2), "ebonstone", BLOCKS } }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("sandstalaktit", { { br_ISNT, bs_BLOCK, glm::vec2(0, 2), "sandstone", BLOCKS } }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("stalagmit", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "stone", BLOCKS } }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("corruptstalagmit", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "ebonstone", BLOCKS } }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("sandstalagmit", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "sandstone", BLOCKS } }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("smallrock", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "stone", BLOCKS }, { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "grass", BLOCKS } }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("mediumrock", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "grass", BLOCKS },{ br_ISNT, bs_BLOCK, glm::vec2(0, -1), "stone", BLOCKS },
+    { br_ISNT, bs_BLOCK, glm::vec2(2, -1), "grass", BLOCKS },{ br_ISNT, bs_BLOCK, glm::vec2(2, -1), "stone", BLOCKS }, }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("bigrock", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "grass", BLOCKS },{ br_ISNT, bs_BLOCK, glm::vec2(0, -1), "stone", BLOCKS },
+            { br_ISNT, bs_BLOCK, glm::vec2(1, -1), "grass", BLOCKS },{ br_ISNT, bs_BLOCK, glm::vec2(1, -1), "stone", BLOCKS }, 
+            { br_ISNT, bs_BLOCK, glm::vec2(2, -1), "grass", BLOCKS },{ br_ISNT, bs_BLOCK, glm::vec2(2, -1), "stone", BLOCKS },}, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("smallice", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "snow", BLOCKS }}, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("mediumice", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "snow", BLOCKS }, { br_ISNT, bs_BLOCK, glm::vec2(1, -1), "snow", BLOCKS } }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("bigice", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "snow", BLOCKS }, { br_ISNT, bs_BLOCK, glm::vec2(1, -1), "snow", BLOCKS },{ br_ISNT, bs_BLOCK, glm::vec2(2, -1), "snow", BLOCKS }, }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("mediumjungle", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "sjunglegrassnow", BLOCKS }, { br_ISNT, bs_BLOCK, glm::vec2(1, -1), "snow", BLOCKS } }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("bigjungle", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "junglegrass", BLOCKS }, { br_ISNT, bs_BLOCK, glm::vec2(1, -1), "snow", BLOCKS },{ br_ISNT, bs_BLOCK, glm::vec2(2, -1), "snow", BLOCKS }, }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("smalldesert", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "sandstone", BLOCKS }, { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "hardenedsand", BLOCKS } }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("mediumdesert", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "sandstone", BLOCKS },{ br_ISNT, bs_BLOCK, glm::vec2(0, -1), "hardenedsand", BLOCKS },
+    { br_ISNT, bs_BLOCK, glm::vec2(2, -1), "sandstone", BLOCKS },{ br_ISNT, bs_BLOCK, glm::vec2(2, -1), "hardenedsand", BLOCKS }, }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("bigdesert", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "sandstone", BLOCKS },{ br_ISNT, bs_BLOCK, glm::vec2(0, -1), "hardenedsand", BLOCKS },
+            { br_ISNT, bs_BLOCK, glm::vec2(1, -1), "sandstone", BLOCKS },{ br_ISNT, bs_BLOCK, glm::vec2(1, -1), "hardenedsand", BLOCKS },
+            { br_ISNT, bs_BLOCK, glm::vec2(2, -1), "sandstone", BLOCKS },{ br_ISNT, bs_BLOCK, glm::vec2(2, -1), "hardenedsand", BLOCKS }, }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("pot", { { br_ISNT, bs_STAT, glm::vec2(0, -1), "updates", BLOCKS } }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("pot", { { br_ISNT, bs_STAT, glm::vec2(1, -1), "updates", BLOCKS } }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("sapling", {  {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "grass", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("mahoganysapling", {    {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "junglegrass", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("corruptsapling", {  {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "corruptgrass", BLOCKS}   }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("borealsapling", {  {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "snow", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("undergroundskeletondecor", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "stone", BLOCKS } }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("undergroundtooldecor", { { br_ISNT, bs_BLOCK, glm::vec2(0, -1), "stone", BLOCKS } }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("cactusmid", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "sand", BLOCKS},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusmid", BLOCKS},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusleft", BLOCKS}, 
+            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusright", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("cactusleft", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "sand", BLOCKS},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusmid", BLOCKS},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusleft", BLOCKS},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusright", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("cactusright", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "sand", BLOCKS},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusmid", BLOCKS},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusleft", BLOCKS},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusright", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("cactusmid", { {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusmid", BLOCKS},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactustop", BLOCKS},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusleft", BLOCKS}, 
+            {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusright", BLOCKS} }, BRules::replaceWith, "cactustop", BLOCKS, true);
+        blocks::addRule("cactustop", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusmid", BLOCKS},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusleft", BLOCKS},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusright", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("cactusleftarm", { {br_ISNT, bs_BLOCK, glm::vec2(1,0), "cactusleft", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("cactusrightarm", { {br_ISNT, bs_BLOCK, glm::vec2(-1,0), "cactusright", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("cactusarmleftmid", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusarmleftmid", BLOCKS},
+                                            {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusleftarm", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("cactusarmrightmid", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusarmrightmid", BLOCKS},
+                                                {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusrightarm", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("cactusarmleftmid", { {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusarmleftmid", BLOCKS},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusarmlefttop", BLOCKS} }, BRules::replaceWith, "cactusarmlefttop", BLOCKS, true);
+        blocks::addRule("cactusarmrightmid", { {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusarmrightmid", BLOCKS},
+            {br_ISNT, bs_BLOCK, glm::vec2(0,1), "cactusarmrighttop", BLOCKS} }, BRules::replaceWith, "cactusarmrightop", BLOCKS, true);
+        blocks::addRule("cactusarmlefttop", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusarmleftmid", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("cactusarmrighttop", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "cactusarmrightmid", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("sunflower", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "grass", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("sunflower", { {br_ISNT, bs_BLOCK, glm::vec2(0,-1), "grass", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("heartcrystal", { {br_ISNT, bs_STAT, glm::vec2(1,-1), "updates", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("heartcrystal", { {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("bottle", { {br_ISNT, bs_STAT, glm::vec2(0,-1), "updates", BLOCKS} }, BRules::breakSelf, "empty", BLOCKS, true);
+        blocks::addRule("normalvines", { {br_ISNT, bs_BLOCK, glm::vec2(0,1), "normalvines", BLOCKS},
+                                    {br_ISNT, bs_BLOCK, glm::vec2(0,1), "grass", BLOCKS},
+            }, BRules::breakSelfAndUpdateBelow, "empty", BLOCKS, true);
+        blocks::addRule("junglevines", { {br_ISNT, bs_BLOCK, glm::vec2(0,1), "junglevines", BLOCKS},
+                                    {br_ISNT, bs_BLOCK, glm::vec2(0,1), "junglegrass", BLOCKS},
+            }, BRules::breakSelfAndUpdateBelow, "empty", BLOCKS, true);
         }
 
         //recipes
@@ -1621,7 +1650,7 @@ namespace resources {
             items::addRecipe({ {{"hellstonebar", 20}}, 1, "moltenbreastplate", {"anvil"} });
             items::addRecipe({ {{"hellstonebar", 15}}, 1, "moltengreaves", {"anvil"} });
             items::addRecipe({ {{"junglespores", 15},{"vines", 3},{"stinger", 12}}, 1, "bladeofgrass", {"anvil"} });
-            items::addRecipe({ {{"iceblade", 1},{"lightsbane", 1},{"bladeofgrass", 1},{"volcano", 1}}, 1, "terrablade", {"anvil"} });
+            items::addRecipe({ {{"iceblade", 1},{"lightsbane", 1},{"bladeofgrass", 1},{"volcano", 1}, {"muramasa", 1}}, 1, "terrablade", {"anvil"}});
             items::addRecipe({ {{"star", 5}}, 1, "manacrystal", {"none"} });
         }
     }
@@ -1634,7 +1663,7 @@ namespace resources {
         {
             base = tmp;
             base.dc.tex = "arrow";
-            base.dc.size = { 2,2 };
+            base.dc.size = { 2,2  };
             base.dc.hasmat = true;
             base.dc.hidden = false;
             base.pc.stoponcollision = false;
@@ -1647,13 +1676,13 @@ namespace resources {
             base.ac.ai = ai_ARROW;
             base.mc.destroydecor = true;
             base.ac.onupdate = mobFunctions::arrowUpdate;
-            items::projectiles.insert(std::make_pair("arrow", base));
+            enemies::projectiles.insert(std::make_pair("arrow", base));
         }
         //bullet
         {
             base = tmp;
             base.dc.tex = "flyingbullet";
-            base.dc.size = { 0.7,0.7 };
+            base.dc.size = { 1.25,1.25 };
             base.dc.hasmat = true;
             base.dc.hidden = false;
             base.pc.stoponcollision = false;
@@ -1667,7 +1696,7 @@ namespace resources {
             base.ac.ai = ai_ARROW;
             base.mc.destroydecor = true;
             base.ac.onupdate = mobFunctions::bulletUpdate;
-            items::projectiles.insert(std::make_pair("bullet", base));
+            enemies::projectiles.insert(std::make_pair("bullet", base));
         }
         //waterbolt
         {
@@ -1709,7 +1738,7 @@ namespace resources {
             base.pec.smallerAsDie = true;
             base.pec.disappearAsDie = true;
             base.mc.destroydecor = true;
-            items::projectiles.insert(std::make_pair("waterbolt", base));
+            enemies::projectiles.insert(std::make_pair("waterbolt", base));
         }
         //aqua scepter
         {
@@ -1751,13 +1780,13 @@ namespace resources {
             base.pec.smallerAsDie = true;
             base.pec.smallerAsDie = true;
             base.mc.destroydecor = true;
-            items::projectiles.insert(std::make_pair("aquabolt", base));
+            enemies::projectiles.insert(std::make_pair("aquabolt", base));
         }
         //magic missile
         {
             base = tmp;
             base.dc.tex = "magicprojectile";
-            base.dc.size = { 2.2,2.2 };
+            base.dc.size = { 2.625,2.625 };
             base.dc.hasmat = false;
             base.dc.hidden = false;
             base.pc.stoponcollision = true;
@@ -1792,13 +1821,13 @@ namespace resources {
             base.mc.onDeath = mobFunctions::ondie_magicprojectile;
             base.ac.onupdate = mobFunctions::magicprojectileUpdate;
             base.mc.destroydecor = true;
-            items::projectiles.insert(std::make_pair("magicprojectile", base));
+            enemies::projectiles.insert(std::make_pair("magicprojectile", base));
         }
         //starfurystar
         {
             base = tmp;
             base.dc.tex = "starfurystar";
-            base.dc.size = { 1.2,1.2 };
+            base.dc.size = { 2,2 };
             base.dc.hasmat = false;
             base.dc.hidden = false;
             base.pc.size = { 0.3,0.3 };
@@ -1834,7 +1863,7 @@ namespace resources {
             base.mc.onDeath = mobFunctions::ondie_starfurystar;
             base.ac.onupdate = mobFunctions::starfurystarUpdate;
             base.mc.destroydecor = true;
-            items::projectiles.insert(std::make_pair("starfurystar", base));
+            enemies::projectiles.insert(std::make_pair("starfurystar", base));
         }
         //enchantedboomerang
         {
@@ -1876,7 +1905,7 @@ namespace resources {
             base.pec.stoponcollision = false;
             base.pec.smallerAsDie = true;
             base.mc.destroydecor = true;
-            items::projectiles.insert(std::make_pair("enchantedboomerang", base));
+            enemies::projectiles.insert(std::make_pair("enchantedboomerang", base));
         }
         //wooden boomerang
         {
@@ -1900,7 +1929,7 @@ namespace resources {
             base.ac.actions = { {6, mobFunctions::boomerangChangeDir, 1} };
             base.ac.onupdate = mobFunctions::boomerangOnUpdate;
             base.mc.destroydecor = true;
-            items::projectiles.insert(std::make_pair("woodenboomerang", base));
+            enemies::projectiles.insert(std::make_pair("woodenboomerang", base));
         }
         //frozenboomerang
         {
@@ -1942,7 +1971,7 @@ namespace resources {
             base.pec.stoponcollision = false;
             base.pec.smallerAsDie = true;
             base.mc.destroydecor = true;
-            items::projectiles.insert(std::make_pair("frozenboomerang", base));
+            enemies::projectiles.insert(std::make_pair("frozenboomerang", base));
         }
         //lightdisc
         {
@@ -1969,13 +1998,13 @@ namespace resources {
             base.ac.actions = { {16, mobFunctions::boomerangChangeDir, 1} };
             base.ac.onupdate = mobFunctions::lightdiscOnUpdate;
             base.mc.destroydecor = true;
-            items::projectiles.insert(std::make_pair("lightdisc", base));
+            enemies::projectiles.insert(std::make_pair("lightdisc", base));
         }
         //icebladeprojectile
         {
             base = tmp;
             base.dc.tex = "empty";
-            base.dc.size = { 2,2 };
+            base.dc.size = { 1,1 };
             base.dc.hasmat = true;
             base.dc.hidden = false;
             base.pc.stoponcollision = true;
@@ -2010,7 +2039,7 @@ namespace resources {
             base.mc.onDeath = mobFunctions::ondie_icebladeprojectile;
             base.ac.onupdate = mobFunctions::icebladeprojectileOnUpdate;
             base.mc.destroydecor = true;
-            items::projectiles.insert(std::make_pair("icebladeprojectile", base));
+            enemies::projectiles.insert(std::make_pair("icebladeprojectile", base));
         }
         //terrabladeswing
         {
@@ -2053,7 +2082,7 @@ namespace resources {
             base.pec.stopAsDie = true;
             base.ac.onupdate = mobFunctions::terrabladeswingOnUpdate;
             base.mc.destroydecor = true;
-            items::projectiles.insert(std::make_pair("terrabladeswing", base));
+            enemies::projectiles.insert(std::make_pair("terrabladeswing", base));
         }
         //terrabladeprojectile
         {
@@ -2096,13 +2125,13 @@ namespace resources {
             base.pec.randradius = 2;
             base.pec.stopAsDie = true;
             base.mc.destroydecor = true;
-            items::projectiles.insert(std::make_pair("terrabladeprojectile", base));
+            enemies::projectiles.insert(std::make_pair("terrabladeprojectile", base));
         }
         //spacegun
         {
             base = tmp;
             base.dc.tex = "spacegunprojectile";
-            base.dc.size = { 2.5,1.5 };
+            base.dc.size = { 2.625,2.625 };
             base.dc.hasmat = true;
             base.dc.hidden = false;
             base.pc.stoponcollision = false;
@@ -2119,7 +2148,7 @@ namespace resources {
             base.ac.ai = ai_ARROW;
             base.ac.onupdate = mobFunctions::bulletUpdate;
             base.mc.destroydecor = true;
-            items::projectiles.insert(std::make_pair("spacegunprojectile", base));
+            enemies::projectiles.insert(std::make_pair("spacegunprojectile", base));
         }
         //enchantedsword
         {
@@ -2161,7 +2190,7 @@ namespace resources {
             base.pec.smallerAsDie = true;
             base.pec.stopAsDie = true;
             base.mc.destroydecor = true;
-            items::projectiles.insert(std::make_pair("enchantedswordprojectile", base));
+            enemies::projectiles.insert(std::make_pair("enchantedswordprojectile", base));
         }
         //snowball
         {
@@ -2201,7 +2230,7 @@ namespace resources {
             base.pec.stopAsDie = true;
             base.pec.speedmultiplier = 1;
             base.mc.destroydecor = true;
-            items::projectiles.insert(std::make_pair("snowball", base));
+            enemies::projectiles.insert(std::make_pair("snowball", base));
         }
         //vilethorn
         {
@@ -2223,13 +2252,13 @@ namespace resources {
             base.ac.ai = ai_ARROW;
             base.ac.onupdate = mobFunctions::vilethornUpdate;
             base.mc.destroydecor = true;
-            items::projectiles.insert(std::make_pair("vilethorn", base));
+            enemies::projectiles.insert(std::make_pair("vilethorn", base));
         }
         //bee
         {
             base = tmp;
             base.dc.tex = "bee";
-            base.dc.size = { 0.8,0.8 };
+            base.dc.size = { 0.625,0.625 };
             base.dc.hasmat = true;
             base.dc.hidden = false;
             base.pc.size = { 0.2,0.2 };
@@ -2247,13 +2276,13 @@ namespace resources {
             base.ac.stats["counter"].intVal = 0;
             base.ac.ai = ai_ARROW;
             base.ac.onupdate = mobFunctions::beeUpdate;
-            items::projectiles.insert(std::make_pair("bee", base));
+            enemies::projectiles.insert(std::make_pair("bee", base));
         }
         //mini retina laser
         {
             base = tmp;
             base.dc.tex = "flyingbullet";
-            base.dc.size = { 1.5,1.5 };
+            base.dc.size = { 1.25,1.25 };
             base.dc.hasmat = true;
             base.dc.hidden = false;
             base.pc.stoponcollision = false;
@@ -2270,7 +2299,7 @@ namespace resources {
             base.ac.ai = ai_ARROW;
             base.ac.onupdate = mobFunctions::bulletUpdate;
             base.mc.destroydecor = true;
-            items::projectiles.insert(std::make_pair("miniretinalaser", base));
+            enemies::projectiles.insert(std::make_pair("miniretinalaser", base));
         }
         //imp
         {
@@ -2313,7 +2342,7 @@ namespace resources {
             base.ac.onupdate = mobFunctions::icebladeprojectileOnUpdate;
             base.mc.onCollision.insert(std::make_pair(mf_ENEMY, collisionFs::volcanoDamage));
             base.mc.destroydecor = true;
-            items::projectiles.insert(std::make_pair("impfireball", base));
+            enemies::projectiles.insert(std::make_pair("impfireball", base));
         }
         //spikediceslime
         {
@@ -2349,7 +2378,7 @@ namespace resources {
             base.pec.randrotation = 8;
             base.pec.stoponcollision = false;
             base.pec.smallerAsDie = true;
-            items::projectiles.insert(std::make_pair("spikediceslimeprojectile", base));
+            enemies::projectiles.insert(std::make_pair("spikediceslimeprojectile", base));
         }
         //spikedjungleslime
         {
@@ -2368,7 +2397,7 @@ namespace resources {
             base.ac.ai = ai_ARROW;
             base.ac.onupdate = mobFunctions::bulletUpdate;
             base.mc.onPlayerCollision = collisionFs::damagePlayerPoison;
-            items::projectiles.insert(std::make_pair("spikedjungleslimeprojectile", base));
+            enemies::projectiles.insert(std::make_pair("spikedjungleslimeprojectile", base));
         }
         //demonscythe
         {
@@ -2407,7 +2436,7 @@ namespace resources {
             base.pec.smallerAsDie = true;
             base.pec.disappearAsDie = true;
             base.pec.radius = 2;
-            items::projectiles.insert(std::make_pair("demonscythe", base));
+            enemies::projectiles.insert(std::make_pair("demonscythe", base));
         }
         //hornetsting
         {
@@ -2422,12 +2451,11 @@ namespace resources {
             base.mc.damage = 26;
             base.mc.hitboxradius = 2;
             base.mc.hp = 1;
-            base.mc.knockback = 0;
-            base.mc.light = glm::vec3(0,0,0.7);
+            base.mc.knockback = 0.4;
             base.ac.ai = ai_ARROW;
             base.mc.onPlayerCollision = collisionFs::damagePlayerPoison;
             base.ac.onupdate = mobFunctions::bulletUpdate;
-            items::projectiles.insert(std::make_pair("hornetsting", base));
+            enemies::projectiles.insert(std::make_pair("hornetsting", base));
         }
         //dark caster projectile
         {
@@ -2444,7 +2472,7 @@ namespace resources {
             base.mc.knockback = 0;
             base.ac.ai = ai_ARROW;
             base.mc.onPlayerCollision = collisionFs::damagePlayer;
-            items::projectiles.insert(std::make_pair("darkcasterprojectile", base));
+            enemies::projectiles.insert(std::make_pair("darkcasterprojectile", base));
         }
         //blade of grass
         {
@@ -2465,7 +2493,46 @@ namespace resources {
             base.mc.onDeath = mobFunctions::ondie_bladeofgrassprojectile;
             base.ac.onupdate = mobFunctions::bladeOfGrassOnUpdate;
             base.mc.onCollision.insert(std::make_pair(mf_ENEMY, collisionFs::bladeofgrassDamage));
-            items::projectiles.insert(std::make_pair("bladeofgrassprojectile", base));
+            enemies::projectiles.insert(std::make_pair("bladeofgrassprojectile", base));
+        }
+        //wallofflesheyelaser
+        {
+            base = tmp;
+            base.dc.tex = "wallofflesheyelaser";
+            base.dc.size = glm::vec3(3.75);
+            base.dc.hasmat = true;
+            base.dc.hidden = false;
+            base.pc.stoponcollision = false;
+            base.pc.size = { 0.3, 0.3 };
+            base.pc.weight = 0;
+            base.mc.damage = 26;
+            base.mc.hitboxradius = 1;
+            base.mc.hp = 123;
+            base.mc.knockback = 0.7;
+            base.mc.light = glm::vec3(2, 0, 2);
+            base.ac.ai = ai_ARROW;
+            base.mc.onPlayerCollision = collisionFs::damagePlayer;
+            base.ac.onupdate = mobFunctions::bulletUpdate;
+            enemies::projectiles.insert(std::make_pair("wallofflesheyelaser", base));
+        }
+        //muramaasa
+        {
+            base = tmp;
+            base.dc.tex = "muramasaprojectile";
+            base.dc.size = glm::vec2(3);
+            base.dc.hasmat = true;
+            base.dc.hidden = false;
+            base.pc.stoponcollision = false;
+            base.pc.weight = 0;
+            base.mc.damage = 26;
+            base.mc.hitboxradius = 1;
+            base.mc.hp = 1;
+            base.mc.knockback = 0;
+            base.ac.ai = ai_ARROW;
+            base.ac.onupdate = mobFunctions::muramasaprojectileUpdate;
+            base.mc.killin = 15;
+            base.dc.opacity = 0.5;
+            enemies::projectiles.insert(std::make_pair("muramasaprojectile", base));
         }
     }
 
@@ -2580,10 +2647,10 @@ namespace resources {
         {
             enemyBase slime = base;
             slime.aC.ai = ai_GREENSLIME;
-            slime.pC.size = { 4, 2.8 };
+            slime.pC.size = { 2.75, 1.75 };
             slime.pC.weight = 1;
             slime.pC.friction = false;
-            slime.dC.size = { 4, 4 };
+            slime.dC.size = { 2.75, 2.75 };
             slime.dC.tex = "colorableslime";
             slime.mC.displayName = "Slime";
             slime.mC.hitboxradius = 1.2;
@@ -2611,10 +2678,10 @@ namespace resources {
         {
             enemyBase slime = base;
             slime.aC.ai = ai_GREENSLIME;
-            slime.pC.size = { 3, 2.1 };
+            slime.pC.size = { 2.5, 1.8 };
             slime.pC.weight = 1;
             slime.pC.friction = false;
-            slime.dC.size = { 3, 3 };
+            slime.dC.size = { 2.5, 2.5 };
             slime.dC.tex = "spikediceslime";
             slime.mC.displayName = "Spiked ice slime";
             slime.mC.hitboxradius = 1.2;
@@ -2641,10 +2708,10 @@ namespace resources {
         {
             enemyBase slime = base;
             slime.aC.ai = ai_GREENSLIME;
-            slime.pC.size = { 3, 2.1 };
+            slime.pC.size = { 2.5, 1.8 };
             slime.pC.weight = 1;
             slime.pC.friction = false;
-            slime.dC.size = { 3, 3 };
+            slime.dC.size = { 2.5, 2.5 };
             slime.dC.tex = "spikedjungleslime";
             slime.mC.displayName = "Spiked jungle slime";
             slime.mC.hitboxradius = 1.2;
@@ -2682,7 +2749,7 @@ namespace resources {
         {
             enemyBase demoneye = base;
             demoneye.aC.ai = ai_DEMONEYE;
-            demoneye.dC.size = glm::vec2(1.7);
+            demoneye.dC.size = glm::vec2(2.25);
             demoneye.pC.size = glm::vec2(1.4);
             demoneye.pC.friction = false;
             demoneye.dC.tex = "demoneye";
@@ -2708,7 +2775,7 @@ namespace resources {
         {
             enemyBase demoneye = base;
             demoneye.aC.ai = ai_DEMONEYE;
-            demoneye.dC.size = glm::vec2(1.5);
+            demoneye.dC.size = glm::vec2(1.875);
             demoneye.pC.size = glm::vec2(1);
             demoneye.pC.friction = false;
             demoneye.dC.tex = "servantofcthulu";
@@ -2758,7 +2825,7 @@ namespace resources {
             enemyBase bunny = base;
             bunny.aC.ai = ai_BUNNY;
             bunny.pC.size = glm::vec2(2);
-            bunny.dC.size = glm::vec2(2);
+            bunny.dC.size = glm::vec2(1.875);
             bunny.dC.tex = "bunny";
             bunny.aC.actions.push_back({ 1, mobFunctions::bunnyUpdate, -1 });
             bunny.aC.stats["standinganim"].charp = "bunny";
@@ -2879,8 +2946,8 @@ namespace resources {
         {
             enemyBase merchant = base;
             merchant.aC.ai = ai_GUIDE;
-            merchant.pC.size = glm::vec2(1.5, 3);
-            merchant.dC.size = glm::vec2(2.8);
+            merchant.pC.size = glm::vec2(2, 3);
+            merchant.dC.size = glm::vec2(3);
             merchant.dC.tex = "merchant";
             merchant.mC.hp = merchant.mC.maxhp = 250;
             merchant.hpbar = true;
@@ -2947,7 +3014,7 @@ namespace resources {
         {
             enemyBase imp = base;
             imp.aC.ai = ai_IMP;
-            imp.dC.size = glm::vec2(3.5);
+            imp.dC.size = glm::vec2(2.875);
             imp.pC.size = glm::vec2(1.4);
             imp.pC.friction = false;
             imp.dC.tex = "imp";
@@ -2999,8 +3066,8 @@ namespace resources {
         {
             enemyBase mouse = base;
             mouse.aC.ai = ai_BUNNY;
-            mouse.pC.size = glm::vec2(0.9);
-            mouse.dC.size = glm::vec2(1);
+            mouse.pC.size = glm::vec2(0.875);
+            mouse.dC.size = glm::vec2(0.875);
             mouse.dC.tex = "mouse";
             mouse.aC.actions.push_back({ 1, mobFunctions::bunnyUpdate, -1 });
             mouse.aC.stats["ms"].floatVal = 2.2;
@@ -3021,7 +3088,7 @@ namespace resources {
         {
             enemyBase eaterofsouls = base;
             eaterofsouls.aC.ai = ai_DEMONEYE;
-            eaterofsouls.dC.size = glm::vec2(5);
+            eaterofsouls.dC.size = glm::vec2(4.75);
             eaterofsouls.pC.size = glm::vec2(4);
             eaterofsouls.pC.friction = false;
             eaterofsouls.dC.tex = "eaterofsouls";
@@ -3048,7 +3115,7 @@ namespace resources {
         {
             enemyBase cavebat = base;
             cavebat.aC.ai = ai_DEMONEYE;
-            cavebat.dC.size = glm::vec2(1.5);
+            cavebat.dC.size = glm::vec2(1.75);
             cavebat.pC.size = glm::vec2(1);
             cavebat.pC.friction = false;
             cavebat.dC.tex = "cavebat";
@@ -3080,7 +3147,7 @@ namespace resources {
         {
             enemyBase cavebat = base;
             cavebat.aC.ai = ai_DEMONEYE;
-            cavebat.dC.size = glm::vec2(1.5);
+            cavebat.dC.size = glm::vec2(1.75);
             cavebat.pC.size = glm::vec2(1);
             cavebat.pC.friction = false;
             cavebat.dC.tex = "junglebat";
@@ -3112,7 +3179,7 @@ namespace resources {
         {
             enemyBase cavebat = base;
             cavebat.aC.ai = ai_DEMONEYE;
-            cavebat.dC.size = glm::vec2(1.5);
+            cavebat.dC.size = glm::vec2(1.75);
             cavebat.pC.size = glm::vec2(1);
             cavebat.pC.friction = false;
             cavebat.dC.tex = "hellbat";
@@ -3144,7 +3211,7 @@ namespace resources {
         {
             enemyBase demon = base;
             demon.aC.ai = ai_DEMONEYE;
-            demon.dC.size = glm::vec2(5);
+            demon.dC.size = glm::vec2(5.125);
             demon.pC.size = glm::vec2(4);
             demon.pC.friction = false;
             demon.dC.tex = "demon";
@@ -3176,7 +3243,7 @@ namespace resources {
         {
             enemyBase vulture = base;
             vulture.aC.ai = ai_DEMONEYE;
-            vulture.dC.size = glm::vec2(5);
+            vulture.dC.size = glm::vec2(4.375);
             vulture.pC.size = glm::vec2(4);
             vulture.pC.friction = false;
             vulture.dC.tex = "vulture";
@@ -3206,7 +3273,7 @@ namespace resources {
         {
             enemyBase hornet = base;
             hornet.aC.ai = ai_DEMONEYE;
-            hornet.dC.size = glm::vec2(3);
+            hornet.dC.size = glm::vec2(2.875);
             hornet.pC.size = glm::vec2(2.2);
             hornet.pC.friction = false;
             hornet.dC.tex = "hornet";
@@ -3240,7 +3307,7 @@ namespace resources {
             antlioncharger.pC.size = glm::vec2(2, 2.32);
             antlioncharger.pC.friction = false;
             antlioncharger.pC.weight = 1.1;
-            antlioncharger.dC.size = glm::vec2(5);
+            antlioncharger.dC.size = glm::vec2(5.125);
             antlioncharger.dC.tex = "antlioncharger";
             antlioncharger.aC.onupdate = mobFunctions::zombieOnUpdate;
             antlioncharger.mC.hitboxradius = 1.3;
@@ -3269,7 +3336,7 @@ namespace resources {
             darkcaster.pC.weight = 1.1;
             darkcaster.aC.actions.push_back({ 180, mobFunctions::casterTeleport, -1 });
             darkcaster.aC.actions.push_back({ 140, mobFunctions::casterShoot, 1 });
-            darkcaster.dC.size = glm::vec2(2.8);
+            darkcaster.dC.size = glm::vec2(3);
             darkcaster.dC.tex = "darkcaster";
             darkcaster.mC.hitboxradius = 1.3;
             darkcaster.mC.hp = darkcaster.mC.maxhp = 50;
@@ -3375,11 +3442,11 @@ namespace resources {
         {
             enemyBase eyeofcthulu = base;
             eyeofcthulu.aC.ai = ai_ZOMBIE;
-            eyeofcthulu.pC.size = glm::vec2(11);
+            eyeofcthulu.pC.size = glm::vec2(9.625);
             eyeofcthulu.pC.friction = false;
             eyeofcthulu.pC.weight = 0;
             eyeofcthulu.pC.stoponcollision = false;
-            eyeofcthulu.dC.size = glm::vec2(11);
+            eyeofcthulu.dC.size = glm::vec2(9.625);
             eyeofcthulu.dC.tex = "eyeofcthulu1";
             eyeofcthulu.aC.onupdate = mobFunctions::eyeofcthuluOnUpdate;
             eyeofcthulu.mC.hitboxradius = 11;
@@ -3417,8 +3484,8 @@ namespace resources {
             eyeofcthulu.bossbar = "bosshead0";
             eyeofcthulu.hpbar = false;
             eyeofcthulu.mC.gore = "eyeofcthulu";
-            eyeofcthulu.prespawntext = "You feel an evil presence watching you..";
-            eyeofcthulu.spawntext = "The Eye of Cthulu has awoken!";
+            eyeofcthulu.prespawntext = "\\c040255040You feel an evil presence watching you..";
+            eyeofcthulu.spawntext = "\\c255000255The Eye of Cthulu has awoken!";
             eyeofcthulu.prespawntimer = 60 * 30;
             eyeofcthulu.slots = 10;
             enemies::enemies.insert(std::make_pair("eyeofcthulu", eyeofcthulu));
@@ -3454,6 +3521,7 @@ namespace resources {
             eaterofworlds.drops = { {"demoniteore",{5, 2, 1}}, {"healthpotion", {1, 0, 0.1}}, {"shadowscales", {2, 1, 0.5}}, {"silvercoin",{4, 2, 1}} };
             eaterofworlds.spawnFunc = enemies::wormSpawnFunc;
             eaterofworlds.mC.gore = "eaterofworldshead";
+            eaterofworlds.spawntext = "\\c255000255The Eater of Worlds has awoken!";
             eaterofworlds.slots = 10;
             enemies::enemies.insert(std::make_pair("eaterofworldshead", eaterofworlds));
         }
@@ -3535,7 +3603,7 @@ namespace resources {
             enemyBase penguin1 = base;
             penguin1.aC.ai = ai_BUNNY;
             penguin1.pC.size = glm::vec2(1.3, 3.1);
-            penguin1.dC.size = glm::vec2(3.1);
+            penguin1.dC.size = glm::vec2(2.375);
             penguin1.dC.tex = "pengu1";
             penguin1.aC.onupdate = mobFunctions::bunnyUpdate;
             penguin1.aC.stats["ms"].floatVal = 0.6;
@@ -3557,7 +3625,7 @@ namespace resources {
             enemyBase penguin1 = base;
             penguin1.aC.ai = ai_BUNNY;
             penguin1.pC.size = glm::vec2(1.3, 3.1);
-            penguin1.dC.size = glm::vec2(3.1);
+            penguin1.dC.size = glm::vec2(2.375);
             penguin1.dC.tex = "pengu2";
             penguin1.aC.onupdate = mobFunctions::bunnyUpdate;
             penguin1.aC.stats["ms"].floatVal = 0.6;
@@ -3579,7 +3647,7 @@ namespace resources {
             enemyBase penguin1 = base;
             penguin1.aC.ai = ai_BUNNY;
             penguin1.pC.size = glm::vec2(1.3, 3.1);
-            penguin1.dC.size = glm::vec2(3.1);
+            penguin1.dC.size = glm::vec2(2.375);
             penguin1.dC.tex = "pengu1";
             penguin1.aC.onupdate = mobFunctions::bunnyUpdate;
             penguin1.aC.stats["ms"].floatVal = 0.6;
@@ -3601,7 +3669,7 @@ namespace resources {
             enemyBase penguin1 = base;
             penguin1.aC.ai = ai_BUNNY;
             penguin1.pC.size = glm::vec2(1.3, 3.1);
-            penguin1.dC.size = glm::vec2(3.1);
+            penguin1.dC.size = glm::vec2(2.375);
             penguin1.dC.tex = "pengu4";
             penguin1.aC.onupdate = mobFunctions::bunnyUpdate;
             penguin1.aC.stats["ms"].floatVal = 0.6;
@@ -3701,7 +3769,7 @@ namespace resources {
             enemyBase frog = base;
             frog.aC.ai = ai_BUNNY;
             frog.pC.size = glm::vec2(1.5, 1.125);
-            frog.dC.size = glm::vec2(1.5);
+            frog.dC.size = glm::vec2(1.125);
             frog.dC.tex = "frog";
             frog.aC.onupdate = mobFunctions::bunnyUpdate;
             frog.aC.stats["ms"].floatVal = 0.55;
@@ -3802,7 +3870,7 @@ namespace resources {
             goldfish.slots = 0;
             enemies::enemies.insert(std::make_pair("goldfish", goldfish));
         }
-        //fish
+        //jellyfish
         {
             enemyBase jellyfish = base;
             jellyfish.aC.ai = ai_BUNNY;
@@ -3838,6 +3906,190 @@ namespace resources {
             jellyfish.slots = 1;
             enemies::enemies.insert(std::make_pair("jellyfish", jellyfish));
         }
+        //wallofflesh
+        {
+            enemyBase wallofflesh = base;
+            wallofflesh.aC.ai = ai_BUNNY;
+            wallofflesh.pC.size = glm::vec2(8.875, 8.875);
+            wallofflesh.dC.size = glm::vec2(8.875);
+            wallofflesh.dC.tex = "wallofflesh";
+            wallofflesh.aC.onupdate = mobFunctions::walloffleshUpdate;
+            wallofflesh.pC.weight = 0;
+            wallofflesh.pC.friction = false;
+            wallofflesh.pC.stoponcollision = false;
+            wallofflesh.mC.hitboxradius = 9;
+            wallofflesh.mC.hp = wallofflesh.mC.maxhp = 5;
+            wallofflesh.mC.families = { mf_ENEMY };
+            wallofflesh.mC.displayName = "Wall of Flesh";
+            wallofflesh.mC.hitboxradius = 1.3;
+            wallofflesh.mC.hp = wallofflesh.mC.maxhp = 8000;
+            wallofflesh.mC.onCollision = { {mf_CRITTER, collisionFs::damage} };
+            wallofflesh.aC.actions = { {1, mobFunctions::walloffleshCreateBody, 1} };
+            wallofflesh.mC.families = { mf_ENEMY };
+            wallofflesh.mC.damage = 50;
+            wallofflesh.mC.defense = 12;
+            wallofflesh.mC.knockback = .7;
+            wallofflesh.mC.kbResist = 1;
+            wallofflesh.mC.onPlayerCollision = collisionFs::damagePlayer;
+            wallofflesh.drops = { {"silvercoin",{4, 2, 1}} };
+            wallofflesh.slots = 15;
+            wallofflesh.mC.candespawn = false;
+            wallofflesh.bossbar = "bosshead2";
+            wallofflesh.spawntext = "\\c255000255The Wall of Flesh has awoken!";
+            enemies::enemies.insert(std::make_pair("walloffflesh", wallofflesh));
+        }
+        //wallofflesheye
+        {
+            enemyBase wallofflesheye = base;
+            wallofflesheye.aC.ai = ai_BUNNY;
+            wallofflesheye.pC.size = glm::vec2(8.875, 8.875);
+            wallofflesheye.dC.size = glm::vec2(8.875);
+            wallofflesheye.dC.tex = "wallofflesheye";
+            wallofflesheye.dC.hasmat = true;
+            wallofflesheye.aC.onupdate = mobFunctions::wallofflesheyeUpdate;
+            wallofflesheye.pC.weight = 0;
+            wallofflesheye.aC.actions.push_back({ 5, mobFunctions::wallofflesheyeShoot, -1 });
+            wallofflesheye.pC.friction = false;
+            wallofflesheye.pC.stoponcollision = false;
+            wallofflesheye.mC.hitboxradius = 9;
+            wallofflesheye.mC.hp = wallofflesheye.mC.maxhp = 5;
+            wallofflesheye.mC.families = { mf_ENEMY };
+            wallofflesheye.mC.displayName = "Wall of Flesh";
+            wallofflesheye.mC.hitboxradius = 1.3;
+            wallofflesheye.mC.hp = wallofflesheye.mC.maxhp = 8000;
+            wallofflesheye.mC.onCollision = { {mf_CRITTER, collisionFs::damage} };
+            wallofflesheye.mC.families = { mf_ENEMY };
+            wallofflesheye.mC.damage = 50;
+            wallofflesheye.mC.knockback = .7;
+            wallofflesheye.mC.kbResist = 1;
+            wallofflesheye.mC.onPlayerCollision = collisionFs::damagePlayer;
+            wallofflesheye.mC.candespawn = false;
+            wallofflesheye.drops = { {"silvercoin",{4, 2, 1}} };
+            wallofflesheye.slots = 15;
+            wallofflesheye.bossbar = "bosshead2";
+            enemies::enemies.insert(std::make_pair("wallofflesheye", wallofflesheye));
+        }
+        //walloffleshbody
+        {
+            enemyBase walloffleshbody = base;
+            walloffleshbody.aC.ai = ai_BUNNY;
+            walloffleshbody.dC.size = glm::vec2(8.875);
+            walloffleshbody.dC.tex = "walloffleshbody";
+            walloffleshbody.aC.onupdate = mobFunctions::walloffleshbodyUpdate;
+            walloffleshbody.hasmob = false;
+            walloffleshbody.hasphys = false;
+            enemies::enemies.insert(std::make_pair("walloffleshbody", walloffleshbody));
+        }
+        //link
+        {
+            enemyBase link = base;
+            link.aC.ai = ai_BUNNY;
+            link.dC.size = glm::vec2(1.75);
+            link.dC.tex = "thehungrylink";
+            link.dC.hasmat = true;
+            link.aC.onupdate = mobFunctions::linkUpdateRef;
+            link.mC.hp = 1;
+            link.pC.weight = 0;
+            link.mC.candespawn = false;
+            link.pC.isstatic = true;
+            enemies::enemies.insert(std::make_pair("link", link));
+        }
+        //thehungry
+        {
+            enemyBase thehungry = base;
+            thehungry.aC.ai = ai_BUNNY;
+            thehungry.dC.size = glm::vec2(3.875);
+            thehungry.dC.hasmat = true;
+            thehungry.pC.size = glm::vec2(1);
+            thehungry.pC.friction = false;
+            thehungry.dC.tex = "thehungry";
+            thehungry.aC.onupdate = mobFunctions::thehungryOnUpdate;
+            thehungry.pC.stoponcollision = false;
+            thehungry.pC.weight = 0;
+            thehungry.mC.hitboxradius = 3;
+            thehungry.mC.hp = thehungry.mC.maxhp = 240;
+            thehungry.mC.families = { mf_ENEMY };
+            thehungry.mC.kbResist = 0.2;
+            thehungry.mC.knockback = 0.5;
+            thehungry.mC.damage = 60;
+            thehungry.mC.defense = 30;
+            thehungry.mC.displayName = "The Hungry";
+            thehungry.mC.onDeath = mobFunctions::ondie_thehungry;
+            thehungry.hpbar = true;
+            enemies::enemies.insert(std::make_pair("thehungry", thehungry));
+        }
+        //thehungryflying
+        {
+            enemyBase thehungry = base;
+            thehungry.aC.ai = ai_BUNNY;
+            thehungry.dC.size = glm::vec2(3.875);
+            thehungry.dC.hasmat = true;
+            thehungry.pC.size = glm::vec2(1);
+            thehungry.pC.friction = false;
+            thehungry.dC.tex = "thehungry";
+            thehungry.aC.onupdate = mobFunctions::demoneyeOnUpdate;
+            thehungry.pC.stoponcollision = false;
+            thehungry.pC.weight = 0;
+            thehungry.mC.hitboxradius = 3;
+            thehungry.mC.hp = thehungry.mC.maxhp = 240;
+            thehungry.mC.families = { mf_ENEMY };
+            thehungry.mC.kbResist = 0.2;
+            thehungry.mC.knockback = 0.5;
+            thehungry.mC.damage = 60;
+            thehungry.mC.defense = 30;
+            thehungry.mC.displayName = "The Hungry";
+            thehungry.hpbar = true;
+            enemies::enemies.insert(std::make_pair("thehungryflying", thehungry));
+        }
+        //wallofflesharm
+        {
+            enemyBase thehungry = base;
+            thehungry.aC.ai = ai_BUNNY;
+            thehungry.dC.size = glm::vec2(3.875);
+            thehungry.dC.hasmat = true;
+            thehungry.dC.tex = "thehungry";
+            thehungry.aC.onupdate = mobFunctions::wallofflesharmOnUpdate;
+            thehungry.hpbar = true;
+            thehungry.hasmob = false;
+            thehungry.hasphys = false;
+            enemies::enemies.insert(std::make_pair("wallofflesharm", thehungry));
+        }
+        //voodoodoll
+        {
+            enemyBase voodoodoll = base;
+            voodoodoll.aC.ai = ai_BUNNY;
+            voodoodoll.dC.size = glm::vec2(1.75);
+            voodoodoll.dC.hasmat = true;
+            voodoodoll.dC.tex = "voodoodollitem";
+            voodoodoll.aC.onupdate = mobFunctions::voodoodollOnUpdate;
+            voodoodoll.pC.size = glm::vec2(1);
+            voodoodoll.hasmob = false;
+            enemies::enemies.insert(std::make_pair("voodoodoll", voodoodoll));
+        }
+        enemies::addEnemyToDay("bird", "forest");
+        enemies::addEnemyToDay("bird", "jungle");
+        enemies::addEnemyToDay("bird", "snow");
+        enemies::addEnemyToDay("fish", "forest");
+        enemies::addEnemyToDay("fish", "jungle");
+        enemies::addEnemyToDay("fish", "snow");
+        enemies::addEnemyToUnderground("jellyfish", "snow");
+        enemies::addEnemyToUnderground("jellyfish", "forest");
+        enemies::addEnemyToUnderground("jellyfish", "jungle");
+        enemies::addEnemyToUnderground("jellyfish", "corruption");
+        enemies::addEnemyToDay("scorpion", "desert");
+        enemies::addEnemyToDay("frog", "jungle");
+        enemies::addEnemyToUnderground("frog", "jungle");
+        enemies::addEnemyToCavern("frog", "jungle");
+        enemies::addEnemyToUnderground("snail", "forest");
+        enemies::addEnemyToUnderground("snail", "snow");
+        enemies::addEnemyToUnderground("snail", "jungle");
+        enemies::addEnemyToUnderground("snail", "corruption");
+        enemies::addEnemyToUnderground("grubby", "jungle");
+        enemies::addEnemyToCavern("snail", "forest");
+        enemies::addEnemyToCavern("snail", "snow");
+        enemies::addEnemyToCavern("snail", "jungle");
+        enemies::addEnemyToCavern("snail", "corruption");
+        enemies::addEnemyToCavern("grubby", "jungle");
         enemies::addEnemyToDay("grasshopper", "forest");
         enemies::addEnemyToDay("penguin1", "snow");
         enemies::addEnemyToDay("penguin2", "snow");
@@ -3865,12 +4117,12 @@ namespace resources {
         enemies::addEnemyToNight("demoneye", "desert");
         enemies::addEnemyToDay("eaterofsouls", "corruption");
         enemies::addEnemyToNight("eaterofsouls", "corruption");
-        enemies::addEnemyToNight("star", "forest");
-        enemies::addEnemyToNight("star", "corruption");
-        enemies::addEnemyToNight("star", "jungle");
-        enemies::addEnemyToNight("star", "snow");
-        enemies::addEnemyToUnderground("mouse", "forest");
-        enemies::addEnemyToUnderground("darkcaster", "forest");
+        enemies::addEnemyToNight("star", "forest", 3);
+        enemies::addEnemyToNight("star", "corruption", 3);
+        enemies::addEnemyToNight("star", "jungle", 3);
+        enemies::addEnemyToNight("star", "snow", 3);
+        enemies::addEnemyToUnderground("mouse", "forest",2);
+        enemies::addEnemyToUnderground("darkcaster", "forest", 2);
         enemies::addEnemyToUnderground("cavebat", "forest");
         enemies::addEnemyToUnderworld("demon", "forest");
         enemies::addEnemyToUnderworld("hellbat", "forest");
@@ -4037,7 +4289,6 @@ namespace resources {
             onfire.peC.randradius = 0.5;
             onfire.peC.opacity = 0.5;
             onfire.peC.opacityovertime = 1.0f / 45;
-            onfire.peC.parent = globals::topparticleLayer;
             effect.push_back(onfire);
             particles::addEffect("onfire", effect);
         }

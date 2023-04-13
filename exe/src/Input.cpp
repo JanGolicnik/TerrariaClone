@@ -3,6 +3,8 @@
 #include <ui.h>
 #include <layers.h>
 #include <utils.h>
+#include <startMenu.h>
+#include <Window.h>
 
 namespace input {
     
@@ -318,17 +320,6 @@ namespace input {
     }
 
     void windowsize_callback(GLFWwindow* window, int width, int height) {
-        glfwSetWindowSize(globals::window, width, height);
-        glViewport(0, 0, width, height);
-        glDeleteFramebuffers(1, &globals::mainFB);
-        glDeleteFramebuffers(1, &globals::tmpFB);
-        glDeleteTextures(1, &globals::mainFBT);
-        glDeleteTextures(1, &globals::tmpFBT);
-        utils::createFrameBuffer(&globals::mainFB, &globals::mainFBT, { width, height });
-        utils::createFrameBuffer(&globals::tmpFB, &globals::tmpFBT, { width, height });
-        globals::resX = width;
-        globals::resY = height;
-        globals::fullScale = glm::vec2(globals::blocksizepx / (float)globals::resX, globals::blocksizepx / (float)globals::resY);
-        Layers::reschanged();
+        Window::changeResolution({ width, height });
     }
 }

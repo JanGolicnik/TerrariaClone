@@ -1,6 +1,7 @@
 #pragma once
 
-#include <componentSystems.h>
+#include <PhysicsSystem.h>
+#include <mobSystem.h>
 
 namespace buffs
 {

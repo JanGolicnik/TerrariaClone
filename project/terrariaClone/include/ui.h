@@ -2,10 +2,11 @@
 
 #include <core.h>
 
-#include <componentsystems.h>
 #include <items.h>
 
 #include <fstream>
+#include <drawSystem.h>
+#include <uiSystem.h>
 
 #define uiCfunctionArguments uiC* p, drawC* draw, int entity, ComponentArray<uiC>* arr
 
@@ -67,10 +68,9 @@ namespace UI
     extern bool capturingInput;
     extern std::string* capturedInput;
 
-
     void destroy();
 
-    void create();
+    void prepareInventories();
     void addElement(int entity, UIFunction func, glm::vec2 pos = glm::vec2(0), glm::vec2 size = glm::vec2(1.0f, 1.0f), int parent = -1, std::unordered_map<std::string, uiStat> stats = {}, std::unordered_map<std::string, std::string> textStats = {}, bool hidden = false, uiAnchor anchor = anchorMID);
     void deleteElement(int entity, bool self = true);
 
@@ -117,6 +117,8 @@ namespace UI
     void toggleONCLICK(uiCfunctionArguments);
     void buttonONCLICK(uiCfunctionArguments);
     void buttonONRENDER(uiCfunctionArguments);
+    void buttonONHOVER(uiCfunctionArguments);
+    void buttonONNOTHOVER(uiCfunctionArguments);
     void dragintONHOLD(uiCfunctionArguments);
     void dragintONRENDER(uiCfunctionArguments);
     void containerONRENDER(uiCfunctionArguments);
@@ -141,6 +143,7 @@ namespace UI
     void cursoritemONRIGHTCLICK(uiCfunctionArguments);
     void soundONENTER(uiCfunctionArguments);
     void toastONRENDER(uiCfunctionArguments);
+    void playerdisplayONRENDER(uiCfunctionArguments);
 
     void uiCfunc_captureInput(uiC* p);
     void uiCfunc_startGame(uiC* p);
@@ -152,9 +155,11 @@ namespace UI
     void uiCfunc_exitGame(uiC* p);
     void uiCfunc_exit(uiC* p);
     void uiCfunc_loadSpecificWorld(uiC* p);
+    void uiCfunc_deleteSpecificWorld(uiC* p);
     void uiCfunc_loadPlayer(uiC* p);
     void uiCfunc_createPlayer(uiC* p);
     void uiCfunc_loadSpecificPlayer(uiC* p);
+    void uiCfunc_deleteSpecificPlayer(uiC* p);
     void uiCfunc_toggleFullscreen(uiC* p);
     void uiCfunc_nextResolution(uiC* p);
     void uiCfunc_resetKeybinds(uiC* p);
@@ -188,13 +193,16 @@ namespace UI
         int itemslot(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor, InventoryItem* itemp, float textsize, itemFamily limitfamily = if_ANY);
         int shopitemslot(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor, InventoryItem* itemp, float textsize, itemFamily limitfamily = if_ANY);
         int guideslot(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor, InventoryItem* itemp, float textsize, itemFamily limitfamily = if_ANY);
-        int text(int parent, glm::vec2 pos, bool hidden, uiAnchor anchor, std::string text = "", float textSize = globals::fontSize, bool centered = false, bool colorOnHover = false, float hoveredScale = 1, float opacity = 1);
-        int text(int parent, glm::vec2 pos, bool hidden, uiAnchor anchor, std::string *text = nullptr, float textSize = globals::fontSize, bool centered = false, bool colorOnHover = false, float hoveredScale = 1, float opacity = 1);
+        int text(int parent, glm::vec2 pos, bool hidden, uiAnchor anchor, std::string text = "", float textSize = globals::fontSize, bool centered = false, bool colorOnHover = false, float hoveredScale = globals::fontSize * 2, float opacity = 1);
+        int text(int parent, glm::vec2 pos, bool hidden, uiAnchor anchor, std::string *text = nullptr, float textSize = globals::fontSize, bool centered = false, bool colorOnHover = false, float hoveredScale = globals::fontSize * 2, float opacity = 1);
         int toast(int parent, glm::vec2 pos, bool hidden, uiAnchor anchor, std::string text, float textSize = globals::fontSize);
+        int playerSelector(int parent, glm::vec2 pos, bool hidden, uiAnchor anchor, int playerDataIndex, float textSize = globals::fontSize);
+        int playerDisplay(int parent, glm::vec2 pos, bool hidden, uiAnchor anchor, int playerDataIndex);
+        int worldSelector(int parent, glm::vec2 pos, bool hidden, uiAnchor anchor, int playerDataIndex, float textSize = globals::fontSize);
         int cursoritem(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor, InventoryItem* itemp);
         int cursortext(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor);
         int craftingslot(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor);
-        int display(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor, std::string tex = "empty", bool autocorrect = true, bool flipX = false, bool flipY = false, glm::vec3* color = nullptr, bool autolight = false, float* huep = nullptr);
+        int display(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor, std::string tex = "empty", bool autocorrect = true, bool flipX = false, bool flipY = false, glm::vec3* color = nullptr, bool autolight = false, float* huep = nullptr, float opacity = 1);
         int tooltip(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor);
         int resourcebar(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor);
         int dragfloat(int parent, glm::vec2 pos, glm::vec2 size, bool hidden, uiAnchor anchor);

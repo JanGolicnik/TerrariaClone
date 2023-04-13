@@ -31,7 +31,8 @@ namespace buffs {
 			p->hp--;
 		}
 
-		particles::spawnEffect("onfire", *phys->position);
+		int e = particles::spawnEffect("onfire", *phys->position);
+		ECS::getComponent<particleEmmiterC>(e)->parent = globals::topparticleLayer;
 	}
 	void happybuff(ActiveBuff* buff, mobC* p, physicsC* phys)
 	{

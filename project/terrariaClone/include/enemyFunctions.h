@@ -2,7 +2,9 @@
 
 #include <core.h>
 #include <ECS/ECS.h>
-#include <componentsystems.h>
+#include <mobSystem.h>
+#include <PhysicsSystem.h>
+#include <aiSystem.h>
 
 #define args  aiC* p, int entity, physicsC* phys, ComponentArray<aiC>*, aiAction* action, int ctime
 namespace mobFunctions
@@ -66,6 +68,17 @@ namespace mobFunctions
 	void birdUpdate(args);
 	void goldfishUpdate(args);
 	void jellyfishUpdate(args);
+	void walloffleshUpdate(args);
+	void walloffleshCreateBody(args);
+	void wallofflesheyeUpdate(args);
+	void walloffleshbodyUpdate(args);
+	void wallofflesheyeShoot(args);
+	void linkUpdateRef(args);
+	void linkUpdateEnt(args);
+	void thehungryOnUpdate(args);
+	void wallofflesharmOnUpdate(args);
+	void voodoodollOnUpdate(args);
+	void muramasaprojectileUpdate(args);
 
 	void ondie_npc(mobDeathargs);
 	void ondie_nothing(mobDeathargs);
@@ -80,6 +93,7 @@ namespace mobFunctions
 	void ondie_impprojectile(mobDeathargs);
 	void ondie_bladeofgrassprojectile(mobDeathargs);
 	void ondie_eaterofworlds(mobDeathargs);
+	void ondie_thehungry(mobDeathargs);
 };
 #undef args
 
@@ -95,4 +109,5 @@ namespace collisionFs {
 	void bladeofgrassDamage(mobCargs);
 	void moltenPickaxeDamage(mobCargs);
 	void moltenHamaxeDamage(mobCargs);
+	void muramasaDamage(mobCargs);
 }

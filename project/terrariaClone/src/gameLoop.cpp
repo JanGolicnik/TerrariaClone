@@ -3,7 +3,6 @@
 #include <utils.h>
 #include <input.h>
 #include <ECS/ECS.h>
-#include <componentsystems.h>
 #include <world.h>
 #include <blocks.h>
 #include <ui.h>
@@ -20,6 +19,7 @@
 #include <liquids.h>
 #include <sounds.h>
 #include <regex>
+#include <Window.h>
 
 namespace gameLoop {
 
@@ -83,7 +83,7 @@ namespace gameLoop {
 
         Player::setPos(map::PlayerSpawn);
         camera::pos = -Player::pos;
-        camera::limits = glm::vec2(-map::mapX + globals::resX / (globals::blocksizepx / 2), -map::mapY + globals::resY / (globals::blocksizepx / 2));
+        camera::limits = glm::vec2(-map::mapX + Window::res.x / (globals::blocksizepx / 2), -map::mapY + Window::res.y / (globals::blocksizepx / 2));
         settingsOpen = false;
 
         createUI();
@@ -102,13 +102,13 @@ namespace gameLoop {
         dc.tex = "sun";
         dc.parent = game::drawSys->behindBackground;
         game::drawSys->addComponent(sun, &dc);
+
         moon = ECS::newEntity();
         dc.position = std::make_shared<glm::vec2>(glm::vec2(0, 0));
         dc.tex = "moon1";
         game::drawSys->addComponent(moon, &dc);
 
         map::spawnLivingNPCS();
-
 
         Inventory::setupInventory(&UI::merchantInventory, { 10, 4 });
         UI::merchantInventory[0]->item = "dirt";
@@ -141,17 +141,14 @@ namespace gameLoop {
 
 
         if (daydtime > 1.0f / dayRate) {
-
-            globals::cdayTime++;
-            if (globals::cdayTime > globals::dayLength) {
-                globals::cdayTime = 0;
+            if (!settingsOpen) {
+                globals::cdayTime++;
+                if (globals::cdayTime > globals::dayLength) {
+                    globals::cdayTime = 0;
+                    map::resetNPCS();
+                }
             }
-
-            if (globals::cdayTime == 0) {
-                map::resetNPCS();
-            }
-
-
+            
             ldayutime = ctime;
         }
 
@@ -173,21 +170,17 @@ namespace gameLoop {
 
         static int counter = 0;
         static float sum = 0;
-
         if (dtime > 1.0f / maxFps) {
 
             if ((globals::cdayTime > 3375 && globals::cdayTime < 3600) || (globals::cdayTime < 225 && globals::cdayTime>0)) {
                 globals::dayclr += utils::approach(globals::dayclr, globals::morningclr, 225);
             }
-
             if (globals::cdayTime > 225 && globals::cdayTime < 1575) {
                 globals::dayclr += utils::approach(globals::dayclr, globals::noonclr, 225);
             }
-
             if (globals::cdayTime > 1575 && globals::cdayTime < 2025) {
                 globals::dayclr += utils::approach(globals::dayclr, globals::eveningclr, 225);
             }
-
             if (globals::cdayTime > 2025 && globals::cdayTime < 3375) {
                 globals::dayclr += utils::approach(globals::dayclr, globals::nightclr, 225);
             }
@@ -199,10 +192,13 @@ namespace gameLoop {
             }
 
             globals::time++;
-            Player::calculateStats();
+
             handleInput();
 
             if (!settingsOpen) {
+                updateSunAndMoon();
+                Player::calculateStats();
+                ECS::getComponent<drawC>(defensetext)->text = std::to_string(Player::defense);
                 UI::refreshCrafting();
                 enemies::spawnNPCS();
                 enemies::doQueues();
@@ -210,68 +206,59 @@ namespace gameLoop {
                 game::physSys->Update();
                 Player::update();
                 ECS::commitQueues();
-            }
-
-            if (Player::dead) {
-                UI::hideChildren(ECS::getComponent<uiC>(deathtextC), false, true);
-                UI::hideChildren(ECS::getComponent<uiC>(equipmentC), true);
-                UI::hideChildren(ECS::getComponent<uiC>(realtimeUI), true);
-                UI::hideChildren(ECS::getComponent<uiC>(inventoryC), true);
-            }
-            else {
-                UI::hideChildren(ECS::getComponent<uiC>(deathtextC), true, true);
-            }
-
-            globals::bgoffset = -camera::pos.x / map::mapX;
-            globals::bgoffsetY = -camera::pos.y / map::mapY;
-
-            glBindFramebuffer(GL_FRAMEBUFFER, globals::tmpFB);
-            glClearColor(globals::dayclr.r, globals::dayclr.g, globals::dayclr.b, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
-            
-            game::drawSys->UpdateBehindBackground();
-
-            if(globals::background) background::render();
-
-            game::drawSys->UpdateBehindBlocks();
-            camera::updateTowardsPlayer();
-
-            game::updateSunAndMoon(sun, moon, Player::pos);
-
-            ECS::getComponent<drawC>(defensetext)->text = std::to_string(Player::defense);
-            
-            Layers::renderLayers();
-
-            ECS::commitQueues();
-            if (!settingsOpen) {
                 game::aiSys->Update();
                 game::toolSys->Update();
                 game::droppedItemSys->Update();
                 game::mobSys->Update();
                 game::particleESys->Update();
+                ECS::commitQueues();
+                                
+                if (Player::dead) {
+                    UI::hideChildren(ECS::getComponent<uiC>(deathtextC), false, true);
+                    UI::hideChildren(ECS::getComponent<uiC>(equipmentC), true);
+                    UI::hideChildren(ECS::getComponent<uiC>(realtimeUI), true);
+                    UI::hideChildren(ECS::getComponent<uiC>(inventoryC), true);
+                }
+                else {
+                    UI::hideChildren(ECS::getComponent<uiC>(deathtextC), true, true);
+                }
+
+                camera::updateTowardsPlayer();
+                globals::bgoffset = -camera::pos.x / map::mapX;
+                globals::bgoffsetY = -camera::pos.y / map::mapY;
+
                 Layers::calculateLight();
             }
+
             game::uiSys->Update();
-            ECS::commitQueues();
+
+            input::clear();
+            
+            //rendering
+
+            Window::bindTemporaryBuffer(glm::vec4(globals::dayclr, 1.0f));
+
+            game::drawSys->UpdateBehindBackground();
+            if (globals::background) background::render();
+            game::drawSys->UpdateBehindBlocks();
+
+            Layers::renderLayers();
+
             game::drawSys->Update();
 
-            
             Player::render();
-            liquids::renderOnScreen();
-            Layers::renderLights();
-            game::drawMain();
-
-            glBindFramebuffer(GL_FRAMEBUFFER, globals::tmpFB);
-            glClearColor(1, 1, 1, 0.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
-
-            game::drawSys->UpdateFront();
-            game::drawOverlays();
-
             
-            glfwSwapBuffers(globals::window);
+            liquids::renderOnScreen();
+            
+            Layers::renderLights();
+            
+            Window::drawMain();
+            Window::bindTemporaryBuffer();
+            game::drawSys->UpdateFront();
+            Window::drawOverlays();
+            Window::swapBuffers();
+            
             ltime = ctime;
-            input::clear();
         }
     }
     void handleInput()
@@ -289,6 +276,8 @@ namespace gameLoop {
             }
             return;
         }
+
+
         auto craftingC = ECS::getComponent<uiC>(gameLoop::crafting);
         if (craftingC->hidden) {
             Player::invBlock -= input::scroll;
@@ -301,115 +290,131 @@ namespace gameLoop {
             if (input::rpressed(GLFW_KEY_R)) {
                 resources::loadAssets(true, true, true);
             }
+            return;
         }
-        else {
-            if (input::held(k_LEFT)) {
-                auto vel = Player::velocity();
-                if (vel->x > 0) vel->x += utils::approach(vel->x, -Player::ms, 35);
-                vel->x +=  utils::approach(vel->x, -Player::ms, 60);
-                Player::friction = false;
-                Player::dir = -1;
+
+
+
+        if (input::held(k_LEFT)) {
+            auto vel = Player::velocity();
+            if (vel->x > 0) vel->x += utils::approach(vel->x, -Player::ms, 35);
+            vel->x += utils::approach(vel->x, -Player::ms, 60);
+            Player::friction = false;
+            Player::dir = -1;
+        }
+        if (input::released(k_LEFT)) {
+            Player::friction = true;
+        }
+        if (input::pressed(k_RIGHT)) {
+        }
+        if (input::held(k_RIGHT)) {
+            auto vel = Player::velocity();
+            if (vel->x < 0) vel->x += utils::approach(vel->x, Player::ms, 35);
+            vel->x += utils::approach(vel->x, Player::ms, 60);
+            Player::dir = 1;
+            Player::friction = false;
+        }
+        if (input::released(k_RIGHT)) {
+            Player::friction = true;
+        }
+        if (input::held(k_DOWN)) {
+            Player::wantstoskip = true;
+        }
+        if (input::pressed(k_JUMP)) {
+            Player::jump();
+        }
+        if (input::released(k_JUMP)) {
+            Player::currJumpTime = 0;
+        }
+        if (input::pressed(k_INVENTORY)) {
+            if (Player::dead)
+            {
+                toggleSettings();
             }
-            if (input::released(k_LEFT)) {
-                Player::friction = true;
-            }
-            if (input::pressed(k_RIGHT)) {
-            }
-            if (input::held(k_RIGHT)) {
-                auto vel = Player::velocity();
-                if (vel->x < 0) vel->x += utils::approach(vel->x, Player::ms, 35);
-                vel->x += utils::approach(vel->x, Player::ms, 60);
-                Player::dir = 1;
-                Player::friction = false;
-            }
-            if (input::released(k_RIGHT)) {
-                Player::friction = true;
-            }
-            if (input::held(k_DOWN)) {
-                Player::wantstoskip = true;
-            }
-            if (input::pressed(k_JUMP)) {
-                Player::jump();
-            }
-            if (input::released(k_JUMP)) {
-                Player::currJumpTime = 0;
-            }
-            if (input::pressed(k_INVENTORY)) {
-                if (Player::dead)
-                {
-                    toggleSettings();
+            else {
+                UI::inventory->toggle();
+                UI::chest->toggle(1);
+                UI::npc->toggle(1);
+                bool state = UI::inventory->hidden();
+                ECS::getComponent<uiC>(crafting)->hidden = state;
+                UI::hideChildren(ECS::getComponent<uiC>(equipmentC), state);
+                UI::hideChildren(ECS::getComponent<uiC>(guideslot), true, true);
+                if (state) {
+                    sounds::menuclose();
+                    UI::hideChildren(ECS::getComponent<uiC>(NPCDialogue), true, true);
+                    game::droppedItemSys->dropItem(Player::pos, UI::guideItem.item, UI::guideItem.num);
                 }
                 else {
-                    UI::inventory->toggle();
-                    UI::chest->toggle(1);
-                    UI::npc->toggle(1);
-                    bool state = UI::inventory->hidden();
-                    ECS::getComponent<uiC>(crafting)->hidden = state;
-                    UI::hideChildren(ECS::getComponent<uiC>(equipmentC), state);
-                    UI::hideChildren(ECS::getComponent<uiC>(guideslot), true, true);
-                    if (state) {
-                        sounds::menuclose();
-                        UI::hideChildren(ECS::getComponent<uiC>(NPCDialogue), true, true);
-                        game::droppedItemSys->dropItem(Player::pos, UI::guideItem.item, UI::guideItem.num);
-                    }
-                    else {
-                        sounds::menuopen();
-                    }
-                    UI::hideChildren(ECS::getComponent<uiC>(buffcontainer), !state);
+                    sounds::menuopen();
                 }
+                UI::hideChildren(ECS::getComponent<uiC>(buffcontainer), !state);
             }
-            if (input::pressed(k_1)) {
-                Player::invBlock = 0;
-            }
-            if (input::pressed(k_2)) {
-                Player::invBlock = 1;
-            }
-            if (input::pressed(k_3)) {
-                Player::invBlock = 2;
-            }
-            if (input::pressed(k_4)) {
-                Player::invBlock = 3;
-            }
-            if (input::pressed(k_5)) {
-                Player::invBlock = 4;
-            }
-            if (input::pressed(k_6)) {
-                Player::invBlock = 5;
-            }
-            if (input::pressed(k_7)) {
-                Player::invBlock = 6;
-            }
-            if (input::pressed(k_8)) {
-                Player::invBlock = 7;
-            }
-            if (input::pressed(k_9)) {
-                Player::invBlock = 8;
-            }
-            if (input::pressed(k_0)) {
-                Player::invBlock = 9;
-            }
-            if (input::rpressed(GLFW_KEY_P)) {
-                ECS::print();
-            }
-            if (input::rheld(GLFW_KEY_L)) {
-                liquids::place("water", globals::mouseBlockCoords(), 0x4);
-            }
-            if (input::rheld(GLFW_KEY_M)) {
-                enemies::spawnEnemy("zombie", globals::mouseBlockCoords());
-            }
-            if (input::rpressed(GLFW_KEY_J)) {
-                enemies::spawnEnemy("jellyfish", globals::mouseBlockCoords(false));
-            }
-            if (input::rheld(GLFW_KEY_O)) {
-                map::spawnDebugSetup(globals::mouseBlockCoords());
-            }
-            if (input::rheld(GLFW_KEY_U)) {
-                for(int i = 0; i < 10; i++)
-                game::droppedItemSys->dropItem(globals::mouseBlockCoords(false), "coppercoin", 1);
-            }
-            if (input::rheld(GLFW_KEY_T)) {
-                Player::setPos(globals::mouseBlockCoords(false));
-            }
+        }
+        if (input::pressed(k_1)) {
+            Player::invBlock = 0;
+        }
+        if (input::pressed(k_2)) {
+            Player::invBlock = 1;
+        }
+        if (input::pressed(k_3)) {
+            Player::invBlock = 2;
+        }
+        if (input::pressed(k_4)) {
+            Player::invBlock = 3;
+        }
+        if (input::pressed(k_5)) {
+            Player::invBlock = 4;
+        }
+        if (input::pressed(k_6)) {
+            Player::invBlock = 5;
+        }
+        if (input::pressed(k_7)) {
+            Player::invBlock = 6;
+        }
+        if (input::pressed(k_8)) {
+            Player::invBlock = 7;
+        }
+        if (input::pressed(k_9)) {
+            Player::invBlock = 8;
+        }
+        if (input::pressed(k_0)) {
+            Player::invBlock = 9;
+        }
+        if (input::rpressed(GLFW_KEY_P)) {
+            projectileBase projectile = enemies::projectiles["muramasaprojectile"];
+            glm::vec2 pos = Window::mouseBlockCoords(false);
+            pos += utils::rotateVecByAngle(glm::vec2(4, 0), rand() % 360);
+
+            auto ppos = std::make_shared<glm::vec2>(pos);
+            projectile.pc.position = ppos;
+            projectile.pc.prevpos = *projectile.pc.position;
+            projectile.dc.position = projectile.pc.position;
+            projectile.dc.parent = globals::projectileLayer;
+            projectile.pc.vel = glm::vec2(0.4, 0);
+            int e = ECS::newEntity();
+            drawSystem::addComponent(e, &projectile.dc, false);
+            ECS::queueComponent<physicsC>(e, projectile.pc);
+            ECS::queueComponent<mobC>(e, projectile.mc);
+            ECS::queueComponent<aiC>(e, projectile.ac);
+            ECS::queueComponent<particleEmmiterC>(e, projectile.pec);
+            ECS::print();
+        }
+        if (input::rpressed(GLFW_KEY_L)) {
+            Layers::placeBlock(Window::mouseBlockCoords(), "torch");
+        }
+        if (input::rheld(GLFW_KEY_J))
+        {
+            liquids::place("water", Window::mouseBlockCoords(), 10);
+        }
+        if (input::rpressed(GLFW_KEY_O)) {
+            map::spawnDebugSetup(Window::mouseBlockCoords());
+        }
+        if (input::rheld(GLFW_KEY_U)) {
+            for(int i = 0; i < 10; i++)
+            game::droppedItemSys->dropItem(Window::mouseBlockCoords(false), "coppercoin", 1);
+        }
+        if (input::rheld(GLFW_KEY_T)) {
+            Player::setPos(Window::mouseBlockCoords(false));
         }
     }
 
@@ -427,6 +432,7 @@ namespace gameLoop {
             return;
         }
 
+        game::savesettings();
         UI::hideChildren(ECS::getComponent<uiC>(settingsUI), true);
         UI::hideChildren(ECS::getComponent<uiC>(inventoryC), false);
         UI::hideChildren(ECS::getComponent<uiC>(equipmentC), false);
@@ -438,11 +444,11 @@ namespace gameLoop {
         UI::hideChildren(HPbar, false);
         UI::chest->toggle(1);
         ECS::getComponent<uiC>(settingsbtn)->hidden = false;
+        ECS::getComponent<uiC>(guideslot)->hidden = true;
     }
 
     void createUI()
     {
-       
         hpbarC = UI::Elements::empty(uiSystem::body);
         realtimeUI = UI::Elements::empty(uiSystem::body);
         settingsUI = UI::Elements::empty(uiSystem::body);
@@ -457,7 +463,7 @@ namespace gameLoop {
         UI::addElement(tooltip, ui_TOOLTIP, { 0,0 }, { 0,0 }, uiSystem::body, { {"textSize", textSize}, {"padding", padding} }, { {"item", "empty"} }, false, anchorNONE);
 
         zoomedcursoritem = ECS::newEntity();
-        UI::addElement(zoomedcursoritem, ui_CURSORITEM, { 0, 0 }, { 2, 2 }, uiSystem::body, { {"parent", {.intVal = globals::topparticleLayer}} }, { {"text", ""} }, false, anchorNONE);
+        UI::addElement(zoomedcursoritem, ui_CURSORITEM, { 0, 0 }, { 2, 2 }, uiSystem::body, {}, { {"text", ""} }, false, anchorNONE);
 
         inventoryC = UI::Elements::empty(realtimeUI);
         chestInvC = UI::Elements::empty(realtimeUI);
@@ -471,7 +477,7 @@ namespace gameLoop {
         droppedCoinsText = UI::Elements::text(deathtextC, { 0, -150 }, false, anchorMID, "", globals::fontSize * 3, true, false, 1, 0.85);
         UI::Elements::text(deathtextC, { 0, -250 }, false, anchorMID, &Player::timeToRespawn, globals::fontSize * 3, true, false, 1, 0.85);
 
-        UI::create();
+        UI::prepareInventories();
 
         buffs::createUI();
 
@@ -503,7 +509,7 @@ namespace gameLoop {
         UI::addElement(breathbar, ui_RESOURCEBAR, { -225, 175 }, {  }, inventoryC, { {"step", step}, {"max", max}, {"sizex", sizex},{"value", value},{ "itemsize", itemsize} }, { {"itemtex", "bubble"}, {"label", "mana"} }, false, anchorMID);
 
         NPCDialogue = ECS::newEntity();
-        UI::addElement(NPCDialogue, ui_TEXTBOX, { 0,-300 }, { 1,1 }, realtimeUI, { {"minwidth", {.floatVal = 1000}}, {"maxwidth", {.floatVal = 1000}}, {"padding",{.floatVal = 120}} }, { {"text", ""} }, true, anchorTOP);
+        UI::addElement(NPCDialogue, ui_TEXTBOX, { 0,-300 }, { 1,1 }, realtimeUI, { {"minwidth", {.floatVal = 1000}}, {"maxwidth", {.floatVal = 1000}}, {"padding",{.floatVal = 120}}, {"textSize", {.floatVal = globals::fontSize}} }, { {"text", ""} }, true, anchorTOP);
 
         uiStat fitText; fitText.boolVal = true;
         uiStat func; func; func.funcp = UI::uiCfunc_toggleSettings;
@@ -553,9 +559,8 @@ namespace gameLoop {
 
         cursor = ECS::newEntity();
         UI::addElement(cursor, ui_CURSOR, { 0,0 }, { 1,1 }, uiSystem::body, {}, {}, false, anchorNONE);
-
-        
     }
+
     void openDialogue(std::string npcname)
     {
         auto textboxp = ECS::getComponent<uiC>(NPCDialogue);
@@ -581,7 +586,7 @@ namespace gameLoop {
         interfaceContainer = ECS::newEntity();
         videoContainer = ECS::newEntity();
         cursorContainer = ECS::newEntity();
-        
+
         uiStat textSize; textSize.floatVal = globals::fontSize * 1.2;
         UI::addElement(settingsMainContainer, ui_CONTAINER, { 0,0 }, { 0,0 }, settingsUI, { {"padding", {.floatVal = 1.5}}, {"opacity", {.floatVal = 0.87}} }, {}, !settingsOpen, anchorNONE);
 
@@ -616,9 +621,6 @@ namespace gameLoop {
         menuStat.intVal = cursorContainer;
         UI::addElement(ECS::newEntity(), ui_BUTTON, { -pos, 0}, {200, 200}, menus, {{"func", func}, {"fitText", {.boolVal = true} }, {"textSize", textSize}, {"menu", menuStat}}, {{"tex", "empty"}, {"text", "Cursor"}}, !settingsOpen, anchorMID);
 
-        menuStat.intVal = controlsContainer;
-        UI::addElement(ECS::newEntity(), ui_BUTTON, { -pos, -75 }, { 200, 200 }, menus, { {"func", func}, {"fitText", {.boolVal = true} }, {"textSize", textSize}, {"menu", menuStat} }, { {"tex", "empty"}, {"text", "Controls"} }, !settingsOpen, anchorMID);
-
         UI::addElement(ECS::newEntity(), ui_BUTTON, { -pos, -150 }, { 200, 200 }, menus, { {"func", {.funcp = UI::uiCfunc_toggleSettings}}, {"fitText", {.boolVal = true} }, {"textSize", textSize} }, { {"tex", "empty"}, {"text", "Close"} }, !settingsOpen, anchorMID);
 
         func.funcp = UI::uiCfunc_saveAndExitGame;
@@ -632,7 +634,12 @@ namespace gameLoop {
         UI::addElement(interfaceContainer, ui_BACK, { pos,0 }, { width,height }, right, { {"opacity", {.floatVal = 0.97}} }, {}, !settingsOpen, anchorMID);
         UI::addElement(videoContainer, ui_BACK, { pos,0 }, { width,height }, right, { {"opacity", {.floatVal = 0.97}} }, {}, !settingsOpen, anchorMID);
         UI::addElement(cursorContainer, ui_BACK, { pos,0 }, { width,height }, right, { {"opacity", {.floatVal = 0.97}} }, {}, !settingsOpen, anchorMID);
+
         controlsContainer = UI::Elements::empty(right);
+
+        menuStat.intVal = controlsContainer;
+        UI::addElement(ECS::newEntity(), ui_BUTTON, { -pos, -75 }, { 200, 200 }, menus, { {"func", {.funcp = UI::uiCfunc_openSettingsMenu}}, {"fitText", {.boolVal = true} }, {"textSize", textSize}, {"menu", menuStat} }, { {"tex", "empty"}, {"text", "Controls"} }, !settingsOpen, anchorMID);
+
 
 
         //------------------------------------------cheats-----------------------------------------------
@@ -688,7 +695,7 @@ namespace gameLoop {
 
         max.floatVal = 5.0f;
         roundAt.floatVal = .09f;
-        ref.floatValp = &globals::zoom;
+        ref.floatValp = &Window::zoom;
         UI::addElement(ECS::newEntity(), ui_DRAGFLOAT, { sliderpos, halfheight - 450 }, { 333,333 / 11 }, generalContainer, { {"textSize",  {.floatVal = sliderTextSize}}, {"ref", ref}, {"max", max}, {"min", {.floatVal = 1.0f}}, {"roundAt", roundAt} }, { {"tex", "slider"},{"label", "Main: "} }, true);
 
         //------------------------------------------general-----------------------------------------------
@@ -707,7 +714,7 @@ namespace gameLoop {
         UI::addElement(ECS::newEntity(), ui_BUTTON, { pos, halfheight - 75 }, { 0, 0 }, videoContainer, { {"func", func}, {"textSize", textSize}, {"fitText", {.boolVal = true}} }, { {"tex", "empty"}, {"text", "Toggle fullscreen"} }, true, anchorMID);
 
         func.funcp = UI::uiCfunc_nextResolution;
-        UI::addElement(ECS::newEntity(), ui_BUTTON, { pos, halfheight - 150 }, { 0, 0 }, videoContainer, { {"func", func}, {"textSize", textSize}, {"fitText", {.boolVal = true}}, {"textp", {.stringp = &game::currResText}} }, { {"tex", "empty"}, {"text", ""} }, true, anchorMID);
+        UI::addElement(ECS::newEntity(), ui_BUTTON, { pos, halfheight - 150 }, { 0, 0 }, videoContainer, { {"func", func}, {"textSize", textSize}, {"fitText", {.boolVal = true}}, {"textp", {.stringp = &Window::currResText}} }, { {"tex", "empty"}, {"text", ""} }, true, anchorMID);
 
         UI::addElement(ECS::newEntity(), ui_TOGGLE, { pos, halfheight - 225 }, { 0, 0 }, videoContainer, { {"ref", {.boolValp = &globals::background}}, {"textSize", textSize} }, { {"label", "Background"} }, true, anchorMID);
 
@@ -795,8 +802,6 @@ namespace gameLoop {
 
         UI::addElement(ECS::newEntity(), ui_BUTTON, { 0, -600 }, { 200, 200 }, controlsContainer, { {"func", {.funcp = UI::uiCfunc_toggleSettings}}, {"fitText", {.boolVal = true} }, {"textSize", textSize} }, { {"tex", "empty"}, {"text", "Close"} }, !settingsOpen, anchorMID);
 
-
-
         //------------------------------------------controls-----------------------------------------------
     }
 
@@ -831,6 +836,8 @@ namespace gameLoop {
 
     void toast(std::string text)
     {
+        text = std::regex_replace(text, std::regex("[$][N][A][M][E][$]"), Player::name);
+
         UI::Elements::toast(toasttextcontainer, glm::vec2(200, 200), false, anchorBOTLEFT, text);
 
         auto container = ECS::getComponent<uiC>(toasttextcontainer);
@@ -843,7 +850,36 @@ namespace gameLoop {
                 ECS::getComponent<drawC>(container->children[i - 1])->opacity = 1;
             }
         }
-
     }
 
+    void updateSunAndMoon()
+    {
+        auto sundraw = ECS::getComponent<drawC>(sun);
+        auto moondraw = ECS::getComponent<drawC>(moon);
+        moondraw->tex = map::moonphases[map::moonphase % map::moonphases.size()];
+
+        float a = int(utils::angleOfVector(glm::normalize(glm::vec2(map::mapX / 2.0f, map::mapY / 2.0f) - *sundraw->position)) - 90) % 360;
+        sundraw->mat = glm::rotate(glm::mat4(1.0f), float(a * PI / 180.0f), glm::vec3(0, 0, 1));
+        a = int(utils::angleOfVector(glm::normalize(glm::vec2(map::mapX/2.0f, map::mapY / 2.0f) - *sundraw->position)) - 90) % 360;
+        moondraw->mat = glm::rotate(glm::mat4(1.0f), float(a * PI / 180.0f), glm::vec3(0, 0, 1));
+
+        //ge od [0, surfaceH] do [mapX/2, surfaceH + surfaceScale*1.5] do [mapX, surfaceH]
+        if (globals::cdayTime > 0 && globals::cdayTime < globals::dayLength / 2) {
+            float percent = globals::cdayTime / globals::dayLength * 2;
+            sundraw->position->x = percent * map::mapX;
+            sundraw->position->y = map::surfaceH + sin(percent * PI) * map::surfaceScale * 1.5f;
+        }
+        else {
+            sundraw->hidden = true;
+        }
+
+        if (globals::cdayTime > globals::dayLength / 2 && globals::cdayTime < globals::dayLength) {
+            float percent = (globals::cdayTime - globals::dayLength / 2) / globals::dayLength * 2;
+            moondraw->position->x = percent * map::mapX;
+            moondraw->position->y = map::surfaceH + sin(percent * PI) * map::surfaceScale * 1.5f;
+        }
+        else {
+            moondraw->hidden = true;
+        }
+    }
 }

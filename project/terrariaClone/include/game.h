@@ -1,11 +1,18 @@
 #pragma once
 #include <core.h>
-#include <componentsystems.h>
+#include <PhysicsSystem.h>
+#include <drawSystem.h>
+#include <droppedItemSystem.h>
+#include <uiSystem.h>
+#include <toolSystem.h>
+#include <aiSystem.h>
+#include <mobSystem.h>
+#include <particleEmmiterSystem.h>
 
 enum Scene {
 	NONE = 0,
 	STARTMENU = 1,
-	GAME = 2
+	GAMELOOP = 2
 };
 
 namespace game
@@ -24,11 +31,7 @@ namespace game
 
 	extern bool showCursor;
 
-	extern std::vector<glm::vec2> resolutions;
-	extern int currRes;
-	extern std::string currResText;
 	
-	void initGlfw();
 	void initCore();
 	void endall();
 
@@ -36,17 +39,13 @@ namespace game
 	void run();
 
 	void savesettings();
-	void loadsettings();
+	bool loadsettings();
 
 	void initBase();
 
 	void changeSceneTo(Scene scene);
 
-	void drawMain();
-	void drawOverlays();
-	void updateSunAndMoon(int sun, int moon, glm::vec2 offset = glm::vec2(0));
 
-	void toggleFullscreen();
-	void nextResolution();
+	void resChanged();
 };
 
